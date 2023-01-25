@@ -8,4 +8,6 @@ include_directories(.)
 add_executable(language
         Lexeme.cpp
         Lexeme.h
-        main.cpp)
+        main.cpp
+        Syntax.h
+        Syntax.cpp)
