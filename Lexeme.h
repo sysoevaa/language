@@ -2,6 +2,10 @@
 #ifndef LANGUAGE__LEXEME_H_
 #define LANGUAGE__LEXEME_H_
 
+#include <string>
+#include <vector>
+
+
 struct Lexeme {
   int type;
   std::string string;
