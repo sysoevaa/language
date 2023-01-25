@@ -5,4 +5,5 @@ CMakeFiles/language.dir/Lexeme.cpp.obj: \
  ../Lexeme.cpp \
  ../Lexeme.h
 CMakeFiles/language.dir/main.cpp.obj: \
+ ../Lexeme.h \
  ../main.cpp
