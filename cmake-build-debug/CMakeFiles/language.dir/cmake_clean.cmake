@@ -1,10 +1,10 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/language.dir/Lexeme.cpp.o"
-  "CMakeFiles/language.dir/Lexeme.cpp.o.d"
-  "CMakeFiles/language.dir/main.cpp.o"
-  "CMakeFiles/language.dir/main.cpp.o.d"
-  "language"
+  "CMakeFiles/language.dir/Lexeme.cpp.obj"
+  "CMakeFiles/language.dir/main.cpp.obj"
+  "language.exe"
+  "language.exe.manifest"
   "language.pdb"
+  "liblanguage.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

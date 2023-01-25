@@ -59,6 +59,16 @@ class Analyser {
               continue;
           }
 
+          if (i + 1 != string.size()) {
+              if (isDoubleOperator(string[i], string[i + 1])) {
+                  lexeme_string += string[i];
+                  lexeme_string += string[i + 1];
+                  i += 2;
+                  divided.emplace_back(4, lexeme_string);
+                  continue;
+              }
+          }
+
           if (isOperator(string[i])) {
               int j = isComment(string, i);
               if (j != -1) {
@@ -189,9 +199,25 @@ class Analyser {
               return true;
           case '=':
               return true;
+          case '<':
+              return true;
+          case '>':
+              return true;
           default:
               return false;
       }
+  }
+
+  bool isDoubleOperator(char a, char b) {
+      if (a == '+' && b == '+' ||
+          a == '-' && b == '-' ||
+          a == '&' && b == '&' ||
+          a == '!' && b == '=' ||
+          a == '<' && b == '=' ||
+          a == '>' && b == '=' ||
+          a == '|' && b == '|' ||
+          a == '*' && b == '*' ) return true;
+      return false;
   }
 
   bool isPunctuation(char symbol) const {
