@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/salex/CLionProjects/language/Lexeme.h
+string
+-
+vector
+-
+
+C:/Users/salex/CLionProjects/language/main.cpp
+iostream
+-
+Lexeme.h
+C:/Users/salex/CLionProjects/language/Lexeme.h
+fstream
+-
+cassert
+-
+
