@@ -99,10 +99,22 @@ class Analyser {
       if (string == "while") {
           return true;
       }
-      if (string == "int") {
+      if (string == "char") {
           return true;
       }
-      if (string == "float") {
+      if (string == "int32") {
+          return true;
+      }
+      if (string == "int64") {
+          return true;
+      }
+      if (string == "float32") {
+          return true;
+      }
+      if (string == "float64") {
+          return true;
+      }
+      if (string == "string") {
           return true;
       }
       if (string == "if") {
@@ -111,6 +123,37 @@ class Analyser {
       if (string == "else") {
           return true;
       }
+      if (string == "exec") {
+          return true;
+      }
+      if (string == "do") {
+          return true;
+      }
+      if (string == "cast") {
+          return true;
+      }
+      if (string == "return") {
+          return true;
+      }
+      if (string == "get") {
+          return true;
+      }
+      if (string == "type") {
+          return true;
+      }
+      if (string == "float32") {
+          return true;
+      }
+      if (string == "struct") {
+          return true;
+      }
+      if (string == "construct") {
+          return true;
+      }
+      if (string == "overload") {
+          return true;
+      }
+
       return false;
   }
 
@@ -156,6 +199,8 @@ class Analyser {
           case ';':
               return true;
           case ',':
+              return true;
+          case ':':
               return true;
           default:
               return false;
