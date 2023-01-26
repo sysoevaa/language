@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Lexeme.h"
 #include <fstream>
+#include "Syntax.h"
 #include <cassert>
 
 int main() {
