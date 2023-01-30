@@ -66,7 +66,21 @@ class SyntaxAnalyser {
         do {
             gc();
             expression();
-        } while (_lex[_ind].string == ',');
+        } while (_lex[_ind].string == ",");
+    }
+
+    void parameterDef() {
+        do {
+            if (!type()) {
+                throw;
+            }
+            gc();
+            if (_lex[_ind].type != 2) {
+                throw;
+            }
+            gc();
+        }
+        while (_lex[_ind].string == ",");
     }
 
     void determinantes() {
