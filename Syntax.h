@@ -101,7 +101,26 @@ class SyntaxAnalyser {
             }
         }
         if (_lex[_ind].type == 2) {
-
+            gc();
+            if (_lex[_ind].string == "(") {
+                parameters();
+                if (_lex[_ind].string != ")") {
+                    throw;
+                }
+            }
+            else if (_lex[_ind].string == "=") {
+                gc();
+                expression();
+            }
+            else {
+                throw;
+            }
+            if (_lex[_ind].string != ";") {
+                throw;
+            }
+            gc();
+            namepace();
+            return;
         }
     }
 
