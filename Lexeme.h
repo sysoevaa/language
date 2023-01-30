@@ -28,16 +28,27 @@ class Analyser {
           }
 
           if (isLetter(string[i])) {
+              int type = -1;
+              if (divided.size() > 0 && divided.back().string == "\'") {
+                  type = 1;
+              } else if (divided.size() > 0 && divided.back().string == "\"") {
+                  type = 2;
+              }
               lexeme_string += string[i];
               ++i;
               for (; i < string.size() && (isLetter(string[i]) || isNumber(string[i])); ++i) {
                   lexeme_string += string[i];
               }
-              if (isTypeOne(lexeme_string)) {
-                  divided.push_back(Lexeme(1, lexeme_string));
-              }
-              else {
-                  divided.push_back(Lexeme(2, lexeme_string));
+              if (type == 1) {
+                  divided.emplace_back(8, lexeme_string);
+              } else if (type == 2) {
+                  divided.emplace_back(9, lexeme_string);
+              } else {
+                  if (isTypeOne(lexeme_string)) {
+                      divided.push_back(Lexeme(1, lexeme_string));
+                  } else {
+                      divided.push_back(Lexeme(2, lexeme_string)); // variable
+                  }
               }
               continue;
           }
@@ -64,7 +75,7 @@ class Analyser {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
-                  divided.emplace_back(4, lexeme_string);
+                  divided.emplace_back(7, lexeme_string);
                   continue;
               }
           }
