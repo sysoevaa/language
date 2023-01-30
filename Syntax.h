@@ -201,7 +201,64 @@ class SyntaxAnalyser {
         }
     }
 
+  void type_cast() {
+      if (!type()) throw;
+      gc();
+      if (_lex[_ind].string != "cast") throw;
+      gc();
+      if (_lex[_ind].type != 2) throw;
+      gc();
+  }
 
+  void type_cast_def() {
+      if (!type()) throw;
+      gc();
+      if (_lex[_ind].string != "cast") throw;
+      gc();
+      if (!type()) throw;
+      gc();
+      variable();
+      if (_lex[_ind].string != "{") throw;
+      gc();
+      namepace();
+      if (_lex[_ind].string != "}") throw;
+      gc();
+  }
+
+  void print() {
+      if (_lex[_ind].string != "print") throw;
+      gc();
+      if (_lex[_ind].string != "(") throw;
+      gc();
+      string();
+      if (_lex[_ind].string != ")") throw;
+      gc();
+  }
+
+  void get() {
+      if (_lex[_ind].string != "get") throw;
+      gc();
+      input();
+  }
+
+  void input() {
+      variable();
+      while (_lex[_ind].string == ",") {
+          gc();
+          variable();
+      }
+  }
+
+  void bool_expression() {
+      if (_lex[_ind].string == "(") {
+          gc();
+          bool_expression();
+          if (_lex[_ind].string != ")") throw;
+      } else if (_lex[_ind].type == 2) {
+          gc();
+          if (_lex[_ind].type != )
+      }
+  }
 
 private:
     std::vector<Lexeme> _lex;
