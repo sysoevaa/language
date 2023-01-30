@@ -70,7 +70,39 @@ class SyntaxAnalyser {
     }
 
     void lexpression() {
+        if (type()) {
+            gc();
+        }
+        else if (_lex[_ind].type == 1) {
+            if (_lex[_ind].string == "if") {
 
+            }
+            if (_lex[_ind].string == "while") {
+
+            }
+            if (_lex[_ind].string == "for") {
+
+            }
+            if (_lex[_ind].string == "do") {
+                gc();
+                if (_lex[_ind].string == "while") {
+
+                }
+                throw;
+            }
+            if (_lex[_ind].string == "while") {
+
+            }
+            if (_lex[_ind].string == "type") {
+
+            }
+            if (_lex[_ind].string == "get") {
+
+            }
+        }
+        if (_lex[_ind].type == 2) {
+
+        }
     }
 
     void namepace() {
