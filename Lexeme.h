@@ -247,6 +247,10 @@ class Analyser {
               return true;
           case ']':
               return true;
+          case '\'':
+              return true;
+          case '\"':
+              return true;
           default:
               return false;
       }
