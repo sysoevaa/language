@@ -131,14 +131,14 @@ class SyntaxAnalyser {
             if (_lex[_ind].string != ")") {
                 throw;
             }
+            return;
         }
-        else if (_lex[_ind].string == "=") {
+        if (_lex[_ind].string == "=") {
             gc();
             expression();
+            return;
         }
-        else {
-            throw;
-        }
+        throw;
 
     }
 
