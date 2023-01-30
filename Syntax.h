@@ -10,9 +10,31 @@ class SyntaxAnalyser {
             gc();
             return;
         }
-        if (_lex[_ind].string == "") {
-
+        if (_lex[_ind].string == "char") {
+            gc();
+            return;
         }
+        if (_lex[_ind].string == "int32") {
+            gc();
+            return;
+        }
+        if (_lex[_ind].string == "int64") {
+            gc();
+            return;
+        }
+        if (_lex[_ind].string == "float32") {
+            gc();
+            return;
+        }
+        if (_lex[_ind].string == "float64") {
+            gc();
+            return;
+        }
+        if (_lex[_ind].string == "string") {
+            gc();
+            return;
+        }
+        throw;
     }
 
     //распихать унарки, обработка стрринга и буковок
@@ -45,12 +67,6 @@ class SyntaxAnalyser {
         }
 
         throw;
-        //if (_ind->type == )
-        //если второй тип - универсальная функция проверки на имя переменной/вызов функции
-        //обязательная проверка на пустоту / оператор
-
-        //вызов еще одной функции экспрешон(если флаг сработал)?
-        //или же в конце чекаем, есть ли точка с запятой, после чего завершаем
     }
 
     void parameters() {
