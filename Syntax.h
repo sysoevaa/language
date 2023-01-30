@@ -4,20 +4,29 @@ class SyntaxAnalyser {
     void gc() {
 
     }
+
+    void type() {
+        if (_lex[_ind].type == 2) {
+            gc();
+            return;
+        }
+        if (_lex[_ind].string == "") {
+
+        }
+    }
+
     //распихать унарки, обработка стрринга и буковок
     void expression() {
-        gc();
-        if (_current->type == 2 || _current->type == 3) {
+        if (_lex[_ind].type == 2 || _lex[_ind].type == 3) {
             gc();
-            if (_current->type == 6 && _current->string == "(") {
+            if (_lex[_ind].type == 6 && _lex[_ind].string == "(") {
                 parameters();
-                gc();
-                if (_current->string != ")") {
+                if (_lex[_ind].string != ")") {
                     throw ;
                 }
                 gc();
             }
-            if (_current->type == 4) {
+            if (_lex[_ind].type == 4) {
                 //распихать унарки в другой тип
                 gc();
                 expression();
@@ -25,10 +34,10 @@ class SyntaxAnalyser {
             return;
         }
 
-        if (_current->type == 6 && _current->string == "(") {
-            expression();
+        if (_lex[_ind].type == 6 && _lex[_ind].string == "(") {
             gc();
-            if (_current->string != ")") {
+            expression();
+            if (_lex[_ind].string != ")") {
                 throw ;
             }
             gc();
@@ -36,19 +45,28 @@ class SyntaxAnalyser {
         }
 
         throw;
-
-        //if (_current->type == )
+        //if (_ind->type == )
         //если второй тип - универсальная функция проверки на имя переменной/вызов функции
         //обязательная проверка на пустоту / оператор
 
         //вызов еще одной функции экспрешон(если флаг сработал)?
         //или же в конце чекаем, есть ли точка с запятой, после чего завершаем
     }
+
     void parameters() {
+        do {
+            gc();
+            expression();
+        } while (_lex[_ind].string == ',');
+    }
+
+    void functionDefinition() {
 
     }
 
+
+
 private:
-    std::vector<Lexeme> _lexemes;
-    Lexeme* _current = nullptr;
+    std::vector<Lexeme> _lex;
+    int _ind = 0;
 };

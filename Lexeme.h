@@ -151,9 +151,6 @@ class Analyser {
       if (string == "type") {
           return true;
       }
-      if (string == "float32") {
-          return true;
-      }
       if (string == "struct") {
           return true;
       }
