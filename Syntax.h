@@ -168,6 +168,9 @@ class SyntaxAnalyser {
             throw;
         }
         gc();
+        if (_lex[_ind].string == "}") {
+            return;
+        }
         namepace();
         return;
     }
@@ -184,12 +187,16 @@ class SyntaxAnalyser {
         if (_lex[_ind].string != "(") {
             throw;
         }
-        parameters();
+        parameterDef();
         if (_lex[_ind].string != ")") {
             throw;
         }
         gc();
         if (_lex[_ind].string != "{") {
+            throw;
+        }
+        namepace();
+        if (_lex[_ind].string != "}") {
             throw;
         }
     }
