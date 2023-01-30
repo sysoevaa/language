@@ -5,36 +5,29 @@ class SyntaxAnalyser {
 
     }
 
-    void type() {
+    bool type() {
         if (_lex[_ind].type == 2) {
-            gc();
-            return;
+            return true;
         }
         if (_lex[_ind].string == "char") {
-            gc();
-            return;
+            return true;
         }
         if (_lex[_ind].string == "int32") {
-            gc();
-            return;
+            return true;
         }
         if (_lex[_ind].string == "int64") {
-            gc();
-            return;
+            return true;
         }
         if (_lex[_ind].string == "float32") {
-            gc();
-            return;
+            return true;
         }
         if (_lex[_ind].string == "float64") {
-            gc();
-            return;
+            return true;
         }
         if (_lex[_ind].string == "string") {
-            gc();
-            return;
+            return true;
         }
-        throw;
+        return false;
     }
 
     //распихать унарки, обработка стрринга и буковок
@@ -76,8 +69,34 @@ class SyntaxAnalyser {
         } while (_lex[_ind].string == ',');
     }
 
-    void functionDefinition() {
+    void lexpression() {
 
+    }
+
+    void namepace() {
+
+    }
+
+    void functionDefinition() {
+        if (!type()) {
+            throw;
+        }
+        gc();
+        if (_lex[_ind].type != 2) {
+            throw;
+        }
+        gc();
+        if (_lex[_ind].string != "(") {
+            throw;
+        }
+        parameters();
+        if (_lex[_ind].string != ")") {
+            throw;
+        }
+        gc();
+        if (_lex[_ind].string != "{") {
+            throw;
+        }
     }
 
 
