@@ -71,12 +71,22 @@ class Analyser {
           }
 
           if (i + 1 != string.size()) {
-              if (isDoubleOperator(string[i], string[i + 1])) {
+              if (isDoubleOperator(string[i], string[i + 1]) == 1) {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
                   divided.emplace_back(7, lexeme_string);
                   continue;
+              } else if (isDoubleOperator(string[i], string[i + 1]) == 2) {
+                  lexeme_string += string[i];
+                  lexeme_string += string[i + 1];
+                  i += 2;
+                  divided.emplace_back(10, lexeme_string);
+              } else if (isDoubleOperator(string[i], string[i + 1]) == 3) {
+                  lexeme_string += string[i];
+                  lexeme_string += string[i + 1];
+                  i += 2;
+                  divided.emplace_back(11, lexeme_string);
               }
           }
 
@@ -216,16 +226,16 @@ class Analyser {
       }
   }
 
-  bool isDoubleOperator(char a, char b) {
+  int isDoubleOperator(char a, char b) {
       if (a == '+' && b == '+' ||
-          a == '-' && b == '-' ||
-          a == '&' && b == '&' ||
+          a == '-' && b == '-') return 1;
+      if (a == '&' && b == '&' ||
           a == '!' && b == '=' ||
           a == '<' && b == '=' ||
           a == '>' && b == '=' ||
-          a == '|' && b == '|' ||
-          a == '*' && b == '*' ) return true;
-      return false;
+          a == '|' && b == '|' ) return 2;
+      if (a == '*' && b == '*' ) return 3;
+      return 0;
   }
 
   bool isPunctuation(char symbol) const {

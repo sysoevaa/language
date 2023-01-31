@@ -256,8 +256,16 @@ class SyntaxAnalyser {
           if (_lex[_ind].string != ")") throw;
       } else if (_lex[_ind].type == 2) {
           gc();
-          if (_lex[_ind].type != )
+          if (_lex[_ind].type != 10) throw;
+          gc();
+          if (_lex[_ind].string == "(") {
+              gc();
+              bool_expression();
+              if (_lex[_ind].string != ")") throw;
+              gc();
+          } else if (_lex[_ind].type != 2) throw;
       }
+      gc();
   }
 
 private:
