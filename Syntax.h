@@ -87,21 +87,23 @@ class SyntaxAnalyser {
           gc();
           If();
       } else if (_lex[_ind].string == "while") {
-
+          gc();
+          While();
       } else if (_lex[_ind].string == "for") {
 
       } else if (_lex[_ind].string == "do") {
           gc();
           if (_lex[_ind].string == "while") {
-
+              gc();
+            dowhile();
           }
           throw;
-      } else if (_lex[_ind].string == "while") {
-
       } else if (_lex[_ind].string == "print") {
-
+          gc();
+          print();
       } else if (_lex[_ind].string == "get") {
-
+          gc();
+          get();
       } else {
           throw;
       }
@@ -287,6 +289,32 @@ class SyntaxAnalyser {
           if (_lex[_ind].string != "}") throw;
           gc();
       } while (_lex[_ind].string == "else");
+      gc();
+  }
+
+  void While() {
+      if (_lex[_ind].string != "(") throw;
+      gc();
+      bool_expression();
+      if (_lex[_ind].string != ")") throw;
+      gc();
+      if (_lex[_ind].string != "{") throw;
+      gc();
+      namepace();
+      if (_lex[_ind].string != "}") throw;
+      gc();
+  }
+
+  void dowhile() {
+      if (_lex[_ind].string != "(") throw;
+      gc();
+      bool_expression();
+      if (_lex[_ind].string != ")") throw;
+      gc();
+      if (_lex[_ind].string != "{") throw;
+      gc();
+      namepace();
+      if (_lex[_ind].string != "{") throw;
       gc();
   }
 
