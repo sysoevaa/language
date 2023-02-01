@@ -6,7 +6,7 @@ class SyntaxAnalyser {
   }
 
   bool type() {
-      if (_lex[_ind].type == 2) { // почему
+      if (_lex[_ind].type == "bool") {
           return true;
       }
       if (_lex[_ind].string == "char") {
@@ -32,7 +32,7 @@ class SyntaxAnalyser {
 
   void program() {
       gc();
-      globalNamepaceNoExec();
+      globalNamespaceNoExec();
       if (_lex[_ind].string != "exec") throw;
       gc();
       functionDefinition();
@@ -40,33 +40,110 @@ class SyntaxAnalyser {
       globalNamespace();
   }
 
-  void globalNamepaceNoExec() {
-
+  void globalNamespaceNoExec() {
+      if (_lex[_ind].string == "struct") {
+          object();
+          globalNamespaceNoExec();
+          return;
+      }
+      if (type()) {
+          if (_ind + 2 >= _lex.size()) throw;
+          if (_lex[_ind + 1].string == "cast") {
+              type_cast_def();
+              globalNamespaceNoExec();
+              return;
+          }
+          else if (_lex[_ind + 1].type != "variable") throw;
+          if (_lex[_ind + 2].string == "(") {
+              functionDefinition();
+              globalNamespaceNoExec();
+              return;
+          }
+          gc();
+          gc();
+          if (_lex[_ind + 2].string == ";") {
+              gc();
+              globalNamespaceNoExec();
+              return;
+          }
+          if (_lex[_ind + 2].string == "=") {
+              gc();
+              expression();
+              globalNamespaceNoExec();
+              return;
+          }
+          throw;
+      }
+      return;
   }
 
   void globalNamespace() {
+      if (_lex[_ind].string == "struct") {
+          object();
+          globalNamespaceNoExec();
+          return;
+      }
+      if (_lex[_ind].string == "exec") {
+          gc();
+          functionDefinition();
+          globalNamespaceNoExec();
+          return;
+      }
+      if (type()) {
+          if (_lex[_ind + 1].string == "cast") {
+              type_cast_def();
+              globalNamespaceNoExec();
+              return;
+          }
+          else if (_lex[_ind + 1].type != "variable") throw;
+          if (_lex[_ind + 2].string == "(") {
+              functionDefinition();
+              globalNamespaceNoExec();
+              return;
+          }
+          gc();
+          gc();
+          if (_lex[_ind + 2].string == ";") {
+              gc();
+              globalNamespaceNoExec();
+              return;
+          }
+          if (_lex[_ind + 2].string == "=") {
+              gc();
+              expression();
+              globalNamespaceNoExec();
+              return;
+          }
+          throw;
+      }
+      return;
+  }
+
+  void object() {
+      if (_lex[_ind].string != "struct") throw;
+      gc();
+      if (_lex[_ind].type != "variable") throw;
 
   }
 
-  //распихать унарки, обработка стрринга и буковок
   void expression() {
-      if (_lex[_ind].type == 2 || _lex[_ind].type == 3) {
+      if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
           gc();
-          if (_lex[_ind].type == 6 && _lex[_ind].string == "(") {
+          if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
               parameters();
               if (_lex[_ind].string != ")") {
                   throw;
               }
               gc();
           }
-          if (_lex[_ind].type == 4) {
+          if (_lex[_ind].type == "bool") {
               gc();
               expression();
           }
           return;
       }
 
-      if (_lex[_ind].type == 6 && _lex[_ind].string == "(") {
+      if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
           gc();
           expression();
           if (_lex[_ind].string != ")") {
@@ -76,7 +153,7 @@ class SyntaxAnalyser {
           return;
       }
 
-      if (_lex[_ind].type == 9 || ) {
+      if (_lex[_ind].type == "string") {
           return;
       }
 
@@ -261,23 +338,35 @@ class SyntaxAnalyser {
   void print() {
       if (_lex[_ind].string != "(") throw;
       gc();
-      expression();
-      if (_lex[_ind].string == ",") {
+      if (_lex[_ind].type != 2 || _lex[_ind].type != 8 ||
+      _lex[_ind].type != 9 || _lex[_ind].type != 3) {
+          throw;
+      }
+      gc();
+      if (_lex[_ind].string == ")") {
+          gc();
+          return;
+      } else if (_lex[_ind].string != ",") {
+          throw;
+      } else {
+          gc();
           do {
+              if (_lex[_ind].type != 2 || _lex[_ind].type != 8 ||
+                  _lex[_ind].type != 9 || _lex[_ind].type != 3) {
+                  throw;
+              }
               gc();
-              expression();
           } while (_lex[_ind].string == ",");
           gc();
+          if (_lex[_ind].string != ")") throw;
       }
-      if (_lex[_ind].string != ")") throw;
       gc();
   }
 
   void get() {
-      if (_lex[_ind].string != "(") throw;
-      input();
-      if (_lex[_ind].string != ")") throw;
+      if (_lex[_ind].string != "get") throw;
       gc();
+      input();
   }
 
   void input() {
@@ -293,16 +382,16 @@ class SyntaxAnalyser {
           gc();
           bool_expression();
           if (_lex[_ind].string != ")") throw;
-      } else if (_lex[_ind].type == "variable") {
+      } else if (_lex[_ind].type == 2) {
           gc();
-          if (_lex[_ind].type != "bool") throw;
+          if (_lex[_ind].type != 10) throw;
           gc();
           if (_lex[_ind].string == "(") {
               gc();
               bool_expression();
               if (_lex[_ind].string != ")") throw;
               gc();
-          } else if (_lex[_ind].type != "variable") throw;
+          } else if (_lex[_ind].type != 2) throw;
       }
       gc();
   }
@@ -362,43 +451,7 @@ class SyntaxAnalyser {
       gc();
   }
 
-  void For() {
-      if (_lex[_ind].string != "(") throw;
-      gc();
-      variable_def();
-      if (_lex[_ind].string == ":") {
-          variable();
-      } else if (_lex[_ind].string == ";") {
-          gc();
-          bool_expression();
-          if (_lex[_ind].string != ";") throw;
-          expression();
-      } else {
-          throw;
-      }
-      if (_lex[_ind].string != "{") throw;
-      gc();
-      cycle_namespace();
-      if (_lex[_ind].string != "}") throw;
-      gc();
-  }
-
-  void variable() {
-      if (_lex[_ind].type != "variable") throw;
-      gc();
-  }
-
-  void variable_def() {
-      if (!type()) throw;
-      gc();
-      if (_lex[_ind].type != "variable") throw;
-      gc();
-      if (_lex[_ind].string != "=") return;
-      gc();
-      expression();
-  }
-
- private:
+  private:
   std::vector<Lexeme> _lex;
   int _ind = 0;
 };
