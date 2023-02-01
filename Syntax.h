@@ -6,7 +6,7 @@ class SyntaxAnalyser {
   }
 
   bool type() {
-      if (_lex[_ind].type == 2) {
+      if (_lex[_ind].type == 2) { // почему
           return true;
       }
       if (_lex[_ind].string == "char") {
@@ -261,35 +261,23 @@ class SyntaxAnalyser {
   void print() {
       if (_lex[_ind].string != "(") throw;
       gc();
-      if (_lex[_ind].type != 2 || _lex[_ind].type != 8 ||
-      _lex[_ind].type != 9 || _lex[_ind].type != 3) {
-          throw;
-      }
-      gc();
-      if (_lex[_ind].string == ")") {
-          gc();
-          return;
-      } else if (_lex[_ind].string != ",") {
-          throw;
-      } else {
-          gc();
+      expression();
+      if (_lex[_ind].string == ",") {
           do {
-              if (_lex[_ind].type != 2 || _lex[_ind].type != 8 ||
-                  _lex[_ind].type != 9 || _lex[_ind].type != 3) {
-                  throw;
-              }
               gc();
+              expression();
           } while (_lex[_ind].string == ",");
           gc();
-          if (_lex[_ind].string != ")") throw;
       }
+      if (_lex[_ind].string != ")") throw;
       gc();
   }
 
   void get() {
-      if (_lex[_ind].string != "get") throw;
-      gc();
+      if (_lex[_ind].string != "(") throw;
       input();
+      if (_lex[_ind].string != ")") throw;
+      gc();
   }
 
   void input() {
@@ -305,16 +293,16 @@ class SyntaxAnalyser {
           gc();
           bool_expression();
           if (_lex[_ind].string != ")") throw;
-      } else if (_lex[_ind].type == 2) {
+      } else if (_lex[_ind].type == "variable") {
           gc();
-          if (_lex[_ind].type != 10) throw;
+          if (_lex[_ind].type != "bool") throw;
           gc();
           if (_lex[_ind].string == "(") {
               gc();
               bool_expression();
               if (_lex[_ind].string != ")") throw;
               gc();
-          } else if (_lex[_ind].type != 2) throw;
+          } else if (_lex[_ind].type != "variable") throw;
       }
       gc();
   }
@@ -372,6 +360,42 @@ class SyntaxAnalyser {
       namepace();
       if (_lex[_ind].string != "{") throw;
       gc();
+  }
+
+  void For() {
+      if (_lex[_ind].string != "(") throw;
+      gc();
+      variable_def();
+      if (_lex[_ind].string == ":") {
+          variable();
+      } else if (_lex[_ind].string == ";") {
+          gc();
+          bool_expression();
+          if (_lex[_ind].string != ";") throw;
+          expression();
+      } else {
+          throw;
+      }
+      if (_lex[_ind].string != "{") throw;
+      gc();
+      cycle_namespace();
+      if (_lex[_ind].string != "}") throw;
+      gc();
+  }
+
+  void variable() {
+      if (_lex[_ind].type != "variable") throw;
+      gc();
+  }
+
+  void variable_def() {
+      if (!type()) throw;
+      gc();
+      if (_lex[_ind].type != "variable") throw;
+      gc();
+      if (_lex[_ind].string != "=") return;
+      gc();
+      expression();
   }
 
  private:
