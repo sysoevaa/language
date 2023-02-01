@@ -181,7 +181,7 @@ class SyntaxAnalyser {
               member();
               return;
           }
-          throw;
+          throw std::logic_error("unexpected symbols");
       }
       return;
   }
@@ -225,7 +225,7 @@ class SyntaxAnalyser {
           if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
               parameters();
               if (_lex[_ind].string != ")") {
-                  throw std::logic_error("expected )");
+                  throw std::logic_error("expected \")\"");
               }
               gc();
           }
@@ -240,7 +240,7 @@ class SyntaxAnalyser {
           gc();
           expression();
           if (_lex[_ind].string != ")") {
-              throw;
+              throw std::logic_error("\")\" expected");
           }
           gc();
           return;
@@ -249,8 +249,7 @@ class SyntaxAnalyser {
       if (_lex[_ind].type == "string") {
           return;
       }
-
-      throw;
+      throw std::logic_error("unexpected symbols");
   }
 
   void parameters() {
@@ -263,11 +262,11 @@ class SyntaxAnalyser {
   void parameterDef() {
       do {
           if (!type()) {
-              throw;
+              throw std::logic_error("expected type name");
           }
           gc();
           if (_lex[_ind].type != "variable") {
-              throw;
+              throw std::logic_error("variable expected");
           }
           gc();
       } while (_lex[_ind].string == ",");
@@ -287,21 +286,21 @@ class SyntaxAnalyser {
           gc();
           if (_lex[_ind].string == "while") {
               gc();
-            dowhile();
+              dowhile();
           }
           throw;
       } else if (_lex[_ind].string == "print") {
           gc();
           print();
           if (_lex[_ind].string != ";") {
-              throw;
+              throw std::logic_error("\";\" expected");
           }
           gc();
       } else if (_lex[_ind].string == "get") {
           gc();
           get();
           if (_lex[_ind].string != ";") {
-              throw;
+              throw std::logic_error("\";\" expected");
           }
           gc();
       } else if (_lex[_ind].string == "return") {
@@ -310,11 +309,11 @@ class SyntaxAnalyser {
               expression();
           }
           if (_lex[_ind].string != ";") {
-              throw;
+              throw std::logic_error("\";\" expected");
           }
           gc();
       } else {
-          throw;
+          throw std::logic_error("unexpected symbols");
       }
   }
 
