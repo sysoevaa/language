@@ -567,12 +567,25 @@ class SyntaxAnalyser {
   }
 
   void string() {
-      if (_lex[_ind].string != "string" && _lex[_ind].type != "keywords") throw;
+      if (_lex[_ind].string != "string" ||  _lex[_ind].type != "keywords") throw;
       gc();
       variable();
       if (_lex[_ind].string != "=") return;
       gc();
       if (_lex[_ind].type != "string") throw;
+      gc();
+  }
+
+  void array_def() {
+      if (_lex[_ind].string != "array" || _lex[_ind].type != "keywords") throw;
+      gc();
+      if (!type()) throw;
+      gc();
+      variable();
+      if (_lex[_ind].string != "(") return;
+      gc();
+      expression();
+      if (_lex[_ind].string != ")") throw;
       gc();
   }
 
