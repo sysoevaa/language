@@ -557,13 +557,13 @@ class SyntaxAnalyser {
   }
 
   void For() {
-      if (_lex[_ind].string != "(") throw;
+      if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
       gc();
       variable_def();
       if (_lex[_ind].string == ":") {
           gc();
           if (_lex[_ind].type != "variable") {
-              throw;
+              throw std::logic_error("variable expected");
           }
       } else if (_lex[_ind].string == ";") {
           gc();
