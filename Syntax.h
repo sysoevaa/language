@@ -226,6 +226,7 @@ class SyntaxAnalyser {
       gc();
       namepace();
       if (_lex[_ind].string != "}") throw std::logic_error("\" } \" expected");
+      gc();
   }
 
   void expression() {

@@ -1,1 +1,49 @@
-code code exec ++ var-- var && n
+cat cast (dog a) {
+    a.leg = lapka;
+}
+
+struct cat {
+    string lapka;
+    array int32 fur;
+
+    construct (kitten k) {
+        name = k.name;
+    }
+
+    cat overload+ (cat b) {
+        return lapka + b.lapka;
+    }
+}
+
+float32 function(int32 a, float64 b) {
+    return a ** b;
+}
+
+exec int32 main() {
+    int64 a;
+    for (bool c = 0; c < 25; ++c) {
+        while (a < b) {
+            a = a + b;
+        }
+    }
+    if (b < a) {
+        a.c = a + 1;
+    } else {
+        return;
+    }
+}
+
+int32 f(cat a, dog b) {
+    c = dog cast a;
+}
+
+
+
+exec int32 foo() {
+    do while (b <= d) {
+        b = b + d;
+    }
+    array int32 arr;
+    array float64 arr(n + 1);
+    string a = "array";
+}
