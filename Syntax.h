@@ -544,15 +544,15 @@ class SyntaxAnalyser {
   }
 
   void dowhile() {
-      if (_lex[_ind].string != "(") throw;
+      if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
       gc();
       bool_expression();
-      if (_lex[_ind].string != ")") throw;
+      if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       gc();
-      if (_lex[_ind].string != "{") throw;
+      if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
       namepace();
-      if (_lex[_ind].string != "{") throw;
+      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
       gc();
   }
 
