@@ -287,8 +287,9 @@ class SyntaxAnalyser {
           if (_lex[_ind].string == "while") {
               gc();
               dowhile();
+          } else {
+              throw std::logic_error("\"while\" expected");
           }
-          throw;
       } else if (_lex[_ind].string == "print") {
           gc();
           print();
@@ -322,7 +323,7 @@ class SyntaxAnalyser {
       if (_lex[_ind].type == "unary") {
           gc();
           if (_lex[_ind].type != "variable") {
-              throw;
+              throw std::logic_error("variable expected");
           }
           return;
       }
@@ -331,28 +332,28 @@ class SyntaxAnalyser {
           gc();
       }
       if (_lex[_ind].type != "variable") {
-          throw;
+          throw std::logic_error("variable expected");
       }
       gc();
       if (_lex[_ind].string == "[") {
           gc();
-          if (_lex[_ind].type != "number") throw;
+          if (_lex[_ind].type != "number") throw std::logic_error("number expected");
           gc();
-          if (_lex[_ind].string != "[") throw;
+          if (_lex[_ind].string != "[") throw std::logic_error("\"[\" expected");
       }
       if (_lex[_ind].string == ".") {
           gc();
           if (_lex[_ind].type != "variable") {
-              throw;
+              throw std::logic_error("variable expected");
           }
       }
       if (_lex[_ind].string == "(") {
           if (def) {
-              throw;
+              throw std::logic_error("variable definition expected");
           }
           parameters();
           if (_lex[_ind].string != ")") {
-              throw;
+              throw std::logic_error("\")\" expected");
           }
           return;
       }
@@ -361,8 +362,7 @@ class SyntaxAnalyser {
           expression();
           return;
       }
-      throw;
-
+      throw std::logic_error("unexpected symbols");
   }
 
   void namepace() {
