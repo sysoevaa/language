@@ -6,7 +6,7 @@ class SyntaxAnalyser {
 
   void gc() {
      ++_ind;
-     if (_ind >= _lex.size()) throw;
+     if (_ind >= _lex.size()) throw std::logic_error("unexpected end of file");
   }
 
   bool type() {
@@ -37,7 +37,7 @@ class SyntaxAnalyser {
   void program() {
       gc();
       globalNamespaceNoExec();
-      if (_lex[_ind].string != "exec") throw;
+      if (_lex[_ind].string != "exec") throw std::logic_error("\"exec\" exec");
       gc();
       functionDefinition();
       gc();
@@ -56,13 +56,13 @@ class SyntaxAnalyser {
           return;
       }
       if (type()) {
-          if (_ind + 2 >= _lex.size()) throw;
+          if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
           if (_lex[_ind + 1].string == "cast") {
               type_cast_def();
               globalNamespaceNoExec();
               return;
           }
-          else if (_lex[_ind + 1].type != "variable") throw;
+          else if (_lex[_ind + 1].type != "variable") throw std::logic_error("expected variable");
           if (_lex[_ind + 2].string == "(") {
               functionDefinition();
               globalNamespaceNoExec();
@@ -81,7 +81,7 @@ class SyntaxAnalyser {
               globalNamespaceNoExec();
               return;
           }
-          throw;
+          throw std::logic_error("unexpected symbols");
       }
       return;
   }
@@ -104,13 +104,13 @@ class SyntaxAnalyser {
           return;
       }
       if (type()) {
-          if (_ind + 2 >= _lex.size()) throw;
+          if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
           if (_lex[_ind + 1].string == "cast") {
               type_cast_def();
               globalNamespace();
               return;
           }
-          else if (_lex[_ind + 1].type != "variable") throw;
+          else if (_lex[_ind + 1].type != "variable") throw std::logic_error("variable expected");
           if (_lex[_ind + 2].string == "(") {
               functionDefinition();
               globalNamespace();
@@ -129,18 +129,18 @@ class SyntaxAnalyser {
               globalNamespace();
               return;
           }
-          throw;
+          throw std::logic_error("unexpected symbols");
       }
       return;
   }
 
   void object() {
-      if (_lex[_ind].string != "struct") throw;
+      if (_lex[_ind].string != "struct") throw std::logic_error("\"struct\" expected");
       gc();
-      if (_lex[_ind].type != "variable") throw;
-      if (_lex[_ind].type != "{") throw;
+      if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
+      if (_lex[_ind].type != "{") throw std::logic_error("\"{\" expected");
       member();
-      if (_lex[_ind].string != "}") throw;
+      if (_lex[_ind].string != "}") throw std::logic_error("\"}\"expected");
       gc();
   }
 
@@ -156,13 +156,13 @@ class SyntaxAnalyser {
           return;
       }
       if (type()) {
-          if (_ind + 2 >= _lex.size()) throw;
+          if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");;
           if (_lex[_ind + 1].string == "overload") {
               overload();
               member();
               return;
           }
-          else if (_lex[_ind + 1].type != "variable") throw;
+          else if (_lex[_ind + 1].type != "variable") throw std::logic_error("variable expected");
           if (_lex[_ind + 2].string == "(") {
               functionDefinition();
               member();
@@ -187,17 +187,17 @@ class SyntaxAnalyser {
   }
 
   void construct() {
-      if (_lex[_ind].string != "construct") throw;
+      if (_lex[_ind].string != "construct") throw std::logic_error("\"construct \" expected");
       gc();
-      if (_lex[_ind].string != "(") throw;
+      if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
       gc();
       parameterDef();
-      if (_lex[_ind].string != ")") throw;
+      if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       gc();
-      if (_lex[_ind].string != "{") throw;
+      if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
       namepace();
-      if (_lex[_ind].string != "}") throw;
+      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
       gc();
   }
 
@@ -225,7 +225,7 @@ class SyntaxAnalyser {
           if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
               parameters();
               if (_lex[_ind].string != ")") {
-                  throw;
+                  throw std::logic_error("expected )");
               }
               gc();
           }
