@@ -527,6 +527,7 @@ class SyntaxAnalyser {
           if (_lex[_ind].string != "}") throw;
           gc();
       } while (_lex[_ind].string == "else");
+      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
       gc();
   }
 
