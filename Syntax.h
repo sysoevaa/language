@@ -2,7 +2,8 @@
 
 class SyntaxAnalyser {
   void gc() {
-
+     ++_ind;
+     if (_ind >= _lex.size()) throw;
   }
 
   bool type() {
@@ -90,6 +91,7 @@ class SyntaxAnalyser {
           return;
       }
       if (type()) {
+          if (_ind + 2 >= _lex.size()) throw;
           if (_lex[_ind + 1].string == "cast") {
               type_cast_def();
               globalNamespaceNoExec();
@@ -123,7 +125,80 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "struct") throw;
       gc();
       if (_lex[_ind].type != "variable") throw;
+      if (_lex[_ind].type != "{") throw;
+      member();
+      if (_lex[_ind].string != "}") throw;
+      gc();
+  }
 
+  void member() {
+      if (_lex[_ind].string == "construct") {
+          construct();
+          member();
+          return;
+      }
+      if (type()) {
+          if (_ind + 2 >= _lex.size()) throw;
+          if (_lex[_ind + 1].string == "overload") {
+              overload();
+              member();
+              return;
+          }
+          else if (_lex[_ind + 1].type != "variable") throw;
+          if (_lex[_ind + 2].string == "(") {
+              functionDefinition();
+              member();
+              return;
+          }
+          gc();
+          gc();
+          if (_lex[_ind + 2].string == ";") {
+              gc();
+              member();
+              return;
+          }
+          if (_lex[_ind + 2].string == "=") {
+              gc();
+              expression();
+              member();
+              return;
+          }
+          throw;
+      }
+      return;
+  }
+
+  void construct() {
+      if (_lex[_ind].string != "construct") throw;
+      gc();
+      if (_lex[_ind].string != "(") throw;
+      gc();
+      parameterDef();
+      if (_lex[_ind].string != ")") throw;
+      gc();
+      if (_lex[_ind].string != "{") throw;
+      gc();
+      namepace();
+      if (_lex[_ind].string != "}") throw;
+      gc();
+  }
+
+  void overload() {
+      if (!type()) throw;
+      gc();
+      if (_lex[_ind].string != "overload") throw;
+      gc();
+      if (_lex[_ind].type != "bool") throw;
+      gc();
+      if (_lex[_ind].string != "(") throw;
+      gc();
+      parameterDef();
+      if (_lex[_ind].string != ")") throw;
+      gc();
+      if (_lex[_ind].string != "{") throw;
+      gc();
+      namepace();
+      if (_lex[_ind].string != "}") throw;
   }
 
   void expression() {
