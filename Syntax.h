@@ -361,7 +361,7 @@ class SyntaxAnalyser {
           expression();
           return;
       }
-      throw std::logic_error("action expected");
+      throw;
 
   }
 
@@ -379,7 +379,7 @@ class SyntaxAnalyser {
       }
       lexpression();
       if (_lex[_ind].string != ";") {
-          throw std::logic_error("\";\" expected");
+          throw;
       }
       gc();
       if (_lex[_ind].string == "}") {
@@ -391,27 +391,27 @@ class SyntaxAnalyser {
 
   void functionDefinition() {
       if (!type()) {
-          throw std::logic_error("function type expected");
+          throw;
       }
       gc();
       if (_lex[_ind].type != "variable") {
-          throw std::logic_error("function name expected");
+          throw;
       }
       gc();
       if (_lex[_ind].string != "(") {
-          throw std::logic_error("\"(\" expected");
+          throw;
       }
       parameterDef();
       if (_lex[_ind].string != ")") {
-          throw std::logic_error("\")\" expected");
+          throw;
       }
       gc();
       if (_lex[_ind].string != "{") {
-          throw std::logic_error("\"{\" expected");
+          throw;
       }
       namepace();
       if (_lex[_ind].string != "}") {
-          throw std::logic_error("\"}\" expected");
+          throw;
       }
   }
 
