@@ -30,6 +30,24 @@ class SyntaxAnalyser {
       return false;
   }
 
+  void program() {
+      gc();
+      globalNamepaceNoExec();
+      if (_lex[_ind].string != "exec") throw;
+      gc();
+      functionDefinition();
+      gc();
+      globalNamespace();
+  }
+
+  void globalNamepaceNoExec() {
+
+  }
+
+  void globalNamespace() {
+
+  }
+
   //распихать унарки, обработка стрринга и буковок
   void expression() {
       if (_lex[_ind].type == 2 || _lex[_ind].type == 3) {
@@ -42,7 +60,6 @@ class SyntaxAnalyser {
               gc();
           }
           if (_lex[_ind].type == 4) {
-              //распихать унарки в другой тип
               gc();
               expression();
           }
@@ -56,6 +73,10 @@ class SyntaxAnalyser {
               throw;
           }
           gc();
+          return;
+      }
+
+      if (_lex[_ind].type == 9 || ) {
           return;
       }
 
@@ -101,9 +122,26 @@ class SyntaxAnalyser {
       } else if (_lex[_ind].string == "print") {
           gc();
           print();
+          if (_lex[_ind].string != ";") {
+              throw;
+          }
+          gc();
       } else if (_lex[_ind].string == "get") {
           gc();
           get();
+          if (_lex[_ind].string != ";") {
+              throw;
+          }
+          gc();
+      } else if (_lex[_ind].string == "return") {
+          gc();
+          if (_lex[_ind].string != ";") {
+              expression();
+          }
+          if (_lex[_ind].string != ";") {
+              throw;
+          }
+          gc();
       } else {
           throw;
       }
