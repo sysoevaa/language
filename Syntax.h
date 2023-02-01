@@ -2,7 +2,8 @@
 
 class SyntaxAnalyser {
   void gc() {
-
+     ++_ind;
+     if (_ind >= _lex.size()) throw;
   }
 
   bool type() {
