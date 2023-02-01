@@ -366,7 +366,7 @@ class SyntaxAnalyser {
   void namepace() {
       if (_lex[_ind].string == "array") {
           array_def();
-          globalNamespaceNoExec();
+          namepace();
           return;
       }
       if (_lex[_ind].type == "keyword" && !type()) {
