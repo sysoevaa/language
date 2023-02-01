@@ -47,6 +47,11 @@ class SyntaxAnalyser {
           globalNamespaceNoExec();
           return;
       }
+      if (_lex[_ind].string == "array") {
+          array_def();
+          globalNamespaceNoExec();
+          return;
+      }
       if (type()) {
           if (_ind + 2 >= _lex.size()) throw;
           if (_lex[_ind + 1].string == "cast") {
@@ -81,39 +86,44 @@ class SyntaxAnalyser {
   void globalNamespace() {
       if (_lex[_ind].string == "struct") {
           object();
-          globalNamespaceNoExec();
+          globalNamespace();
+          return;
+      }
+      if (_lex[_ind].string == "array") {
+          array_def();
+          globalNamespace();
           return;
       }
       if (_lex[_ind].string == "exec") {
           gc();
           functionDefinition();
-          globalNamespaceNoExec();
+          globalNamespace();
           return;
       }
       if (type()) {
           if (_ind + 2 >= _lex.size()) throw;
           if (_lex[_ind + 1].string == "cast") {
               type_cast_def();
-              globalNamespaceNoExec();
+              globalNamespace();
               return;
           }
           else if (_lex[_ind + 1].type != "variable") throw;
           if (_lex[_ind + 2].string == "(") {
               functionDefinition();
-              globalNamespaceNoExec();
+              globalNamespace();
               return;
           }
           gc();
           gc();
           if (_lex[_ind + 2].string == ";") {
               gc();
-              globalNamespaceNoExec();
+              globalNamespace();
               return;
           }
           if (_lex[_ind + 2].string == "=") {
               gc();
               expression();
-              globalNamespaceNoExec();
+              globalNamespace();
               return;
           }
           throw;
@@ -135,6 +145,11 @@ class SyntaxAnalyser {
       if (_lex[_ind].string == "construct") {
           construct();
           member();
+          return;
+      }
+      if (_lex[_ind].string == "array") {
+          array_def();
+          mamber();
           return;
       }
       if (type()) {
@@ -349,6 +364,11 @@ class SyntaxAnalyser {
   }
 
   void namepace() {
+      if (_lex[_ind].string == "array") {
+          array_def();
+          globalNamespaceNoExec();
+          return;
+      }
       if (_lex[_ind].type == "keyword" && !type()) {
           determinantes();
           gc();
