@@ -416,59 +416,59 @@ class SyntaxAnalyser {
   }
 
   void type_cast() {
-      if (!type()) throw;
+      if (!type()) throw std::logic_error("type expected");
       gc();
-      if (_lex[_ind].string != "cast") throw;
+      if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
       gc();
-      if (_lex[_ind].type != "variable") throw;
+      if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
       gc();
   }
 
   void type_cast_def() {
-      if (!type()) throw;
+      if (!type()) throw std::logic_error("\"type\" expected");
       gc();
-      if (_lex[_ind].string != "cast") throw;
+      if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
       gc();
-      if (!type()) throw;
+      if (!type()) throw std::logic_error("type expected");
       gc();
       variable();
-      if (_lex[_ind].string != "{") throw;
+      if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
       namepace();
-      if (_lex[_ind].string != "}") throw;
+      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
       gc();
   }
 
   void print() {
-      if (_lex[_ind].string != "(") throw;
+      if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
       gc();
       if (_lex[_ind].type != "variable" || _lex[_ind].type != "string" ||
       _lex[_ind].type != "char" || _lex[_ind].type != "number") {
-          throw;
+          throw std::logic_error("expression expected");
       }
       gc();
       if (_lex[_ind].string == ")") {
           gc();
           return;
       } else if (_lex[_ind].string != ",") {
-          throw;
+          throw std::logic_error("\",\" expected");
       } else {
           gc();
           do {
               if (_lex[_ind].type != "variable" || _lex[_ind].type != "string" ||
                   _lex[_ind].type != "char" || _lex[_ind].type != "number") {
-                  throw;
+                  throw std::logic_error("expression expected");
               }
               gc();
           } while (_lex[_ind].string == ",");
           gc();
-          if (_lex[_ind].string != ")") throw;
+          if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       }
       gc();
   }
 
   void get() {
-      if (_lex[_ind].string != "get") throw;
+      if (_lex[_ind].string != "get") throw std::logic_error("\"get\" expected");
       gc();
       input();
   }
