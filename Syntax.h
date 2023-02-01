@@ -491,6 +491,16 @@ class SyntaxAnalyser {
     expression();
   }
 
+  void string() {
+      if (_lex[_ind].string != "string" && _lex[_ind].type != "keywords") throw;
+      gc();
+      variable();
+      if (_lex[_ind].string != "=") return;
+      gc();
+      if (_lex[_ind].type != "string") throw;
+      gc();
+  }
+
   private:
   std::vector<Lexeme> _lex;
   int _ind = 0;
