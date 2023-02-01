@@ -224,13 +224,26 @@ class SyntaxAnalyser {
   void expression() {
       if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
           gc();
-          if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
+          if (_lex[_ind].string == "cast") {
+              --_ind;
+              type_cast();
+          }
+          else if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
               parameters();
               if (_lex[_ind].string != ")") {
                   throw std::logic_error("expected \")\"");
               }
               gc();
           }
+          if (_lex[_ind].type == "binary") {
+              gc();
+              expression();
+          }
+          return;
+      }
+
+      if (type()) {
+          type_cast();
           if (_lex[_ind].type == "binary") {
               gc();
               expression();
