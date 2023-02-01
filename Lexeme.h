@@ -168,7 +168,7 @@ class Analyser {
       if (string == "get") {
           return true;
       }
-      if (string == "type") {
+      if (string == "print") {
           return true;
       }
       if (string == "struct") {

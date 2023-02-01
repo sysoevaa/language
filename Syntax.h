@@ -35,9 +35,9 @@ class SyntaxAnalyser {
   }
 
   void program() {
-      gc();
+      //gc();
       globalNamespaceNoExec();
-      if (_lex[_ind].string != "exec") throw std::logic_error("\"exec\" exec");
+      if (_lex[_ind].string != "exec") throw std::logic_error("\"exec\" expected");
       gc();
       functionDefinition();
       gc();
@@ -62,7 +62,9 @@ class SyntaxAnalyser {
               globalNamespaceNoExec();
               return;
           }
-          else if (_lex[_ind + 1].type != "variable") throw std::logic_error("expected variable");
+          else if (_lex[_ind + 1].type != "variable") {
+              throw std::logic_error("expected variable");
+          }
           if (_lex[_ind + 2].string == "(") {
               functionDefinition();
               globalNamespaceNoExec();
@@ -260,6 +262,7 @@ class SyntaxAnalyser {
   }
 
   void parameterDef() {
+      if (_lex[_ind].string == ")") return;
       do {
           if (!type()) {
               throw std::logic_error("expected type name");
@@ -366,6 +369,9 @@ class SyntaxAnalyser {
   }
 
   void namepace() {
+      if (_lex[_ind].string == "}") {
+          return;
+      }
       if (_lex[_ind].string == "array") {
           array_def();
           globalNamespaceNoExec();
@@ -373,7 +379,6 @@ class SyntaxAnalyser {
       }
       if (_lex[_ind].type == "keyword" && !type()) {
           determinantes();
-          gc();
           namepace();
           return;
       }
@@ -401,6 +406,7 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "(") {
           throw std::logic_error("\"(\" expected");
       }
+      gc();
       parameterDef();
       if (_lex[_ind].string != ")") {
           throw std::logic_error("\")\" expected");
@@ -409,6 +415,7 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "{") {
           throw std::logic_error("\"{\" expected");
       }
+      gc();
       namepace();
       if (_lex[_ind].string != "}") {
           throw std::logic_error("\"}\" expected");
@@ -442,8 +449,8 @@ class SyntaxAnalyser {
   void print() {
       if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
       gc();
-      if (_lex[_ind].type != "variable" || _lex[_ind].type != "string" ||
-      _lex[_ind].type != "char" || _lex[_ind].type != "number") {
+      if (_lex[_ind].type != "variable" && _lex[_ind].type != "string" &&
+      _lex[_ind].type != "char" && _lex[_ind].type != "number") {
           throw std::logic_error("expression expected");
       }
       gc();
