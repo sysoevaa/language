@@ -645,7 +645,7 @@ class SyntaxAnalyser {
       }
   }
 
-  private:
+private:
   std::vector<Lexeme> _lex;
   int _ind = 0;
 };
