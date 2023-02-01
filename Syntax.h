@@ -572,17 +572,17 @@ class SyntaxAnalyser {
           gc();
           expression();
       } else {
-          throw;
+          throw std::logic_error("\";\" expected");
       }
-      if (_lex[_ind].string != ")") throw;
+      if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       gc();
-      if (_lex[_ind].string != "{") throw;
+      if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
       cycle_namespace();
   }
 
   void variable() {
-    if (_lex[_ind].type != "variable") throw;
+    if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
     gc();
   }
 
