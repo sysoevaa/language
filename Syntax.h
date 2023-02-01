@@ -612,7 +612,7 @@ class SyntaxAnalyser {
           throw std::logic_error("\"array\" expected");
       }
       gc();
-      if (!type()) throw;
+      if (!type()) throw std::logic_error("type expected");
       gc();
       variable();
       if (_lex[_ind].string != "(") return;
