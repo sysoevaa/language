@@ -224,26 +224,18 @@ class SyntaxAnalyser {
   void expression() {
       if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
           gc();
-          if (_lex[_ind].string == "cast") {
-              --_ind;
-              type_cast();
+          if (_lex[_ind].string == ".") {
+              gc();
+              variable();
           }
-          else if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
+          if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
               parameters();
               if (_lex[_ind].string != ")") {
                   throw std::logic_error("expected \")\"");
               }
               gc();
           }
-          if (_lex[_ind].type == "binary") {
-              gc();
-              expression();
-          }
-          return;
-      }
 
-      if (type()) {
-          type_cast();
           if (_lex[_ind].type == "binary") {
               gc();
               expression();
@@ -262,6 +254,7 @@ class SyntaxAnalyser {
       }
 
       if (_lex[_ind].type == "string") {
+          gc();
           return;
       }
       throw std::logic_error("unexpected symbols");
@@ -340,21 +333,25 @@ class SyntaxAnalyser {
           if (_lex[_ind].type != "variable") {
               throw std::logic_error("variable expected");
           }
+          gc();
           return;
       }
       if (type()) {
-          def = true;
           gc();
-      }
-      if (_lex[_ind].type != "variable") {
+          if (_lex[_ind].type == "variable") {
+              def = true;
+              gc();
+          }
+      } else {
           throw std::logic_error("name expected");
       }
-      gc();
+      //gc();
       if (_lex[_ind].string == "[") {
           gc();
-          if (_lex[_ind].type != "number") throw std::logic_error("number expected");
+          if (_lex[_ind].type != "number" || _lex[_ind].type != "variable") throw std::logic_error("index expected");
           gc();
           if (_lex[_ind].string != "]") throw std::logic_error("\"]\" expected");
+          gc();
       }
       if (_lex[_ind].string == ".") {
           gc();
@@ -364,12 +361,13 @@ class SyntaxAnalyser {
       }
       if (_lex[_ind].string == "(") {
           if (def) {
-              throw std::logic_error("\"(\" expected");
+              throw std::logic_error("\"=\" expected");
           }
           parameters();
           if (_lex[_ind].string != ")") {
               throw std::logic_error("\")\" expected");
           }
+          gc();
           return;
       }
       if (_lex[_ind].string == "=") {
@@ -590,7 +588,7 @@ class SyntaxAnalyser {
           bool_expression();
           if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
           gc();
-          expression();
+          lexpression();
       } else {
           throw std::logic_error("\";\" expected");
       }
@@ -658,6 +656,7 @@ class SyntaxAnalyser {
           }
           gc();
           if (_lex[_ind].string == "}") {
+              gc();
               return;
           }
           cycle_namespace();
