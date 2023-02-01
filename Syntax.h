@@ -568,7 +568,7 @@ class SyntaxAnalyser {
       } else if (_lex[_ind].string == ";") {
           gc();
           bool_expression();
-          if (_lex[_ind].string != ";") throw;
+          if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
           gc();
           expression();
       } else {
