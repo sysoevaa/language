@@ -202,21 +202,21 @@ class SyntaxAnalyser {
   }
 
   void overload() {
-      if (!type()) throw;
+      if (!type()) throw std::logic_error("type of function expected");
       gc();
-      if (_lex[_ind].string != "overload") throw;
+      if (_lex[_ind].string != "overload") throw std::logic_error("\"overload\" expected");
       gc();
-      if (_lex[_ind].type != "binary") throw;
+      if (_lex[_ind].type != "binary") throw std::logic_error("binary operator expected");
       gc();
-      if (_lex[_ind].string != "(") throw;
+      if (_lex[_ind].string != "(") throw std::logic_error("\"( \" expected");
       gc();
       parameterDef();
-      if (_lex[_ind].string != ")") throw;
+      if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       gc();
-      if (_lex[_ind].string != "{") throw;
+      if (_lex[_ind].string != "{") throw std::logic_error("\"{ \" expected");
       gc();
       namepace();
-      if (_lex[_ind].string != "}") throw;
+      if (_lex[_ind].string != "}") throw std::logic_error("\" } \" expected");
   }
 
   void expression() {
