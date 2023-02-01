@@ -7,9 +7,8 @@
 
 
 struct Lexeme {
-  int type;
-  std::string string;
-  Lexeme(int _type, std::string _string) : type(_type), string(_string) {}
+  std::string string, type;
+  Lexeme(const std::string& _type, const std::string& _string) : type(_type), string(_string) {}
 };
 
 
@@ -40,14 +39,14 @@ class Analyser {
                   lexeme_string += string[i];
               }
               if (type == 1) {
-                  divided.emplace_back(8, lexeme_string);
+                  divided.emplace_back("char", lexeme_string);
               } else if (type == 2) {
-                  divided.emplace_back(9, lexeme_string);
+                  divided.emplace_back("string", lexeme_string);
               } else {
                   if (isTypeOne(lexeme_string)) {
-                      divided.push_back(Lexeme(1, lexeme_string));
+                      divided.push_back(Lexeme("keyword", lexeme_string));
                   } else {
-                      divided.push_back(Lexeme(2, lexeme_string)); // variable
+                      divided.push_back(Lexeme("variable", lexeme_string)); // variable
                   }
               }
               continue;
@@ -66,7 +65,7 @@ class Analyser {
                       lexeme_string += string[i];
                   }
               }
-              divided.push_back(Lexeme(3, lexeme_string));
+              divided.push_back(Lexeme("number", lexeme_string));
               continue;
           }
 
@@ -75,18 +74,18 @@ class Analyser {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
-                  divided.emplace_back(7, lexeme_string);
+                  divided.emplace_back("unary", lexeme_string);
                   continue;
               } else if (isDoubleOperator(string[i], string[i + 1]) == 2) {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
-                  divided.emplace_back(10, lexeme_string);
+                  divided.emplace_back("bool", lexeme_string);
               } else if (isDoubleOperator(string[i], string[i + 1]) == 3) {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
-                  divided.emplace_back(11, lexeme_string);
+                  divided.emplace_back("power", lexeme_string);
               }
           }
 
@@ -98,25 +97,25 @@ class Analyser {
               }
               lexeme_string += string[i];
               ++i;
-              divided.push_back(Lexeme(4, lexeme_string));
+              divided.push_back(Lexeme("binary", lexeme_string));
               continue;
           }
 
           if (isPunctuation(string[i])) {
               lexeme_string += string[i];
               ++i;
-              divided.push_back(Lexeme(5, lexeme_string));
+              divided.push_back(Lexeme("punct", lexeme_string));
               continue;
           }
 
           if (isBracket(string[i])) {
               lexeme_string += string[i];
               ++i;
-              divided.push_back(Lexeme(6, lexeme_string));
+              divided.push_back(Lexeme("bracket", lexeme_string));
               continue;
           }
 
-          divided.push_back(Lexeme(-1, "ERR"));
+          divided.push_back(Lexeme("err", "ERR"));
           break;
       }
       return divided;
