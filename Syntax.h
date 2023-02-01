@@ -125,6 +125,9 @@ class SyntaxAnalyser {
       gc();
       if (_lex[_ind].type != "variable") throw;
       if (_lex[_ind].type != "{") throw;
+      member();
+      if (_lex[_ind].string != "}") throw;
+      gc();
   }
 
   void member() {
