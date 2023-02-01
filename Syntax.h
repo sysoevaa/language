@@ -126,23 +126,23 @@ class SyntaxAnalyser {
   }
 
   void expression() {
-      if (_lex[_ind].type == "variable" || _lex[_ind].type == "number") {
+      if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
           gc();
-          if (_lex[_ind].type == 6 && _lex[_ind].string == "(") {
+          if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
               parameters();
               if (_lex[_ind].string != ")") {
                   throw;
               }
               gc();
           }
-          if (_lex[_ind].type == 4) {
+          if (_lex[_ind].type == "bool") {
               gc();
               expression();
           }
           return;
       }
 
-      if (_lex[_ind].type == 6 && _lex[_ind].string == "(") {
+      if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
           gc();
           expression();
           if (_lex[_ind].string != ")") {
@@ -152,7 +152,7 @@ class SyntaxAnalyser {
           return;
       }
 
-      if (_lex[_ind].type == 9 || ) {
+      if (_lex[_ind].type == "string") {
           return;
       }
 
