@@ -224,6 +224,15 @@ class SyntaxAnalyser {
   void expression() {
       if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
           gc();
+          if (_lex[_ind].string == "cast") {
+              --_ind;
+              type_cast();
+              if (_lex[_ind].type == "binary") {
+                  gc();
+                  expression();
+              }
+              return;
+          }
           if (_lex[_ind].string == ".") {
               gc();
               variable();
@@ -236,6 +245,15 @@ class SyntaxAnalyser {
               gc();
           }
 
+          if (_lex[_ind].type == "binary") {
+              gc();
+              expression();
+          }
+          return;
+      }
+
+      if (type()) {
+          type_cast();
           if (_lex[_ind].type == "binary") {
               gc();
               expression();
