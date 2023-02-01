@@ -221,12 +221,30 @@ class SyntaxAnalyser {
   }
 
   void print() {
-      if (_lex[_ind].string != "print") throw;
-      gc();
       if (_lex[_ind].string != "(") throw;
       gc();
-      string();
-      if (_lex[_ind].string != ")") throw;
+      if (_lex[_ind].type != 2 || _lex[_ind].type != 8 ||
+      _lex[_ind].type != 9 || _lex[_ind].type != 3) {
+          throw;
+      }
+      gc();
+      if (_lex[_ind].string == ")") {
+          gc();
+          return;
+      } else if (_lex[_ind].string != ",") {
+          throw;
+      } else {
+          gc();
+          do {
+              if (_lex[_ind].type != 2 || _lex[_ind].type != 8 ||
+                  _lex[_ind].type != 9 || _lex[_ind].type != 3) {
+                  throw;
+              }
+              gc();
+          } while (_lex[_ind].string == ",");
+          gc();
+          if (_lex[_ind].string != ")") throw;
+      }
       gc();
   }
 
