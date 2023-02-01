@@ -31,6 +31,9 @@ class SyntaxAnalyser {
       if (_lex[_ind].string == "string") {
           return true;
       }
+      if (_lex[_ind].string == "bool") {
+          return true;
+      }
       return false;
   }
 
@@ -140,7 +143,9 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "struct") throw std::logic_error("\"struct\" expected");
       gc();
       if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
-      if (_lex[_ind].type != "{") throw std::logic_error("\"{\" expected");
+      gc();
+      if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
+      gc();
       member();
       if (_lex[_ind].string != "}") throw std::logic_error("\"}\"expected");
       gc();
@@ -172,12 +177,12 @@ class SyntaxAnalyser {
           }
           gc();
           gc();
-          if (_lex[_ind + 2].string == ";") {
+          if (_lex[_ind].string == ";") {
               gc();
               member();
               return;
           }
-          if (_lex[_ind + 2].string == "=") {
+          if (_lex[_ind].string == "=") {
               gc();
               expression();
               member();
@@ -245,7 +250,7 @@ class SyntaxAnalyser {
               gc();
           }
 
-          if (_lex[_ind].type == "binary") {
+          if (_lex[_ind].type == "binary" || _lex[_ind].type == "power") {
               gc();
               expression();
           }
@@ -288,6 +293,7 @@ class SyntaxAnalyser {
   void parameterDef() {
       if (_lex[_ind].string == ")") return;
       do {
+          if (_lex[_ind - 1].string != "(") gc();
           if (!type()) {
               throw std::logic_error("expected type name");
           }
@@ -376,6 +382,7 @@ class SyntaxAnalyser {
           if (_lex[_ind].type != "variable") {
               throw std::logic_error("method expected");
           }
+          gc();
       }
       if (_lex[_ind].string == "(") {
           if (def) {
@@ -391,6 +398,9 @@ class SyntaxAnalyser {
       if (_lex[_ind].string == "=") {
           gc();
           expression();
+          return;
+      }
+      if (_lex[_ind].string == ";") {
           return;
       }
       throw std::logic_error("unexpected symbol");
@@ -449,6 +459,7 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "}") {
           throw std::logic_error("\"}\" expected");
       }
+      gc();
   }
 
   void type_cast() {
@@ -465,9 +476,13 @@ class SyntaxAnalyser {
       gc();
       if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
       gc();
+      if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
+      gc();
       if (!type()) throw std::logic_error("type expected");
       gc();
       variable();
+      if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
+      gc();
       if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
       namepace();
@@ -522,7 +537,7 @@ class SyntaxAnalyser {
           gc();
           bool_expression();
           if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
-      } else if (_lex[_ind].type == "variable") {
+      } else if (_lex[_ind].type == "variable" || _lex[_ind].type == "number") {
           gc();
           if (_lex[_ind].type != "bool") throw std::logic_error("bool operator expected");
           gc();
@@ -531,7 +546,9 @@ class SyntaxAnalyser {
               bool_expression();
               if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
               gc();
-          } else if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
+          } else if (_lex[_ind].type != "variable" && _lex[_ind].type != "number") {
+              throw std::logic_error("variable expected");
+          }
       }
       gc();
   }
@@ -615,6 +632,8 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
       cycle_namespace();
+      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
+      gc();
   }
 
   void variable() {
@@ -659,7 +678,7 @@ class SyntaxAnalyser {
   }
 
   void cycle_namespace() {
-      if (_lex[_ind].type == "keywords") {
+      if (_lex[_ind].type == "keyword") {
           if (_lex[_ind].string == "break" || _lex[_ind].string == "continue") {
               if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
               cycle_namespace();
