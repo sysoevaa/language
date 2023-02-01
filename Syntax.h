@@ -361,7 +361,7 @@ class SyntaxAnalyser {
           expression();
           return;
       }
-      throw;
+      throw std::logic_error("unexpected symbol");
 
   }
 
