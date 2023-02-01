@@ -7,7 +7,7 @@ class SyntaxAnalyser {
   }
 
   bool type() {
-      if (_lex[_ind].type == "bool") {
+      if (_lex[_ind].type == "variable") {
           return true;
       }
       if (_lex[_ind].string == "char") {
@@ -188,7 +188,7 @@ class SyntaxAnalyser {
       gc();
       if (_lex[_ind].string != "overload") throw;
       gc();
-      if (_lex[_ind].type != "bool") throw;
+      if (_lex[_ind].type != "binary") throw;
       gc();
       if (_lex[_ind].string != "(") throw;
       gc();
@@ -211,7 +211,7 @@ class SyntaxAnalyser {
               }
               gc();
           }
-          if (_lex[_ind].type == "bool") {
+          if (_lex[_ind].type == "binary") {
               gc();
               expression();
           }
@@ -248,7 +248,7 @@ class SyntaxAnalyser {
               throw;
           }
           gc();
-          if (_lex[_ind].type != 2) {
+          if (_lex[_ind].type != "variable") {
               throw;
           }
           gc();
@@ -302,9 +302,9 @@ class SyntaxAnalyser {
 
   void lexpression() {
       bool def = false;
-      if (_lex[_ind].type == 7) {
+      if (_lex[_ind].type == "unary") {
           gc();
-          if (_lex[_ind].type != 2) {
+          if (_lex[_ind].type != "variable") {
               throw;
           }
           return;
@@ -313,13 +313,19 @@ class SyntaxAnalyser {
           def = true;
           gc();
       }
-      if (_lex[_ind].type != 2) {
+      if (_lex[_ind].type != "variable") {
           throw;
       }
       gc();
+      if (_lex[_ind].string == "[") {
+          gc();
+          if (_lex[_ind].type != "number") throw;
+          gc();
+          if (_lex[_ind].string != "[") throw;
+      }
       if (_lex[_ind].string == ".") {
           gc();
-          if (_lex[_ind].type != 2) {
+          if (_lex[_ind].type != "variable") {
               throw;
           }
       }
@@ -343,7 +349,7 @@ class SyntaxAnalyser {
   }
 
   void namepace() {
-      if (_lex[_ind].type == 1 && !type()) {
+      if (_lex[_ind].type == "keyword" && !type()) {
           determinantes();
           gc();
           namepace();
@@ -366,7 +372,7 @@ class SyntaxAnalyser {
           throw;
       }
       gc();
-      if (_lex[_ind].type != 2) {
+      if (_lex[_ind].type != "variable") {
           throw;
       }
       gc();
@@ -392,7 +398,7 @@ class SyntaxAnalyser {
       gc();
       if (_lex[_ind].string != "cast") throw;
       gc();
-      if (_lex[_ind].type != 2) throw;
+      if (_lex[_ind].type != "variable") throw;
       gc();
   }
 
@@ -414,8 +420,8 @@ class SyntaxAnalyser {
   void print() {
       if (_lex[_ind].string != "(") throw;
       gc();
-      if (_lex[_ind].type != 2 || _lex[_ind].type != 8 ||
-      _lex[_ind].type != 9 || _lex[_ind].type != 3) {
+      if (_lex[_ind].type != "variable" || _lex[_ind].type != "string" ||
+      _lex[_ind].type != "char" || _lex[_ind].type != "number") {
           throw;
       }
       gc();
@@ -427,8 +433,8 @@ class SyntaxAnalyser {
       } else {
           gc();
           do {
-              if (_lex[_ind].type != 2 || _lex[_ind].type != 8 ||
-                  _lex[_ind].type != 9 || _lex[_ind].type != 3) {
+              if (_lex[_ind].type != "variable" || _lex[_ind].type != "string" ||
+                  _lex[_ind].type != "char" || _lex[_ind].type != "number") {
                   throw;
               }
               gc();
@@ -458,7 +464,7 @@ class SyntaxAnalyser {
           gc();
           bool_expression();
           if (_lex[_ind].string != ")") throw;
-      } else if (_lex[_ind].type == 2) {
+      } else if (_lex[_ind].type == "variable") {
           gc();
           if (_lex[_ind].type != 10) throw;
           gc();
@@ -467,7 +473,7 @@ class SyntaxAnalyser {
               bool_expression();
               if (_lex[_ind].string != ")") throw;
               gc();
-          } else if (_lex[_ind].type != 2) throw;
+          } else if (_lex[_ind].type != "variable") throw;
       }
       gc();
   }
