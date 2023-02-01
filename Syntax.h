@@ -1,6 +1,9 @@
 #include "Lexeme.h"
 
 class SyntaxAnalyser {
+ public:
+  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex) {}
+
   void gc() {
      ++_ind;
      if (_ind >= _lex.size()) throw;
@@ -636,6 +639,10 @@ class SyntaxAnalyser {
           cycle_namespace();
           return;
       }
+  }
+
+  Lexeme GetLast() {
+      return _lex[_ind];
   }
 
   private:

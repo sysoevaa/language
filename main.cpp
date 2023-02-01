@@ -8,16 +8,20 @@ int main() {
     std::ofstream out_stream("divided.txt");
     std::ifstream in_stream("start_code.txt");
     Analyser analyser;
-    std::string string;
+    std::string not_divided;
     char k;
     while (in_stream.get(k)) {
-        string.push_back(k);
+        not_divided.push_back(k);
     }
-    out_stream << string << " " << string.size() << "\n";
-    std::vector<Lexeme> v;
-    v = analyser.divide(string);
-    for (auto a : v) {
-        out_stream << '(' << a.type << "," << '"' << a.string << '"' << ")\n";
+    auto divided = analyser.divide(not_divided);
+    divided.emplace_back("END", "END");
+    SyntaxAnalyser syntax_analyser(divided);
+    try {
+        syntax_analyser.program();
+    } catch (...) {
+        std::cout << "Error found at lexeme: " << syntax_analyser.GetLast().string << "\n";
     }
-    return 0;
+    if (syntax_analyser.GetLast().string != "END") {
+        std::cout << "There are extra symbols at file\n";
+    }
 }
