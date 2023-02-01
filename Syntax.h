@@ -127,11 +127,6 @@ class SyntaxAnalyser {
       if (_lex[_ind].type != "{") throw;
   }
 
-  void objectdef() {
-      member();
-      if (_lex[_ind].type != ";") throw;
-  }
-
   void member() {
       if (_lex[_ind].string == "construct") {
           construct();
