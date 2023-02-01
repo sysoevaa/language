@@ -6,7 +6,7 @@ class SyntaxAnalyser {
   }
 
   bool type() {
-      if (_lex[_ind].type == 2) {
+      if (_lex[_ind].type == "bool") {
           return true;
       }
       if (_lex[_ind].string == "char") {
