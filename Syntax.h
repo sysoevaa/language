@@ -149,7 +149,7 @@ class SyntaxAnalyser {
       }
       if (_lex[_ind].string == "array") {
           array_def();
-          mamber();
+          member();
           return;
       }
       if (type()) {
