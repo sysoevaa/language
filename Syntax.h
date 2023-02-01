@@ -485,30 +485,32 @@ class SyntaxAnalyser {
       if (_lex[_ind].string == "(") {
           gc();
           bool_expression();
-          if (_lex[_ind].string != ")") throw;
+          if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       } else if (_lex[_ind].type == "variable") {
           gc();
-          if (_lex[_ind].type != "bool") throw;
+          if (_lex[_ind].type != "bool") throw std::logic_error("bool operator expected");
           gc();
           if (_lex[_ind].string == "(") {
               gc();
               bool_expression();
-              if (_lex[_ind].string != ")") throw;
+              if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
               gc();
-          } else if (_lex[_ind].type != "variable") throw;
+          } else if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
       }
       gc();
   }
 
   void If() {
-      if (_lex[_ind].string != "(") throw;
+      if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
       gc();
       bool_expression();
-      if (_lex[_ind].string != ")") throw;
+      if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       gc();
-      if (_lex[_ind].string != "{") throw;
+      if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
       namepace();
+      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
+      gc();
       if (_lex[_ind].string != "else") return;
       gc();
       do {
@@ -526,8 +528,6 @@ class SyntaxAnalyser {
           if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
           gc();
       } while (_lex[_ind].string == "else");
-      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
-      gc();
   }
 
   void While() {
