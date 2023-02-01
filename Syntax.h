@@ -488,7 +488,7 @@ class SyntaxAnalyser {
           if (_lex[_ind].string != ")") throw;
       } else if (_lex[_ind].type == "variable") {
           gc();
-          if (_lex[_ind].type != 10) throw;
+          if (_lex[_ind].type != "bool") throw;
           gc();
           if (_lex[_ind].string == "(") {
               gc();
