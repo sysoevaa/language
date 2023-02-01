@@ -52,7 +52,7 @@ class SyntaxAnalyser {
               globalNamespaceNoExec();
               return;
           }
-          else if (_lex[_ind + 1].type != 2) throw;
+          else if (_lex[_ind + 1].type != "variable") throw;
           if (_lex[_ind + 2].string == "(") {
               functionDefinition();
               globalNamespaceNoExec();
@@ -94,7 +94,7 @@ class SyntaxAnalyser {
               globalNamespaceNoExec();
               return;
           }
-          else if (_lex[_ind + 1].type != 2) throw;
+          else if (_lex[_ind + 1].type != "variable") throw;
           if (_lex[_ind + 2].string == "(") {
               functionDefinition();
               globalNamespaceNoExec();
@@ -121,12 +121,12 @@ class SyntaxAnalyser {
   void object() {
       if (_lex[_ind].string != "struct") throw;
       gc();
-      if (_lex[_ind].type != 2) throw;
+      if (_lex[_ind].type != "variable") throw;
 
   }
 
   void expression() {
-      if (_lex[_ind].type == 2 || _lex[_ind].type == 3) {
+      if (_lex[_ind].type == "variable" || _lex[_ind].type == "number") {
           gc();
           if (_lex[_ind].type == 6 && _lex[_ind].string == "(") {
               parameters();
