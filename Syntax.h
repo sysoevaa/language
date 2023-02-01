@@ -43,7 +43,7 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "exec") throw std::logic_error("\"exec\" expected");
       gc();
       functionDefinition();
-      //fgc();
+      //gc();
       globalNamespace();
   }
 
@@ -76,6 +76,8 @@ class SyntaxAnalyser {
           gc();
           gc();
           if (_lex[_ind + 2].string == ";") {
+              gc();
+              gc();
               gc();
               globalNamespaceNoExec();
               return;
@@ -668,10 +670,13 @@ class SyntaxAnalyser {
       if (!type()) throw std::logic_error("type expected");
       gc();
       variable();
-      if (_lex[_ind].string != "(") return;
-      gc();
-      expression();
-      if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
+      if (_lex[_ind].string == "(") {
+          gc();
+          expression();
+          if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
+          gc();
+      }
+      if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
       gc();
   }
 

@@ -47,10 +47,12 @@ class Analyser {
               }
               if (type == 1) {
                   divided.pop_back();
+                  lexeme_string.push_back(' ');
                   divided.emplace_back("char", lexeme_string);
                   ++i;
               } else if (type == 2) {
                   divided.pop_back();
+                  lexeme_string.push_back(' ');
                   divided.emplace_back("string", lexeme_string);
                   ++i;
               } else {
