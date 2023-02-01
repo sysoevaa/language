@@ -33,15 +33,26 @@ class Analyser {
               } else if (divided.size() > 0 && divided.back().string == "\"") {
                   type = 2;
               }
-              lexeme_string += string[i];
-              ++i;
+              // lexeme_string += string[i];
+              // ++i;
+              if (type == 1 || type == 2) {
+                  while (i < string.size() && (string[i] != '\"' || string[i] != '\"')) {
+                      lexeme_string += string[i];
+                      ++i;
+                  }
+                  if (i == string.size()) divided.emplace_back("ERR", "Err");
+              }
               for (; i < string.size() && (isLetter(string[i]) || isNumber(string[i])); ++i) {
                   lexeme_string += string[i];
               }
               if (type == 1) {
+                  divided.pop_back();
                   divided.emplace_back("char", lexeme_string);
+                  ++i;
               } else if (type == 2) {
+                  divided.pop_back();
                   divided.emplace_back("string", lexeme_string);
+                  ++i;
               } else {
                   if (isTypeOne(lexeme_string)) {
                       divided.push_back(Lexeme("keyword", lexeme_string));
@@ -81,11 +92,13 @@ class Analyser {
                   lexeme_string += string[i + 1];
                   i += 2;
                   divided.emplace_back("bool", lexeme_string);
+                  continue;
               } else if (isDoubleOperator(string[i], string[i + 1]) == 3) {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
                   divided.emplace_back("power", lexeme_string);
+                  continue;
               }
           }
 
@@ -96,8 +109,12 @@ class Analyser {
                   continue;
               }
               lexeme_string += string[i];
+              if (string[i] == '<' || string[i] == '>') {
+                  divided.emplace_back("bool", lexeme_string);
+              } else {
+                  divided.push_back(Lexeme("binary", lexeme_string));
+              }
               ++i;
-              divided.push_back(Lexeme("binary", lexeme_string));
               continue;
           }
 
@@ -133,6 +150,9 @@ class Analyser {
           return true;
       }
       if (string == "int32") {
+          return true;
+      }
+      if (string == "bool") {
           return true;
       }
       if (string == "int64") {

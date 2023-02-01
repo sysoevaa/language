@@ -43,7 +43,7 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "exec") throw std::logic_error("\"exec\" expected");
       gc();
       functionDefinition();
-      gc();
+      //fgc();
       globalNamespace();
   }
 
@@ -321,7 +321,9 @@ class SyntaxAnalyser {
               gc();
               dowhile();
           }
-          throw;
+          else {
+              throw std::logic_error("\"while \" expected");
+          }
       } else if (_lex[_ind].string == "print") {
           gc();
           print();
@@ -351,6 +353,7 @@ class SyntaxAnalyser {
   }
 
   void lexpression() {
+      if (_lex[_ind].string == "}") return;
       bool def = false;
       if (_lex[_ind].type == "unary") {
           gc();
@@ -409,6 +412,7 @@ class SyntaxAnalyser {
 
   void namepace() {
       if (_lex[_ind].string == "}") {
+          //gc();
           return;
       }
       if (_lex[_ind].string == "array") {
@@ -591,9 +595,7 @@ class SyntaxAnalyser {
       gc();
       if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
-      namepace();
-      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
-      gc();
+      cycle_namespace();
   }
 
   void dowhile() {
@@ -604,9 +606,7 @@ class SyntaxAnalyser {
       gc();
       if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
-      namepace();
-      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
-      gc();
+      cycle_namespace();
   }
 
   void For() {
@@ -632,8 +632,6 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
       gc();
       cycle_namespace();
-      if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
-      gc();
   }
 
   void variable() {
@@ -663,7 +661,7 @@ class SyntaxAnalyser {
   }
 
   void array_def() {
-      if (_lex[_ind].string != "array" || _lex[_ind].type != "keywords")  {
+      if (_lex[_ind].string != "array")  {
           throw std::logic_error("\"array\" expected");
       }
       gc();
@@ -687,6 +685,10 @@ class SyntaxAnalyser {
               cycle_namespace();
           }
       } else {
+          if (_lex[_ind].string == "}") {
+              gc();
+              return;
+          }
           lexpression();
           if (_lex[_ind].string != ";") {
               throw std::logic_error("\";\" expected");
