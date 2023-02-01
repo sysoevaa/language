@@ -47,6 +47,7 @@ class SyntaxAnalyser {
           return;
       }
       if (type()) {
+          if (_ind + 2 >= _lex.size()) throw;
           if (_lex[_ind + 1].string == "cast") {
               type_cast_def();
               globalNamespaceNoExec();
@@ -450,7 +451,7 @@ class SyntaxAnalyser {
       gc();
   }
 
- private:
+  private:
   std::vector<Lexeme> _lex;
   int _ind = 0;
 };
