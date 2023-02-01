@@ -188,7 +188,8 @@ class SyntaxAnalyser {
           gc();
           While();
       } else if (_lex[_ind].string == "for") {
-
+          gc();
+          For();
       } else if (_lex[_ind].string == "do") {
           gc();
           if (_lex[_ind].string == "while") {
@@ -449,6 +450,45 @@ class SyntaxAnalyser {
       namepace();
       if (_lex[_ind].string != "{") throw;
       gc();
+  }
+
+  void For() {
+      if (_lex[_ind].string != "(") throw;
+      gc();
+      variable_def();
+      if (_lex[_ind].string == ":") {
+          gc();
+          if (_lex[_ind].type != "variable") {
+              throw;
+          }
+      } else if (_lex[_ind].string == ";") {
+          gc();
+          bool_expression();
+          if (_lex[_ind].string != ";") throw;
+          gc();
+          expression();
+      } else {
+          throw;
+      }
+      if (_lex[_ind].string != ")") throw;
+      gc();
+      if (_lex[_ind].string != "{") throw;
+      gc();
+      cycle_namespace();
+  }
+
+  void variable() {
+    if (_lex[_ind].type != "variable") throw;
+    gc();
+  }
+
+  void variable_def() {
+    if (!type()) throw;
+    gc();
+    variable();
+    if (_lex[_ind].string != "=") return;
+    gc();
+    expression();
   }
 
   private:
