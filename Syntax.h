@@ -336,7 +336,9 @@ class SyntaxAnalyser {
           gc();
           if (_lex[_ind].type != "number") throw;
           gc();
-          if (_lex[_ind].string != "[") throw;
+          if (_lex[_ind].string != "]") throw;
+          gc();
+          if (_lex[_ind].string == "(") throw;
       }
       if (_lex[_ind].string == ".") {
           gc();
@@ -617,6 +619,11 @@ class SyntaxAnalyser {
 
   void cycle_namespace() {
       if (_lex[_ind].type == "keywords") {
+          if (_lex[_ind].string == "array") {
+              array_def();
+              cycle_namespace();
+              return;
+          }
           if (_lex[_ind].string == "break" || _lex[_ind].string == "continue") {
               if (_lex[_ind].string != ";") throw;
               cycle_namespace();
