@@ -416,20 +416,20 @@ class SyntaxAnalyser {
   }
 
   void type_cast() {
-      if (!type()) throw;
+      if (!type()) throw std::logic_error("type expected");
       gc();
-      if (_lex[_ind].string != "cast") throw;
+      if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
       gc();
-      if (_lex[_ind].type != "variable") throw;
+      if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
       gc();
   }
 
   void type_cast_def() {
-      if (!type()) throw;
+      if (!type()) throw std::logic_error("\"type\" expected");
       gc();
-      if (_lex[_ind].string != "cast") throw std::logic_error("\"cat\" expected");
+      if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
       gc();
-      if (!type()) throw;
+      if (!type()) throw std::logic_error("type expected");
       gc();
       variable();
       if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
@@ -451,7 +451,7 @@ class SyntaxAnalyser {
           gc();
           return;
       } else if (_lex[_ind].string != ",") {
-          throw;
+          throw std::logic_error("\",\" expected");
       } else {
           gc();
           do {
