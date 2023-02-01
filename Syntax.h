@@ -630,7 +630,7 @@ class SyntaxAnalyser {
       } else {
           lexpression();
           if (_lex[_ind].string != ";") {
-              throw;
+              throw std::logic_error("\";\" expected");
           }
           gc();
           if (_lex[_ind].string == "}") {
