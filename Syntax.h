@@ -32,7 +32,7 @@ class SyntaxAnalyser {
 
   void program() {
       gc();
-      globalNamepaceNoExec();
+      globalNamespaceNoExec();
       if (_lex[_ind].string != "exec") throw;
       gc();
       functionDefinition();
@@ -40,15 +40,91 @@ class SyntaxAnalyser {
       globalNamespace();
   }
 
-  void globalNamepaceNoExec() {
-
+  void globalNamespaceNoExec() {
+      if (_lex[_ind].string == "struct") {
+          object();
+          globalNamespaceNoExec();
+          return;
+      }
+      if (type()) {
+          if (_lex[_ind + 1].string == "cast") {
+              type_cast_def();
+              globalNamespaceNoExec();
+              return;
+          }
+          else if (_lex[_ind + 1].type != 2) throw;
+          if (_lex[_ind + 2].string == "(") {
+              functionDefinition();
+              globalNamespaceNoExec();
+              return;
+          }
+          gc();
+          gc();
+          if (_lex[_ind + 2].string == ";") {
+              gc();
+              globalNamespaceNoExec();
+              return;
+          }
+          if (_lex[_ind + 2].string == "=") {
+              gc();
+              expression();
+              globalNamespaceNoExec();
+              return;
+          }
+          throw;
+      }
+      return;
   }
 
   void globalNamespace() {
+      if (_lex[_ind].string == "struct") {
+          object();
+          globalNamespaceNoExec();
+          return;
+      }
+      if (_lex[_ind].string == "exec") {
+          gc();
+          functionDefinition();
+          globalNamespaceNoExec();
+          return;
+      }
+      if (type()) {
+          if (_lex[_ind + 1].string == "cast") {
+              type_cast_def();
+              globalNamespaceNoExec();
+              return;
+          }
+          else if (_lex[_ind + 1].type != 2) throw;
+          if (_lex[_ind + 2].string == "(") {
+              functionDefinition();
+              globalNamespaceNoExec();
+              return;
+          }
+          gc();
+          gc();
+          if (_lex[_ind + 2].string == ";") {
+              gc();
+              globalNamespaceNoExec();
+              return;
+          }
+          if (_lex[_ind + 2].string == "=") {
+              gc();
+              expression();
+              globalNamespaceNoExec();
+              return;
+          }
+          throw;
+      }
+      return;
+  }
+
+  void object() {
+      if (_lex[_ind].string != "struct") throw;
+      gc();
+      if (_lex[_ind].type != 2) throw;
 
   }
 
-  //распихать унарки, обработка стрринга и буковок
   void expression() {
       if (_lex[_ind].type == 2 || _lex[_ind].type == 3) {
           gc();
