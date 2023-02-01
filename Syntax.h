@@ -587,7 +587,7 @@ class SyntaxAnalyser {
   }
 
   void variable_def() {
-    if (!type()) throw;
+    if (!type()) throw std::logic_error("variable name expected");
     gc();
     variable();
     if (_lex[_ind].string != "=") return;
@@ -596,17 +596,21 @@ class SyntaxAnalyser {
   }
 
   void string() {
-      if (_lex[_ind].string != "string" ||  _lex[_ind].type != "keywords") throw;
+      if (_lex[_ind].string != "string" ||  _lex[_ind].type != "keywords") {
+          throw std::logic_error("\"string\" expected");
+      }
       gc();
       variable();
       if (_lex[_ind].string != "=") return;
       gc();
-      if (_lex[_ind].type != "string") throw;
+      if (_lex[_ind].type != "string") throw std::logic_error("string expected");
       gc();
   }
 
   void array_def() {
-      if (_lex[_ind].string != "array" || _lex[_ind].type != "keywords") throw;
+      if (_lex[_ind].string != "array" || _lex[_ind].type != "keywords")  {
+          throw std::logic_error("\"array\" expected");
+      }
       gc();
       if (!type()) throw;
       gc();
@@ -614,14 +618,14 @@ class SyntaxAnalyser {
       if (_lex[_ind].string != "(") return;
       gc();
       expression();
-      if (_lex[_ind].string != ")") throw;
+      if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       gc();
   }
 
   void cycle_namespace() {
       if (_lex[_ind].type == "keywords") {
           if (_lex[_ind].string == "break" || _lex[_ind].string == "continue") {
-              if (_lex[_ind].string != ";") throw;
+              if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
               cycle_namespace();
           } else {
               determinantes();
