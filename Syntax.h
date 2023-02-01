@@ -589,6 +589,29 @@ class SyntaxAnalyser {
       gc();
   }
 
+  void cycle_namespace() {
+      if (_lex[_ind].type == "keywords") {
+          if (_lex[_ind].string == "break" || _lex[_ind].string == "continue") {
+              if (_lex[_ind].string != ";") throw;
+              cycle_namespace();
+          } else {
+              determinantes();
+              cycle_namespace();
+          }
+      } else {
+          lexpression();
+          if (_lex[_ind].string != ";") {
+              throw;
+          }
+          gc();
+          if (_lex[_ind].string == "}") {
+              return;
+          }
+          cycle_namespace();
+          return;
+      }
+  }
+
   private:
   std::vector<Lexeme> _lex;
   int _ind = 0;
