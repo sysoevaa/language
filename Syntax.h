@@ -547,7 +547,7 @@ class SyntaxAnalyser {
           if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
       } else if (_lex[_ind].type == "variable" || _lex[_ind].type == "number") {
           gc();
-          if (_lex[_ind].type != "bool") throw std::logic_error("bool operator expected");
+          if (_lex[_ind].type != "bool" && _lex[_ind].type != "binary") throw std::logic_error("operator expected");
           gc();
           if (_lex[_ind].string == "(") {
               gc();
