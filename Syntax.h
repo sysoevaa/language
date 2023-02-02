@@ -236,7 +236,7 @@ class SyntaxAnalyser {
           if (_lex[_ind].string == "cast") {
               --_ind;
               type_cast();
-              if (_lex[_ind].type == "binary") {
+              if (_lex[_ind].type == "binary" || _lex[_ind].type == "power") {
                   gc();
                   expression();
               }
@@ -263,7 +263,7 @@ class SyntaxAnalyser {
 
       if (type()) {
           type_cast();
-          if (_lex[_ind].type == "binary") {
+          if (_lex[_ind].type == "binary" || _lex[_ind].type == "power") {
               gc();
               expression();
           }
@@ -277,6 +277,10 @@ class SyntaxAnalyser {
               throw std::logic_error("\")\" expected");
           }
           gc();
+          if (_lex[_ind].type == "binary" || _lex[_ind].type == "power") {
+              gc();
+              expression();
+          }
           return;
       }
 
@@ -683,7 +687,7 @@ class SyntaxAnalyser {
   }
 
   void cycle_namespace() {
-      if (_lex[_ind].type == "keyword") {
+      if (_lex[_ind].type == "keyword" && !type()) {
           if (_lex[_ind].string == "break" || _lex[_ind].string == "continue") {
               if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
               cycle_namespace();
