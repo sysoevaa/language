@@ -8,7 +8,7 @@ exec int32 foo() {
     int32 c = a + b / (b ** d + (a - d));
     int32 l = 0;
     int32 r = n;
-    while (r > l) {
+    while (r - l) {
         int32 m = l + (r - l) / 2;
         if (m * m < x) {
             l = m;
@@ -16,4 +16,51 @@ exec int32 foo() {
             r = m;
         }
     }
+}
+
+cat cast (dog a) {
+    a.leg = lapka;
+}
+
+struct cat {
+    string lapka;
+
+    construct (cat a) {
+        c = a.c;
+        if (c < 0) {
+            return;
+        }
+        a = b.f() + func(a, b, c + 1);
+    }
+
+    float32 function(int32 a, float64 b) {
+        int32 = 2;
+        return a ** b;
+    }
+
+    cat overload + (cat a) {
+        return a + a.c;
+    }
+}
+
+float32 function(int32 a, float64 b) {
+    return a ** b;
+}
+
+exec int32 main() {
+    int64 a;
+    for (bool c = 0; c < 25; ++c) {
+        while (a < b) {
+            a = a + b;
+        }
+    }
+}
+
+exec int32 foo() {
+    do while (b <= d) {
+        b = b + d;
+    }
+    array int32 arr;
+    array float64 arr(n + 1);
+    string a = "array";
 }
