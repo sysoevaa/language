@@ -82,9 +82,10 @@ class SyntaxAnalyser {
               globalNamespaceNoExec();
               return;
           }
-          if (_lex[_ind + 2].string == "=") {
+          if (_lex[_ind].string == "=") {
               gc();
               expression();
+              if (_lex[_ind].string == ";") gc();
               globalNamespaceNoExec();
               return;
           }

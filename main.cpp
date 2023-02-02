@@ -14,11 +14,11 @@ int main() {
         not_divided.push_back(k);
     }
     auto divided = analyser.divide(not_divided);
-    divided.emplace_back("END", "END");
-    for (auto& s : divided) {
-        out_stream << s.type << ' ' << s.string << '\n';
-        out_stream.flush();
+    if (divided.back().string == "ERR") {
+        std::cout << "Unexpected symbols in text were found";
+        return 1;
     }
+    divided.emplace_back("END", "END");
     SyntaxAnalyser syntax_analyser(divided);
     try {
         syntax_analyser.program();

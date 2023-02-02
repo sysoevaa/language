@@ -37,8 +37,6 @@ int32 f(cat a, dog b) {
     c = dog cast a;
 }
 
-
-
 exec int32 foo() {
     do while (b <= d) {
         b = b + d;
@@ -46,4 +44,6 @@ exec int32 foo() {
     array int32 arr;
     array float64 arr(n + 1);
     string a = "array";
+    int32 c = a + b / (b ** d + (a - d));
+
 }
