@@ -18,12 +18,12 @@ int main() {
         std::cout << "Unexpected symbols in text were found";
         return 1;
     }
-    divided.emplace_back("END", "END");
+    divided.emplace_back("END", "END", divided.back().num + 1);
     SyntaxAnalyser syntax_analyser(divided);
     try {
         syntax_analyser.program();
     } catch (std::exception& e) {
-        std::cout << "Error found at lexeme: " << syntax_analyser.GetLast().string << "\n";
+        std::cout << "Error found at lexeme: " << syntax_analyser.GetLast().string << " in string " << syntax_analyser.GetLast().num << "\n";
         std::cout << e.what();
         return 1;
     }

@@ -246,7 +246,7 @@ class SyntaxAnalyser {
               gc();
               variable();
           }
-          if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
+          if (_lex[_ind].string == "(") {
               parameters();
               if (_lex[_ind].string != ")") {
                   throw std::logic_error("expected \")\"");
@@ -257,6 +257,14 @@ class SyntaxAnalyser {
           if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
               gc();
               expression();
+          }
+          if (_lex[_ind].string == "[") {
+              gc();
+              expression();
+              if (_lex[_ind].string != "]") {
+                  throw std::logic_error ("] expected");
+              }
+              gc();
           }
           return;
       }
@@ -546,27 +554,6 @@ class SyntaxAnalyser {
           variable();
       }
   }
-
-  /* void bool_expression() {
-      if (_lex[_ind].string == "(") {
-          gc();
-          bool_expression();
-          if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
-      } else if (_lex[_ind].type == "variable" || _lex[_ind].type == "number") {
-          gc();
-          if (_lex[_ind].type != "bool" && _lex[_ind].type != "binary") throw std::logic_error("operator expected");
-          gc();
-          if (_lex[_ind].string == "(") {
-              gc();
-              bool_expression();
-              if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
-              gc();
-          } else if (_lex[_ind].type != "variable" && _lex[_ind].type != "number") {
-              throw std::logic_error("variable expected");
-          }
-      }
-      gc();
-  } */
 
   void If() {
       if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");

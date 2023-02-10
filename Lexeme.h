@@ -8,7 +8,9 @@
 
 struct Lexeme {
   std::string string, type;
-  Lexeme(const std::string& _type, const std::string& _string) : type(_type), string(_string) {}
+  int num;
+  Lexeme(const std::string& _type, const std::string& _string, int _num) :
+  type(_type), string(_string), num(_num) {}
 };
 
 
@@ -22,6 +24,7 @@ class Analyser {
           std::string lexeme_string;
 
           if (isSeparator(string[i])) {
+              if (string[i] == '\n') ++num;
               ++i;
               continue;
           }
@@ -40,7 +43,7 @@ class Analyser {
                       lexeme_string += string[i];
                       ++i;
                   }
-                  if (i == string.size()) divided.emplace_back("ERR", "Err");
+                  if (i == string.size()) divided.emplace_back("ERR", "Err", -1);
               }
               for (; i < string.size() && (isLetter(string[i]) || isNumber(string[i])); ++i) {
                   lexeme_string += string[i];
@@ -48,18 +51,18 @@ class Analyser {
               if (type == 1) {
                   divided.pop_back();
                   lexeme_string.push_back(' ');
-                  divided.emplace_back("char", lexeme_string);
+                  divided.emplace_back("char", lexeme_string, num);
                   ++i;
               } else if (type == 2) {
                   divided.pop_back();
                   lexeme_string.push_back(' ');
-                  divided.emplace_back("string", lexeme_string);
+                  divided.emplace_back("string", lexeme_string, num);
                   ++i;
               } else {
                   if (isTypeOne(lexeme_string)) {
-                      divided.push_back(Lexeme("keyword", lexeme_string));
+                      divided.push_back(Lexeme("keyword", lexeme_string, num));
                   } else {
-                      divided.push_back(Lexeme("variable", lexeme_string)); // variable
+                      divided.push_back(Lexeme("variable", lexeme_string, num)); // variable
                   }
               }
               continue;
@@ -78,7 +81,7 @@ class Analyser {
                       lexeme_string += string[i];
                   }
               }
-              divided.push_back(Lexeme("number", lexeme_string));
+              divided.push_back(Lexeme("number", lexeme_string, num));
               continue;
           }
 
@@ -87,19 +90,19 @@ class Analyser {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
-                  divided.emplace_back("unary", lexeme_string);
+                  divided.emplace_back("unary", lexeme_string, num);
                   continue;
               } else if (isDoubleOperator(string[i], string[i + 1]) == 2) {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
-                  divided.emplace_back("bool", lexeme_string);
+                  divided.emplace_back("bool", lexeme_string, num);
                   continue;
               } else if (isDoubleOperator(string[i], string[i + 1]) == 3) {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
-                  divided.emplace_back("power", lexeme_string);
+                  divided.emplace_back("power", lexeme_string, num);
                   continue;
               }
           }
@@ -112,9 +115,9 @@ class Analyser {
               }
               lexeme_string += string[i];
               if (string[i] == '<' || string[i] == '>') {
-                  divided.emplace_back("bool", lexeme_string);
+                  divided.emplace_back("bool", lexeme_string, num);
               } else {
-                  divided.push_back(Lexeme("binary", lexeme_string));
+                  divided.push_back(Lexeme("binary", lexeme_string, num));
               }
               ++i;
               continue;
@@ -123,18 +126,18 @@ class Analyser {
           if (isPunctuation(string[i])) {
               lexeme_string += string[i];
               ++i;
-              divided.push_back(Lexeme("punct", lexeme_string));
+              divided.push_back(Lexeme("punct", lexeme_string, num));
               continue;
           }
 
           if (isBracket(string[i])) {
               lexeme_string += string[i];
               ++i;
-              divided.push_back(Lexeme("bracket", lexeme_string));
+              divided.push_back(Lexeme("bracket", lexeme_string, num));
               continue;
           }
 
-          divided.push_back(Lexeme("err", "ERR"));
+          divided.push_back(Lexeme("err", "ERR", -1));
           break;
       }
       return divided;
@@ -302,12 +305,14 @@ class Analyser {
       i += 2;
       while (i + 1 < string.size()) {
           if (string[i] == '*' && string[i + 1] == '/') break;
+          if (string[i] == '\n') ++num;
           ++i;
       }
       if (i + 1 == string.size()) return -1;
       return i + 2;
   }
  private:
+  int num = 1;
 };
 
 #endif // LANGUAGE__LEXEME_H_
