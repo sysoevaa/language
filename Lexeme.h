@@ -114,11 +114,12 @@ class Analyser {
                   i = j;
                   continue;
               }
+              int priority = isOperator(string[i]);
               lexeme_string += string[i];
               if (string[i] == '<' || string[i] == '>') {
-                  divided.emplace_back("bool", lexeme_string, num);
+                  divided.emplace_back("bool", lexeme_string, num, priority);
               } else {
-                  divided.push_back(Lexeme("binary", lexeme_string, num));
+                  divided.push_back(Lexeme("binary", lexeme_string, num, priority));
               }
               ++i;
               continue;
@@ -222,32 +223,32 @@ class Analyser {
       return symbol == ' ' || symbol == '\n';
   }
 
-  bool isOperator(char symbol) const {
+  int isOperator(char symbol) const {
       switch(symbol){
           case '+':
-              return true;
+              return 3;
           case '-':
-              return true;
+              return 3;
           case '*':
-              return true;
+              return 2;
           case '/':
-              return true;
+              return 2;
           case '%':
-              return true;
+              return 2;
           case '&':
-              return true;
+              return 2;
           case '!':
-              return true;
+              return 2;
           case '~':
-              return true;
+              return 2;
           case '=':
-              return true;
+              return 8;
           case '<':
-              return true;
+              return 4;
           case '>':
-              return true;
+              return 4;
           default:
-              return false;
+              return 0;
       }
   }
 
