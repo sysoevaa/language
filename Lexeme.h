@@ -9,8 +9,9 @@
 struct Lexeme {
   std::string string, type;
   int num;
-  Lexeme(const std::string& _type, const std::string& _string, int _num) :
-  type(_type), string(_string), num(_num) {}
+  int priority;
+  Lexeme(const std::string& _type, const std::string& _string, int _num, int _priority = 0) :
+  type(_type), string(_string), num(_num), priority(_priority) {}
 };
 
 

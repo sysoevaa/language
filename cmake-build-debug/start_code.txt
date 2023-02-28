@@ -2,6 +2,7 @@ exec int32 foo() {
     /* do while (b <= d) {
         b = b + d;
     }
+    int32 = 2;
     array int32 arr;
     array float64 arr(n + 1);
     string a = "array";
@@ -10,7 +11,7 @@ exec int32 foo() {
     int32 r = n; */
     while (r - l) {
         int32 m = l (r - l) / 2 + arr[i][j];
-        if (m * m < x) {
+        if (m < x) {
             l = m;
         } else {
             r = m;
