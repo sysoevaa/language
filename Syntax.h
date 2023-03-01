@@ -233,12 +233,13 @@ class SyntaxAnalyser {
 
   void expression() {
       if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
-          expCheck.Process(_lex[_ind]);
           gc();
           if (_lex[_ind].string == "cast") {
+              expCheck.Process(_lex[_ind - 1]);
               expCheck.Process(_lex[_ind]);
               --_ind;
               type_cast();
+              expCheck.Process(_lex[_ind - 1]);
               if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
                   expCheck.Process(_lex[_ind]);
                   gc();
@@ -250,6 +251,7 @@ class SyntaxAnalyser {
               gc();
               variable();
           }
+          expCheck.Process(_lex[_ind - 1]);
           if (_lex[_ind].string == "(") {
               parameters();
               if (_lex[_ind].string != ")") {

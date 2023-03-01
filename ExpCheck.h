@@ -7,6 +7,7 @@ public:
     void Push(Lexeme lexeme);
     int GetPriority();
     void Merge();
+    Lexeme GetType();
 private:
     std::vector<Lexeme> _stack;
 }

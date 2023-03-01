@@ -11,12 +11,12 @@ void ExpCheck::Process(Lexeme lexeme) {
         return;
     }
 
-    if (lexeme.string == "(") {
+    if (lexeme.string == "(" || lexeme.string == "[") {
         Push(lexeme);
         return;
     }
 
-    if (lexeme.string == ")") {
+    if (lexeme.string == ")" || lexeme.string == "]") {
         while (GetPriority() != 8) {
             Merge();
         }
@@ -48,7 +48,7 @@ int ExpCheck::GetPriority() {
         return 0;
     }
 
-    if (_stack[_stack.size() - 2].string == "(") {
+    if (_stack[_stack.size() - 2].string == "(" || _stack[_stack.size() - 2].string == "[") {
         return 8;
     }
 
@@ -56,7 +56,7 @@ int ExpCheck::GetPriority() {
 }
 
 void ExpCheck::Merge() {
-    if (_stack[_stack.size() - 1].string == ")") {
+    if (_stack[_stack.size() - 1].string == ")" || _stack[_stack.size() - 1].string == "]") {
         _stack.pop_back();
         Lexeme lex = _stack[_stack.size() - 1];
         _stack.pop_back();
@@ -127,4 +127,8 @@ void ExpCheck::Merge() {
         Push(lex);
         return;
     }
+}
+
+Lexeme ExpCheck::GetType() {
+    return _stack[0];
 }
