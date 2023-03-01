@@ -1,4 +1,5 @@
 #include "Lexeme.h"
+#include "ExpCheck.h"
 
 class SyntaxAnalyser {
  public:
@@ -232,11 +233,14 @@ class SyntaxAnalyser {
 
   void expression() {
       if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
+          expCheck.Process(_lex[_ind]);
           gc();
           if (_lex[_ind].string == "cast") {
+              expCheck.Process(_lex[_ind]);
               --_ind;
               type_cast();
               if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+                  expCheck.Process(_lex[_ind]);
                   gc();
                   expression();
               }
@@ -255,15 +259,18 @@ class SyntaxAnalyser {
           }
 
           if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+              expCheck.Process(_lex[_ind]);
               gc();
               expression();
           }
           if (_lex[_ind].string == "[") {
+              expCheck.Process(_lex[_ind]);
               gc();
               expression();
               if (_lex[_ind].string != "]") {
                   throw std::logic_error ("] expected");
               }
+              expCheck.Process(_lex[_ind]);
               gc();
           }
           return;
@@ -279,13 +286,16 @@ class SyntaxAnalyser {
       }
 
       if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
+          expCheck.Process(_lex[_ind]);
           gc();
           expression();
           if (_lex[_ind].string != ")") {
               throw std::logic_error("\")\" expected");
           }
+          expCheck.Process(_lex[_ind]);
           gc();
           if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+              expCheck.Process(_lex[_ind]);
               gc();
               expression();
           }
@@ -293,6 +303,7 @@ class SyntaxAnalyser {
       }
 
       if (_lex[_ind].type == "string") {
+          expCheck.Process(_lex[_ind]);
           gc();
           return;
       }
@@ -711,4 +722,5 @@ class SyntaxAnalyser {
   private:
   std::vector<Lexeme> _lex;
   int _ind = 0;
+  ExpCheck expCheck;
 };
