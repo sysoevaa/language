@@ -132,3 +132,13 @@ void ExpCheck::Merge() {
 Lexeme ExpCheck::GetType() {
     return _stack[0];
 }
+
+void ExpCheck::TailMerge() {
+    while (GetPriority() != 9) {
+        Merge();
+    }
+}
+
+void Clear() {
+    _stack.clear();
+}

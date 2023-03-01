@@ -233,7 +233,7 @@ void SyntaxAnalyser::expression() {
             expCheck.Process(_lex[_ind]);
             --_ind;
             type_cast();
-            expCheck.Process(_lex[_ind - 1]);
+            expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
             if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
                 expCheck.Process(_lex[_ind]);
                 gc();
@@ -245,7 +245,7 @@ void SyntaxAnalyser::expression() {
             gc();
             variable();
         }
-        expCheck.Process(_lex[_ind - 1]);
+        expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind].string), 0));
         if (_lex[_ind].string == "(") {
             parameters();
             if (_lex[_ind].string != ")") {
