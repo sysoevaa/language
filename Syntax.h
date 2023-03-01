@@ -281,8 +281,12 @@ class SyntaxAnalyser {
       }
 
       if (type()) {
+          expCheck.Process(_lex[_ind]);
           type_cast();
+          expCheck.Process(_lex[_ind - 2]);
+          expCheck.Process(_lex[_ind - 1]);
           if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+              expCheck.Process(_lex[_ind]);
               gc();
               expression();
           }
