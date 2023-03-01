@@ -89,7 +89,7 @@ void ExpCheck::Merge() {
     std::string type1 = _stack[_stack.size() - 1].string, type2 = _stack[_stack.size() - 3].string;
 
     if (type1 == "string" || type2 == "string") {
-        throw std::logic_error("can't fit string in expression")
+        throw std::logic_error("can't fit string in expression");
     }
 
     if (type1 == "int32" && type2 == "int64") {
