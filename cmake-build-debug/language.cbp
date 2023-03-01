@@ -82,6 +82,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/Neponel/CLionProjects/language/ExpCheck.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/Neponel/CLionProjects/language/ExpCheck.h">
+			<Option target="language"/>
+		</Unit>
 		<Unit filename="/Users/Neponel/CLionProjects/language/Lexeme.cpp">
 			<Option target="language"/>
 		</Unit>
@@ -92,6 +98,12 @@
 			<Option target="language"/>
 		</Unit>
 		<Unit filename="/Users/Neponel/CLionProjects/language/Syntax.h">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/Neponel/CLionProjects/language/TID.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/Neponel/CLionProjects/language/TID.h">
 			<Option target="language"/>
 		</Unit>
 		<Unit filename="/Users/Neponel/CLionProjects/language/main.cpp">

@@ -10,4 +10,6 @@ add_executable(language
         Lexeme.h
         main.cpp
         Syntax.h
-        Syntax.cpp)
+        Syntax.cpp
+        TID.h
+        TID.cpp ExpCheck.cpp ExpCheck.h)
