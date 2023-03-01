@@ -44,6 +44,10 @@ int ExpCheck::GetPriority() {
         return _stack[_stack.size() - 2].priority;
     }
 
+    if (_stack[_stack.size() - 2].string == "cast") {
+        return 0;
+    }
+
     if (_stack[_stack.size() - 2].string == "(") {
         return 8;
     }
@@ -56,6 +60,15 @@ void ExpCheck::Merge() {
         _stack.pop_back();
         Lexeme lex = _stack[_stack.size() - 1];
         _stack.pop_back();
+        _stack.pop_back();
+        Push(lex);
+        return;
+    }
+
+    if (_stack[_stack.size() - 2].string == "cast") {
+        _stack.pop_back();
+        _stack.pop_back();
+        Lexeme lex = _stack[_stack.size() - 1];
         _stack.pop_back();
         Push(lex);
         return;
