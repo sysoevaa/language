@@ -129,6 +129,30 @@ language/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/build
 .PHONY : language/fast
 
+ExpCheck.o: ExpCheck.cpp.o
+.PHONY : ExpCheck.o
+
+# target to build an object file
+ExpCheck.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/ExpCheck.cpp.o
+.PHONY : ExpCheck.cpp.o
+
+ExpCheck.i: ExpCheck.cpp.i
+.PHONY : ExpCheck.i
+
+# target to preprocess a source file
+ExpCheck.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/ExpCheck.cpp.i
+.PHONY : ExpCheck.cpp.i
+
+ExpCheck.s: ExpCheck.cpp.s
+.PHONY : ExpCheck.s
+
+# target to generate assembly for a file
+ExpCheck.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/ExpCheck.cpp.s
+.PHONY : ExpCheck.cpp.s
+
 Lexeme.o: Lexeme.cpp.o
 .PHONY : Lexeme.o
 
@@ -177,6 +201,30 @@ Syntax.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/Syntax.cpp.s
 .PHONY : Syntax.cpp.s
 
+TID.o: TID.cpp.o
+.PHONY : TID.o
+
+# target to build an object file
+TID.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/TID.cpp.o
+.PHONY : TID.cpp.o
+
+TID.i: TID.cpp.i
+.PHONY : TID.i
+
+# target to preprocess a source file
+TID.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/TID.cpp.i
+.PHONY : TID.cpp.i
+
+TID.s: TID.cpp.s
+.PHONY : TID.s
+
+# target to generate assembly for a file
+TID.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/TID.cpp.s
+.PHONY : TID.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -210,12 +258,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... language"
+	@echo "... ExpCheck.o"
+	@echo "... ExpCheck.i"
+	@echo "... ExpCheck.s"
 	@echo "... Lexeme.o"
 	@echo "... Lexeme.i"
 	@echo "... Lexeme.s"
 	@echo "... Syntax.o"
 	@echo "... Syntax.i"
 	@echo "... Syntax.s"
+	@echo "... TID.o"
+	@echo "... TID.i"
+	@echo "... TID.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

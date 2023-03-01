@@ -11,5 +11,7 @@ add_executable(language
         main.cpp
         Syntax.h
         Syntax.cpp
+        TID.h
         TID.cpp
-        TID.h)
+        ExpCheck.cpp
+        ExpCheck.h)
