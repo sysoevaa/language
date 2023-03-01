@@ -1,9 +1,11 @@
 #include "Lexeme.h"
 #include "ExpCheck.h"
+#include "TID.h"
+
 
 class SyntaxAnalyser {
  public:
-  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex) {}
+  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID) {}
 
   void gc() {
      ++_ind;
@@ -725,4 +727,5 @@ class SyntaxAnalyser {
   std::vector<Lexeme> _lex;
   int _ind = 0;
   ExpCheck expCheck;
+  TID* _tid;
 };
