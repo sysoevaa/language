@@ -57,8 +57,8 @@ FunctionDef* StructDef::FindFunction(std::string id) {
 }
 
 TID::TID() {
-    global = new TIDElement;
-    _current_tid = global;
+    _global = new TIDElement;
+    _current_tid = _global;
 }
 
 std::string TID::GetType(std::string id) {
@@ -66,12 +66,16 @@ std::string TID::GetType(std::string id) {
     while (find_type != nullptr && _current_tid->GetType(id) == "UNDEFINED") {
         find_type = find_type->GetParent();
     }
-    if (find_type == nullptr) return "UNDEFINED";
-    return find_type->GetType(id);
+    if (find_type != nullptr) return find_type->GetType(id);
+    return _global->GetType(id);
 }
 
 // add func types
 // add operators
+
+void TID::OpenScope() {
+     _current_tid = _current_tid->NewScope();
+}
 
 FunctionDef* TID::AddFunction(std::string id) {
     if (_functions.count(id) != 0) throw std::logic_error("There are two functions"

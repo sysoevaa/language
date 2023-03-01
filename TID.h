@@ -28,7 +28,7 @@ class StructDef : public TIDElement {
  public:
     FunctionDef* AddMethod(std::string id);
     void AddMember(std::string id, std::string type);
-    std::string FindMember(std::string id);
+    std::string FindMember(std::string id); // returns type of member with this id
     FunctionDef* FindFunction(std::string id);
  private:
   TIDElement *_members;
@@ -41,12 +41,13 @@ class TID {
   FunctionDef *AddFunction(std::string id);
   StructDef *AddStruct(std::string id);
   std::string GetType(std::string id);
+  void AddGlobal();
   TID();
   void OpenScope();
   void CloseScope();
  private:
   std::map<std::string, FunctionDef *> _functions;
   std::map<std::string, StructDef *> _structs;
-  TIDElement *global;
+  TIDElement *_global;
   TIDElement *_current_tid;
 };
