@@ -7,35 +7,43 @@ class TIDElement {
   void AddVariable(std::string id, std::string type);
   TIDElement *GetParent();
   TIDElement *NewScope();
+  TIDElement();
  protected:
   std::map<std::string, std::string> _id; // variable name, type
   std::vector<TIDElement *> _scopes;
   TIDElement *parent;
 };
 
-class FunctionDef : TIDElement {
+class FunctionDef : public TIDElement {
  public:
   std::vector<std::string> GetParameters();
   FunctionDef();
+  std::string GetType();
  private:
   std::vector<std::string> _formal_parameters;
+  std::string _type;
 };
 
-class StructDef : TIDElement {
+class StructDef : public TIDElement {
  public:
     FunctionDef* AddMethod(std::string id);
-    void AddMember();
-    TIDElement* FindMember(std::string id);
+    void AddMember(std::string id, std::string type);
+    std::string FindMember(std::string id);
     FunctionDef* FindFunction(std::string id);
  private:
   TIDElement *_members;
-  FunctionDef *_methods;
+  std::map<std::string, FunctionDef*> _methods;
+  std::map<std::string, std::string> _operators;
 };
 
 class TID {
  public:
   FunctionDef *AddFunction(std::string id);
   StructDef *AddStruct(std::string id);
+  std::string GetType(std::string id);
+  TID();
+  void OpenScope();
+  void CloseScope();
  private:
   std::map<std::string, FunctionDef *> _functions;
   std::map<std::string, StructDef *> _structs;
