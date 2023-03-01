@@ -1,8 +1,13 @@
-//
-// Created by А ну да on 01.03.2023.
-//
+#include "Lexeme.h"
+#include <vector>
 
-#ifndef LANGUAGE_EXPCHECK_H
-#define LANGUAGE_EXPCHECK_H
-
-#endif //LANGUAGE_EXPCHECK_H
+class ExpCheck {
+public:
+    void Process(Lexeme lexeme);
+    void Push(Lexeme lexeme);
+    int GetPriority();
+    void Merge();
+    Lexeme GetType();
+private:
+    std::vector<Lexeme> _stack;
+}
