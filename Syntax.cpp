@@ -1,7 +1,7 @@
 #include "Lexeme.h"
 #include "Syntax.h"
 
-void SyntaxAnalyser::gc()  {
+void SyntaxAnalyser::gc() {
     ++_ind;
     if (_ind >= _lex.size()) throw std::logic_error("unexpected end of file");
 }
@@ -402,6 +402,7 @@ void SyntaxAnalyser::lexpression() {
     } else {
         throw std::logic_error("name expected");
     }
+    //gc();
     if (_lex[_ind].string == "[") {
         gc();
         if (_lex[_ind].type != "number" || _lex[_ind].type != "variable") throw std::logic_error("index expected");
@@ -436,10 +437,12 @@ void SyntaxAnalyser::lexpression() {
         return;
     }
     throw std::logic_error("unexpected symbol");
+
 }
 
 void SyntaxAnalyser::namepace() {
     if (_lex[_ind].string == "}") {
+        //gc();
         return;
     }
     if (_lex[_ind].string == "array") {
