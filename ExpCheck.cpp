@@ -134,7 +134,7 @@ Lexeme ExpCheck::GetType() {
 }
 
 void ExpCheck::TailMerge() {
-    while (GetPriority() != 9) {
+    while (GetPriority() < 8) {
         Merge();
     }
 }
