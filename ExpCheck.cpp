@@ -22,6 +22,10 @@ void ExpCheck::Process(Lexeme lexeme) {
         }
         Push(lexeme);
         Merge();
+        //possible type check with else
+        if (lexeme.string == "]") {
+            _stack.pop_back();
+        }
         return;
     }
 
@@ -59,6 +63,11 @@ int ExpCheck::GetPriority() {
 }
 
 void ExpCheck::Merge() {
+
+    if (_stack[_stack.size() - 2].type == "variable") {
+        return;
+    }
+
     if (_stack[_stack.size() - 1].string == ")" || _stack[_stack.size() - 1].string == "]") {
         _stack.pop_back();
         Lexeme lex = _stack[_stack.size() - 1];
@@ -90,8 +99,6 @@ void ExpCheck::Merge() {
     _stack.pop_back();
     _stack.pop_back();
     Push(lex);
-
-
 
 //    if (type1 == "string" || type2 == "string") {
 //        throw std::logic_error("can't fit string in expression");
