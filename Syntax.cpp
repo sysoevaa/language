@@ -245,6 +245,7 @@ void SyntaxAnalyser::expression() {
             gc();
             variable();
         }
+        //method
         expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
         if (_lex[_ind].string == "(") {
             parameters();
@@ -309,6 +310,55 @@ void SyntaxAnalyser::expression() {
         expCheck.Process(_lex[_ind]);
         gc();
         return;
+    }
+
+    if (_lex[_ind].type == "unary") {
+        expCheck.Process(_lex[_ind]);
+        gc();
+        if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
+            if (_lex[_ind].string == ".") {
+                gc();
+                variable();
+            }
+            //method
+            expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
+            if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+                expCheck.Process(_lex[_ind]);
+                gc();
+                expression();
+            }
+            if (_lex[_ind].string == "[") {
+                expCheck.Process(_lex[_ind]);
+                gc();
+                expression();
+                if (_lex[_ind].string != "]") {
+                    throw std::logic_error ("] expected");
+                }
+                expCheck.Process(_lex[_ind]);
+                gc();
+            }
+            expCheck.TailMerge();
+            return;
+        }
+
+        if (_lex[_ind].string == "(") {
+            expCheck.Process(_lex[_ind]);
+            gc();
+            expression();
+            if (_lex[_ind].string != ")") {
+                throw std::logic_error("\")\" expected");
+            }
+            expCheck.Process(_lex[_ind]);
+            gc();
+            if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+                expCheck.Process(_lex[_ind]);
+                gc();
+                expression();
+            }
+            expCheck.TailMerge();
+            return;
+        }
+
     }
     throw std::logic_error("unexpected symbols");
 }
