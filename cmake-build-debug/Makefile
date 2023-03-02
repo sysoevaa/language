@@ -177,6 +177,30 @@ Lexeme.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/Lexeme.cpp.s
 .PHONY : Lexeme.cpp.s
 
+Overloader.o: Overloader.cpp.o
+.PHONY : Overloader.o
+
+# target to build an object file
+Overloader.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/Overloader.cpp.o
+.PHONY : Overloader.cpp.o
+
+Overloader.i: Overloader.cpp.i
+.PHONY : Overloader.i
+
+# target to preprocess a source file
+Overloader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/Overloader.cpp.i
+.PHONY : Overloader.cpp.i
+
+Overloader.s: Overloader.cpp.s
+.PHONY : Overloader.s
+
+# target to generate assembly for a file
+Overloader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/Overloader.cpp.s
+.PHONY : Overloader.cpp.s
+
 Syntax.o: Syntax.cpp.o
 .PHONY : Syntax.o
 
@@ -264,6 +288,9 @@ help:
 	@echo "... Lexeme.o"
 	@echo "... Lexeme.i"
 	@echo "... Lexeme.s"
+	@echo "... Overloader.o"
+	@echo "... Overloader.i"
+	@echo "... Overloader.s"
 	@echo "... Syntax.o"
 	@echo "... Syntax.i"
 	@echo "... Syntax.s"

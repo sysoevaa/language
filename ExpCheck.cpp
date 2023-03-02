@@ -87,46 +87,49 @@ void ExpCheck::Merge() {
     }
 
     std::string type1 = _stack[_stack.size() - 1].string, type2 = _stack[_stack.size() - 3].string;
+    std::string oper = _stack[_stack.size() - 1].string;
 
-    if (type1 == "string" || type2 == "string") {
-        throw std::logic_error("can't fit string in expression");
-    }
 
-    if (type1 == "int32" && type2 == "int64") {
-        Lexeme lex = _stack[_stack.size() - 3];
-        _stack.pop_back();
-        _stack.pop_back();
-        _stack.pop_back();
-        Push(lex);
-        return;
-    }
 
-    if (type1 == "int32" && type2 == "int64") {
-        Lexeme lex = _stack[_stack.size() - 3];
-        _stack.pop_back();
-        _stack.pop_back();
-        _stack.pop_back();
-        Push(lex);
-        return;
-    }
-
-    if (type1 == "int64" && type2 == "int32") {
-        Lexeme lex = _stack[_stack.size() - 1];
-        _stack.pop_back();
-        _stack.pop_back();
-        _stack.pop_back();
-        Push(lex);
-        return;
-    }
-
-    if (type1 == "int32" && type2 == "int64") {
-        Lexeme lex = _stack[_stack.size() - 3];
-        _stack.pop_back();
-        _stack.pop_back();
-        _stack.pop_back();
-        Push(lex);
-        return;
-    }
+//    if (type1 == "string" || type2 == "string") {
+//        throw std::logic_error("can't fit string in expression");
+//    }
+//
+//    if (type1 == "int32" && type2 == "int64") {
+//        Lexeme lex = _stack[_stack.size() - 3];
+//        _stack.pop_back();
+//        _stack.pop_back();
+//        _stack.pop_back();
+//        Push(lex);
+//        return;
+//    }
+//
+//    if (type1 == "int32" && type2 == "int64") {
+//        Lexeme lex = _stack[_stack.size() - 3];
+//        _stack.pop_back();
+//        _stack.pop_back();
+//        _stack.pop_back();
+//        Push(lex);
+//        return;
+//    }
+//
+//    if (type1 == "int64" && type2 == "int32") {
+//        Lexeme lex = _stack[_stack.size() - 1];
+//        _stack.pop_back();
+//        _stack.pop_back();
+//        _stack.pop_back();
+//        Push(lex);
+//        return;
+//    }
+//
+//    if (type1 == "int32" && type2 == "int64") {
+//        Lexeme lex = _stack[_stack.size() - 3];
+//        _stack.pop_back();
+//        _stack.pop_back();
+//        _stack.pop_back();
+//        Push(lex);
+//        return;
+//    }
 }
 
 Lexeme ExpCheck::GetType() {
