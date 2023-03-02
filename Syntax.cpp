@@ -54,6 +54,7 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
         return;
     }
     if (type()) {
+        std::string var_type = _lex[_ind].string;
         if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "cast") {
             type_cast_def();
@@ -82,7 +83,7 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-            //Check
+            if (var_type != lex.string) throw std::logic_error("unexpected type");
             if (_lex[_ind].string == ";") gc();
             globalNamespaceNoExec();
             return;
@@ -149,6 +150,7 @@ void SyntaxAnalyser::globalNamespace() {
 }
 
 void SyntaxAnalyser::object() {
+    //how to add type
     if (_lex[_ind].string != "struct") throw std::logic_error("\"struct\" expected");
     gc();
     if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
@@ -199,7 +201,7 @@ void SyntaxAnalyser::member() {
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-            //Check
+            if (lex.string != member_type) throw std::logic_error("unexpected type");
             member();
             return;
         }
