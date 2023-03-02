@@ -623,6 +623,9 @@ void SyntaxAnalyser::If() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     expression();
+    Lexeme lex = expCheck.GetType();
+    expCheck.Clear();
+    //bool check
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
@@ -638,6 +641,7 @@ void SyntaxAnalyser::If() {
             if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
             gc();
             expression();
+            expCheck.Clear();
             if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
             gc();
         }
@@ -653,6 +657,9 @@ void SyntaxAnalyser::While() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     expression();
+    Lexeme lex = expCheck.GetType();
+    expCheck.Clear();
+    //bool c
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
