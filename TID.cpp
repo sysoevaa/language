@@ -29,8 +29,10 @@ std::vector<std::string> FunctionDef::GetParameters() {
     return _formal_parameters;
 }
 
-FunctionDef::FunctionDef() {
+FunctionDef::FunctionDef(std::vector<std::pair<std::string, std::string>>& formal_parameters) {
+    // _formal_parameters =
     parent = nullptr;
+
 }
 
 std::string FunctionDef::GetType() {
@@ -100,3 +102,11 @@ void TID::CloseScope() {
 FunctionDef *StructDef::AddOperator(std::string oper, std::string type) {
 
 }
+std::string TID::GetTypeOverload(std::string type1, std::string &type2, std::string& oper) {
+    if (_structs.count(type1) == 0) throw std::logic_error("undefined type in expression");
+    auto overloadptr = _structs[type1]->FindOverload(type2, oper);
+    if (overloadptr == nullptr) throw std::logic_error("undefined operator");
+    return overloadptr->GetType();
+}
+
+
