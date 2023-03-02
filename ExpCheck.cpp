@@ -39,6 +39,9 @@ int ExpCheck::GetPriority() {
     if (_stack.size() < 2) {
         return 9;
     }
+    if (_stack[_stack.size() - 2].type == "unary") {
+        return -1;
+    }
     if (_stack[_stack.size() - 2].type == "binary" || _stack[_stack.size() - 2].type == "power" ||
     _stack[_stack.size() - 2].type == "bool") {
         return _stack[_stack.size() - 2].priority;
@@ -74,20 +77,19 @@ void ExpCheck::Merge() {
         return;
     }
 
-    if (_stack[_stack.size() - 1].type == "variable" || _stack[_stack.size() - 3].type == "variable") {
-        if (_stack[_stack.size() - 1].string == _stack[_stack.size() - 3].string) {
-            Lexeme lex = _stack[_stack.size() - 1];
-            _stack.pop_back();
-            _stack.pop_back();
-            _stack.pop_back();
-            Push(lex);
-            return;
-        }
-        throw std::logic_error ("Incomparable types");
+    if (_stack[_stack.size() - 2].type == "unary") {
+        return;
     }
 
     std::string type1 = _stack[_stack.size() - 1].string, type2 = _stack[_stack.size() - 3].string;
     std::string oper = _stack[_stack.size() - 1].string;
+
+    Lexeme lex("variable", _tid->GetTypeOverload(type1, type2, oper), 0);
+
+    _stack.pop_back();
+    _stack.pop_back();
+    _stack.pop_back();
+    Push(lex);
 
 
 

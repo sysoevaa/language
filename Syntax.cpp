@@ -80,6 +80,9 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
         if (_lex[_ind].string == "=") {
             gc();
             expression();
+            Lexeme lex = expCheck.GetType();
+            expCheck.Clear();
+            //Check
             if (_lex[_ind].string == ";") gc();
             globalNamespaceNoExec();
             return;
@@ -129,6 +132,9 @@ void SyntaxAnalyser::globalNamespace() {
         if (_lex[_ind + 2].string == "=") {
             gc();
             expression();
+            Lexeme lex = expCheck.GetType();
+            expCheck.Clear();
+            //Check
             globalNamespace();
             return;
         }
@@ -183,6 +189,9 @@ void SyntaxAnalyser::member() {
         if (_lex[_ind].string == "=") {
             gc();
             expression();
+            Lexeme lex = expCheck.GetType();
+            expCheck.Clear();
+            //Check
             member();
             return;
         }
@@ -245,6 +254,7 @@ void SyntaxAnalyser::expression() {
             gc();
             variable();
         }
+        //method
         expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
         if (_lex[_ind].string == "(") {
             parameters();
@@ -310,6 +320,55 @@ void SyntaxAnalyser::expression() {
         gc();
         return;
     }
+
+    if (_lex[_ind].type == "unary") {
+        expCheck.Process(_lex[_ind]);
+        gc();
+        if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
+            if (_lex[_ind].string == ".") {
+                gc();
+                variable();
+            }
+            //method
+            expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
+            if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+                expCheck.Process(_lex[_ind]);
+                gc();
+                expression();
+            }
+            if (_lex[_ind].string == "[") {
+                expCheck.Process(_lex[_ind]);
+                gc();
+                expression();
+                if (_lex[_ind].string != "]") {
+                    throw std::logic_error ("] expected");
+                }
+                expCheck.Process(_lex[_ind]);
+                gc();
+            }
+            expCheck.TailMerge();
+            return;
+        }
+
+        if (_lex[_ind].string == "(") {
+            expCheck.Process(_lex[_ind]);
+            gc();
+            expression();
+            if (_lex[_ind].string != ")") {
+                throw std::logic_error("\")\" expected");
+            }
+            expCheck.Process(_lex[_ind]);
+            gc();
+            if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+                expCheck.Process(_lex[_ind]);
+                gc();
+                expression();
+            }
+            expCheck.TailMerge();
+            return;
+        }
+
+    }
     throw std::logic_error("unexpected symbols");
 }
 
@@ -318,6 +377,9 @@ void SyntaxAnalyser::parameters() {
         gc();
         if (_lex[_ind].string == ")") return;
         expression();
+        Lexeme lex = expCheck.GetType();
+        expCheck.Clear();
+        //Check
     } while (_lex[_ind].string == ",");
 }
 
@@ -373,6 +435,9 @@ void SyntaxAnalyser::determinantes() {
         gc();
         if (_lex[_ind].string != ";") {
             expression();
+            Lexeme lex = expCheck.GetType();
+            expCheck.Clear();
+            //Check
         }
         if (_lex[_ind].string != ";") {
             throw std::logic_error("\";\" expected");
@@ -434,6 +499,9 @@ void SyntaxAnalyser::lexpression() {
     if (_lex[_ind].string == "=") {
         gc();
         expression();
+        Lexeme lex = expCheck.GetType();
+        expCheck.Clear();
+        //Check
         return;
     }
     if (_lex[_ind].string == ";") {
@@ -573,6 +641,9 @@ void SyntaxAnalyser::If() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     expression();
+    Lexeme lex = expCheck.GetType();
+    expCheck.Clear();
+    //bool check
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
@@ -588,6 +659,9 @@ void SyntaxAnalyser::If() {
             if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
             gc();
             expression();
+            Lexeme lex = expCheck.GetType();
+            expCheck.Clear();
+            //Check
             if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
             gc();
         }
@@ -603,6 +677,9 @@ void SyntaxAnalyser::While() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     expression();
+    Lexeme lex = expCheck.GetType();
+    expCheck.Clear();
+    //bool check
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
@@ -614,6 +691,9 @@ void SyntaxAnalyser::dowhile() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     expression();
+    Lexeme lex = expCheck.GetType();
+    expCheck.Clear();
+    //Check
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
@@ -633,6 +713,9 @@ void SyntaxAnalyser::For() {
     } else if (_lex[_ind].string == ";") {
         gc();
         expression();
+        Lexeme lex = expCheck.GetType();
+        expCheck.Clear();
+        //Check
         if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
         gc();
         lexpression();
@@ -658,6 +741,9 @@ void SyntaxAnalyser::variable_def() {
     if (_lex[_ind].string != "=") return;
     gc();
     expression();
+    Lexeme lex = expCheck.GetType();
+    expCheck.Clear();
+    //Check
 }
 
 void SyntaxAnalyser::string() {
@@ -683,6 +769,9 @@ void SyntaxAnalyser::array_def() {
     if (_lex[_ind].string == "(") {
         gc();
         expression();
+        Lexeme lex = expCheck.GetType();
+        expCheck.Clear();
+        //Check
         if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
         gc();
     }

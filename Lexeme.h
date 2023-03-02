@@ -91,7 +91,7 @@ class Analyser {
                   lexeme_string += string[i];
                   lexeme_string += string[i + 1];
                   i += 2;
-                  divided.emplace_back("unary", lexeme_string, num);
+                  divided.emplace_back("unary", lexeme_string, num, 1);
                   continue;
               } else if (isDoubleOperator(string[i], string[i + 1]) == 2) {
                   lexeme_string += string[i];
@@ -122,6 +122,9 @@ class Analyser {
               }
               int priority = isOperator(string[i]);
               lexeme_string += string[i];
+              if (string[i] == '=') {
+                  divided.emplace_back("equals", lexeme_string, num);
+              }
               if (string[i] == '<' || string[i] == '>') {
                   divided.emplace_back("bool", lexeme_string, num, priority);
               } else {
