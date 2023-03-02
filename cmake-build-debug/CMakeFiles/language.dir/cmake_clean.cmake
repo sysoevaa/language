@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/language.dir/ExpCheck.cpp.o.d"
   "CMakeFiles/language.dir/Lexeme.cpp.o"
   "CMakeFiles/language.dir/Lexeme.cpp.o.d"
+  "CMakeFiles/language.dir/Overloader.cpp.o"
+  "CMakeFiles/language.dir/Overloader.cpp.o.d"
   "CMakeFiles/language.dir/Syntax.cpp.o"
   "CMakeFiles/language.dir/Syntax.cpp.o.d"
   "CMakeFiles/language.dir/TID.cpp.o"
