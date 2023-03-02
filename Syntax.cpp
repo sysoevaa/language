@@ -659,7 +659,7 @@ void SyntaxAnalyser::While() {
     expression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
-    //bool c
+    //bool check
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");

@@ -122,6 +122,9 @@ class Analyser {
               }
               int priority = isOperator(string[i]);
               lexeme_string += string[i];
+              if (string[i] == '=') {
+                  divided.emplace_back("equals", lexeme_string, num);
+              }
               if (string[i] == '<' || string[i] == '>') {
                   divided.emplace_back("bool", lexeme_string, num, priority);
               } else {
