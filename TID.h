@@ -4,15 +4,20 @@
 class TIDElement {
  public:
   TIDElement();
-  std::string GetType(std::string id);
+  void SetType(std::string& id);
+  std::string GetType(std::string id, bool func = false);
   void AddVariable(std::string id, std::string type);
   TIDElement *GetParent();
-  TIDElement *NewScope();
+  void SetParent(TIDElement* parent);
+  std::map<std::string, std::string> GetId();
+  TIDElement* AddOverload(std::string& type, std::string& oper, std::string& ret);
+  std::string GetOverloadType(std::string& type, std::string& oper);
 
  protected:
   std::map<std::string, std::string> _id; // variable name, type
-  std::vector<std::map<std::string, std::string>> _overload;
-  TIDElement *parent;
+  std::map<std::pair<std::string, std::string>, TIDElement*> _overload;
+  std::string _type;
+  TIDElement *_parent;
 };
 
 class TID {
@@ -24,12 +29,15 @@ class TID {
   std::string GetType(std::string& name);
   void AddFunction(std::string& name, std::vector<std::pair<std::string, std::string>>& formal_parameters);
   std::vector<std::string> GetParameters(std::string& func_name);
-  void AddCast(std::string& type1, std::string& type2, std::string& oper);
-  bool GetCast(std::string& type1, std::string& type2, std::string& oper);
+  void AddCast(std::string& type1, std::string& type2);
+  bool GetCast(std::string& type1, std::string& type2);
+  void AddOverload(std::string& type, std::string& oper, std::string& ret);
   std::string GetTypeOverload(std::string& type1, std::string& type2, std::string& oper);
+  std::string GetMember(std::string& type, std::string& name);
+  std::string GetTypeFunction(std::string& name);
  private:
   std::map<std::string, TIDElement*> _functions;
   std::map<std::string, TIDElement*> _structs;
-  std::map<std::string, std::vector<std::string>> _cast;
+  std::vector<std::pair<std::pair<std::string, std::string>, TIDElement*>> _cast;
   TIDElement *_current_tid;
 };
