@@ -281,6 +281,7 @@ void SyntaxAnalyser::expression() {
         }
         //ask! what did I mean by this my god
         if (_lex[_ind].string == "(") {
+            _tid->GetTypeFunction(_lex[_ind - 1].string);
             parameters();
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("expected \")\"");
@@ -493,11 +494,13 @@ void SyntaxAnalyser::lexpression() {
         gc();
         return;
     }
+    std::string name;
     if (type()) {
         //check if struct exists
         gc();
         if (_lex[_ind].type == "variable") {
-            _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind - 1].string);
+            _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
+            name = _lex[_ind].string;
             def = true;
             gc();
         } else if (_lex[_ind - 1].type == "keyword") {
@@ -519,12 +522,16 @@ void SyntaxAnalyser::lexpression() {
         if (_lex[_ind].type != "variable") {
             throw std::logic_error("method expected");
         }
+        std::string method = _lex[_ind].string;
+        std::string type1 = _tid->GetType(name);
+        _tid->GetMember(type1, method);
         gc();
     }
     if (_lex[_ind].string == "(") {
         if (def) {
             throw std::logic_error("\"=\" expected");
         }
+        _tid->GetTypeFunction(_lex[_ind - 1].string);
         parameters();
         if (_lex[_ind].string != ")") {
             throw std::logic_error("\")\" expected");
@@ -537,7 +544,7 @@ void SyntaxAnalyser::lexpression() {
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        //Check
+        if (_tid->GetType(name) != lex.string) throw std::logic_error("unexpected type");
         return;
     }
     if (_lex[_ind].string == ";") {
