@@ -125,16 +125,21 @@ void SyntaxAnalyser::globalNamespace() {
         gc();
         gc();
         if (_lex[_ind + 2].string == ";") {
+            _tid->AddVariable(_lex[_ind].string, _lex[_ind + 1].string);
             gc();
             globalNamespace();
             return;
         }
         if (_lex[_ind + 2].string == "=") {
+            _tid->AddVariable(_lex[_ind].string, _lex[_ind + 1].string);
+            std::string type = _lex[_ind].string;
             gc();
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-            //Check
+            if (lex.string != type) {
+                throw std::logic_error("trying to put " + lex.string + " into the " + type);
+            }
             globalNamespace();
             return;
         }
@@ -167,14 +172,17 @@ void SyntaxAnalyser::member() {
         return;
     }
     if (type()) {
-        if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");;
+        std::string member_type = _lex[_ind].string;
+        if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "overload") {
             overload();
             member();
             return;
         }
         else if (_lex[_ind + 1].type != "variable") throw std::logic_error("variable expected");
+        std::string member_name = _lex[_ind + 1].type;
         if (_lex[_ind + 2].string == "(") {
+            //how to add member?
             functionDefinition();
             member();
             return;
@@ -201,6 +209,7 @@ void SyntaxAnalyser::member() {
 }
 
 void SyntaxAnalyser::construct() {
+    //blyaaa eshe constructori suka
     if (_lex[_ind].string != "construct") throw std::logic_error("\"construct \" expected");
     gc();
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
@@ -210,26 +219,35 @@ void SyntaxAnalyser::construct() {
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
+    _tid->OpenScope();
     namepace();
+    _tid->CloseScope();
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
     gc();
 }
 
 void SyntaxAnalyser::overload() {
     if (!type()) throw std::logic_error("type of function expected");
+    std::string type1 = _lex[_ind].string;
     gc();
     if (_lex[_ind].string != "overload") throw std::logic_error("\"overload\" expected");
     gc();
     if (_lex[_ind].type != "binary") throw std::logic_error("binary operator expected");
+    std::string operator_ = _lex[_ind].string;
     gc();
     if (_lex[_ind].string != "(") throw std::logic_error("\"( \" expected");
     gc();
+    std::string type2;
+    //how to check second parameter type?
     parameterDef();
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
+    _tid->AddOverload(type1, operator_, type2);
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{ \" expected");
     gc();
+    _tid->OpenScope();
     namepace();
+    _tid->CloseScope();
     if (_lex[_ind].string != "}") throw std::logic_error("\" } \" expected");
     gc();
 }
@@ -253,9 +271,13 @@ void SyntaxAnalyser::expression() {
         if (_lex[_ind].string == ".") {
             gc();
             variable();
+            std::string type_name = _tid->GetType(_lex[_ind - 3].string);
+            expCheck.Process(Lexeme("variable",  _tid->GetMember(type_name, _lex[_ind].string), 0));
         }
-        //method
-        expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
+        else {
+            expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
+        }
+        //ask!
         if (_lex[_ind].string == "(") {
             parameters();
             if (_lex[_ind].string != ")") {
@@ -328,8 +350,13 @@ void SyntaxAnalyser::expression() {
             if (_lex[_ind].string == ".") {
                 gc();
                 variable();
+                std::string type_name = _tid->GetType(_lex[_ind - 3].string);
+                expCheck.Process(Lexeme("variable",  _tid->GetMember(type_name, _lex[_ind].string), 0));
             }
-            //method
+            else {
+                expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
+            }
+            //ask!
             expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
             if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
                 expCheck.Process(_lex[_ind]);
@@ -373,17 +400,21 @@ void SyntaxAnalyser::expression() {
 }
 
 void SyntaxAnalyser::parameters() {
+    //need to access function name
+    std::vector<std::string> parameter_types;
+    int i = 0;
     do {
         gc();
         if (_lex[_ind].string == ")") return;
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        //Check
+        if (lex.string != parameter_types[i]) throw std::logic_error("parameter types don't match");
     } while (_lex[_ind].string == ",");
 }
 
 void SyntaxAnalyser::parameterDef() {
+    //array as a parameter maybe?
     if (_lex[_ind].string == ")") return;
     do {
         if (_lex[_ind - 1].string != "(") gc();
@@ -437,7 +468,7 @@ void SyntaxAnalyser::determinantes() {
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-            //Check
+            //Check, somehow we need to access the function type
         }
         if (_lex[_ind].string != ";") {
             throw std::logic_error("\";\" expected");
@@ -452,6 +483,7 @@ void SyntaxAnalyser::lexpression() {
     if (_lex[_ind].string == "}") return;
     bool def = false;
     if (_lex[_ind].type == "unary") {
+        //unary check
         gc();
         if (_lex[_ind].type != "variable") {
             throw std::logic_error("variable expected");
@@ -460,6 +492,7 @@ void SyntaxAnalyser::lexpression() {
         return;
     }
     if (type()) {
+        //check if struct exists
         gc();
         if (_lex[_ind].type == "variable") {
             _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind - 1].string);
@@ -543,25 +576,33 @@ void SyntaxAnalyser::functionDefinition() {
     if (!type()) {
         throw std::logic_error("type expected");
     }
+    std::string f_type = _lex[_ind].string;
     gc();
     if (_lex[_ind].type != "variable") {
         throw std::logic_error("variable expected");
     }
+    std::string f_name = _lex[_ind].string;
     gc();
     if (_lex[_ind].string != "(") {
         throw std::logic_error("\"(\" expected");
     }
     gc();
+    std::vector<std::pair<std::string, std::string>> formal_parameters;
+    //should we make an array as a parameter?
     parameterDef();
     if (_lex[_ind].string != ")") {
         throw std::logic_error("\")\" expected");
     }
+    //no function type included
+    _tid->AddFunction(f_name, formal_parameters);
     gc();
     if (_lex[_ind].string != "{") {
         throw std::logic_error("\"{\" expected");
     }
     gc();
+    _tid->OpenScope();
     namepace();
+    _tid->CloseScope();
     if (_lex[_ind].string != "}") {
         throw std::logic_error("\"}\" expected");
     }
@@ -570,15 +611,19 @@ void SyntaxAnalyser::functionDefinition() {
 
 void SyntaxAnalyser::type_cast() {
     if (!type()) throw std::logic_error("type expected");
+    std::string type1 = _lex[_ind].string;
     gc();
     if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
     gc();
+    std::string type2 = _lex[_ind].string;
     if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
     gc();
+    if (!_tid->GetCast(type1, type2)) throw std::logic_error("no such cast exists");
 }
 
 void SyntaxAnalyser::type_cast_def() {
     if (!type()) throw std::logic_error("\"type\" expected");
+    std::string cast_type_to = _lex[_ind].string;
     gc();
     if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
     gc();
@@ -586,12 +631,16 @@ void SyntaxAnalyser::type_cast_def() {
     gc();
     if (!type()) throw std::logic_error("type expected");
     gc();
+    std::string cast_type_from = _lex[_ind].string;
     variable();
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
+    _tid->OpenScope();
     namepace();
+    _tid->CloseScope();
+    //problem with return
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
     gc();
 }
@@ -644,12 +693,16 @@ void SyntaxAnalyser::If() {
     expression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
-    //bool check
+    if (lex.string != "bool" && lex.string != "int32" && lex.string != "int64") {
+        throw std::logic_error("bool type expected");
+    }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
+    _tid->OpenScope();
     namepace();
+    _tid->CloseScope();
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
     gc();
     if (_lex[_ind].string != "else") return;
@@ -660,15 +713,19 @@ void SyntaxAnalyser::If() {
             if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
             gc();
             expression();
-            Lexeme lex = expCheck.GetType();
+            Lexeme lex1 = expCheck.GetType();
             expCheck.Clear();
-            //Check
+            if (lex1.string != "bool" && lex1.string != "int32" && lex1.string != "int64") {
+                throw std::logic_error("bool type expected");
+            }
             if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
             gc();
         }
         if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
         gc();
+        _tid->OpenScope();
         namepace();
+        _tid->CloseScope();
         if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
         gc();
     } while (_lex[_ind].string == "else");
@@ -680,12 +737,16 @@ void SyntaxAnalyser::While() {
     expression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
-    //bool check
+    if (lex.string != "bool" && lex.string != "int32" && lex.string != "int64") {
+        throw std::logic_error("bool type expected");
+    }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
+    _tid->OpenScope();
     cycle_namespace();
+    _tid->CloseScope();
 }
 
 void SyntaxAnalyser::dowhile() {
@@ -694,12 +755,16 @@ void SyntaxAnalyser::dowhile() {
     expression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
-    //Check
+    if (lex.string != "bool" && lex.string != "int32" && lex.string != "int64") {
+        throw std::logic_error("bool type expected");
+    }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
+    _tid->OpenScope();
     cycle_namespace();
+    _tid->CloseScope();
 }
 
 void SyntaxAnalyser::For() {
@@ -716,7 +781,9 @@ void SyntaxAnalyser::For() {
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        //Check
+        if (lex.string != "bool" && lex.string != "int32" && lex.string != "int64") {
+            throw std::logic_error("bool type expected");
+        }
         if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
         gc();
         lexpression();
@@ -727,7 +794,9 @@ void SyntaxAnalyser::For() {
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
+    _tid->OpenScope();
     cycle_namespace();
+    _tid->CloseScope();
 }
 
 void SyntaxAnalyser::variable() {
@@ -737,14 +806,16 @@ void SyntaxAnalyser::variable() {
 
 void SyntaxAnalyser::variable_def() {
     if (!type()) throw std::logic_error("variable name expected");
+    std::string var_type = _lex[_ind].string;
     gc();
+    std::string var_name = _lex[_ind].string;
     variable();
     if (_lex[_ind].string != "=") return;
     gc();
     expression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
-    //Check
+    if (lex.string != var_type) throw std::logic_error("trying to put " + lex.string + " into " + var_type);
 }
 
 void SyntaxAnalyser::string() {
@@ -765,14 +836,18 @@ void SyntaxAnalyser::array_def() {
     }
     gc();
     if (!type()) throw std::logic_error("type expected");
+    //add array
+    std::string arr_type = _lex[_ind].string;
     gc();
+    std::string arr_name = _lex[_ind].string;
+    _tid->AddVariable(arr_type, arr_name);
     variable();
     if (_lex[_ind].string == "(") {
         gc();
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        //Check
+        if (lex.string != arr_type) throw std::logic_error("trying to put " + lex.string + " into " + arr_type);
         if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
         gc();
     }
