@@ -89,4 +89,14 @@ StructDef* TID::AddStruct(std::string id) {
     return _structs[id] = new StructDef;
 }
 
+void TID::AddGlobal(std::string id, std::string type) {
+    _global->AddVariable(id, type);
+}
 
+void TID::CloseScope() {
+    _current_tid = _current_tid->GetParent();
+}
+
+FunctionDef *StructDef::AddOperator(std::string oper, std::string type) {
+
+}

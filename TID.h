@@ -27,27 +27,36 @@ class FunctionDef : public TIDElement {
 class StructDef : public TIDElement {
  public:
     FunctionDef* AddMethod(std::string id);
+    FunctionDef* AddOperator(std::string oper, std::string type);
     void AddMember(std::string id, std::string type);
     std::string FindMember(std::string id); // returns type of member with this id
     FunctionDef* FindFunction(std::string id);
  private:
   TIDElement *_members;
   std::map<std::string, FunctionDef*> _methods;
+  std::map<std::string, std::vector<std::string>> _overload;
   std::map<std::string, std::string> _operators;
 };
+
+// method for getting overloaded operator type
+
+
 
 class TID {
  public:
   FunctionDef *AddFunction(std::string id);
   StructDef *AddStruct(std::string id);
   std::string GetType(std::string id);
-  void AddGlobal();
+  void AddGlobal(std::string id, std::string type);
   TID();
   void OpenScope();
   void CloseScope();
  private:
   std::map<std::string, FunctionDef *> _functions;
   std::map<std::string, StructDef *> _structs;
+  std::map<std::string, std::string> _cast;
   TIDElement *_global;
   TIDElement *_current_tid;
 };
+
+//
