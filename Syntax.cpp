@@ -462,6 +462,7 @@ void SyntaxAnalyser::lexpression() {
     if (type()) {
         gc();
         if (_lex[_ind].type == "variable") {
+            _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind - 1].string);
             def = true;
             gc();
         } else if (_lex[_ind - 1].type == "keyword") {
