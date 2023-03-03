@@ -163,4 +163,9 @@ std::string TID::GetCurrentReturnType() {
     throw std::logic_error("There is return out of function");
 }
 
-
+void TID::AddStruct(std::string &type) {
+    if (_structs.count(type) != 0) throw std::logic_error("There are two structures with the same names");
+    _structs[type] = new TIDElement;
+    _structs[type] ->SetParent(_current_tid);
+    _current_tid = _structs[type];
+}
