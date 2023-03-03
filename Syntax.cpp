@@ -494,7 +494,7 @@ void SyntaxAnalyser::determinantes() {
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-           if (lex.string != _save_type) throw std::logic_error("incorrect return type");
+           if (lex.string != _tid->GetCurrentReturnType()) throw std::logic_error("incorrect return type");
         }
         if (_lex[_ind].string != ";") {
             throw std::logic_error("\";\" expected");
@@ -686,6 +686,7 @@ void SyntaxAnalyser::print() {
         _lex[_ind].type != "char" && _lex[_ind].type != "number") {
         throw std::logic_error("expression expected");
     }
+    if (_lex[_ind].type == "variable") _tid->GetType(_lex[_ind].string);
     gc();
     if (_lex[_ind].string == ")") {
         gc();
@@ -714,9 +715,11 @@ void SyntaxAnalyser::get() {
 }
 
 void SyntaxAnalyser::input() {
+    _tid->GetType(_lex[_ind].string);
     variable();
     while (_lex[_ind].string == ",") {
         gc();
+        _tid->GetType(_lex[_ind].string);
         variable();
     }
 }
@@ -807,6 +810,7 @@ void SyntaxAnalyser::For() {
     variable_def();
     if (_lex[_ind].string == ":") {
         gc();
+        //array check
         if (_lex[_ind].type != "variable") {
             throw std::logic_error("variable expected");
         }
