@@ -70,12 +70,12 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
             globalNamespaceNoExec();
             return;
         }
+        std::string var_name = _lex[_ind + 1].string;
         gc();
         gc();
-        if (_lex[_ind + 2].string == ";") {
+        if (_lex[_ind].string == ";") {
             gc();
-            gc();
-            gc();
+            _tid->AddVariable(var_type, var_name);
             globalNamespaceNoExec();
             return;
         }
@@ -86,6 +86,7 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
             expCheck.Clear();
             if (var_type != lex.string) throw std::logic_error("unexpected type");
             if (_lex[_ind].string == ";") gc();
+            _tid->AddVariable(var_type, var_name);
             globalNamespaceNoExec();
             return;
         }
@@ -190,6 +191,8 @@ void SyntaxAnalyser::member() {
         std::string member_name = _lex[_ind + 1].type;
         if (_lex[_ind + 2].string == "(") {
             functionDefinition();
+            _tid->AddFunction(member_name, _parameter_def_arr, member_type);
+            _parameter_def_arr.clear();
             member();
             return;
         }
