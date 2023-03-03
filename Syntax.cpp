@@ -421,17 +421,21 @@ void SyntaxAnalyser::parameters() {
 
 void SyntaxAnalyser::parameterDef() {
     //array as a parameter maybe?
+    std::pair<std::string, std::string> par;
     if (_lex[_ind].string == ")") return;
     do {
         if (_lex[_ind - 1].string != "(") gc();
         if (!type()) {
             throw std::logic_error("expected type name");
         }
+        par.first = _lex[_ind].string;
         gc();
         if (_lex[_ind].type != "variable") {
             throw std::logic_error("variable expected");
         }
+        par.second = _lex[_ind].string;
         gc();
+        _parameter_def_arr.push_back(par);
     } while (_lex[_ind].string == ",");
 }
 
@@ -474,7 +478,7 @@ void SyntaxAnalyser::determinantes() {
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-            //Check, somehow we need to access the function type
+           if (lex.string != _save_type) throw std::logic_error("incorrect return type");
         }
         if (_lex[_ind].string != ";") {
             throw std::logic_error("\";\" expected");
@@ -599,22 +603,22 @@ void SyntaxAnalyser::functionDefinition() {
         throw std::logic_error("\"(\" expected");
     }
     gc();
-    std::vector<std::pair<std::string, std::string>> formal_parameters;
-    //should we make an array as a parameter?
     parameterDef();
     if (_lex[_ind].string != ")") {
         throw std::logic_error("\")\" expected");
     }
-    //no function type included
-    _tid->AddFunction(f_name, formal_parameters);
+    _tid->AddFunction(f_name, _parameter_def_arr, f_type);
+    _parameter_def_arr.clear();
     gc();
     if (_lex[_ind].string != "{") {
         throw std::logic_error("\"{\" expected");
     }
     gc();
+    _save_type = f_type;
     _tid->OpenScope();
     namepace();
     _tid->CloseScope();
+    _save_type = "null";
     if (_lex[_ind].string != "}") {
         throw std::logic_error("\"}\" expected");
     }
