@@ -603,6 +603,8 @@ void SyntaxAnalyser::functionDefinition() {
         throw std::logic_error("\"(\" expected");
     }
     gc();
+    std::vector<std::pair<std::string, std::string>> formal_parameters;
+    //should we make an array as a parameter?
     parameterDef();
     if (_lex[_ind].string != ")") {
         throw std::logic_error("\")\" expected");
