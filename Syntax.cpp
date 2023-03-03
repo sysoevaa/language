@@ -300,9 +300,9 @@ void SyntaxAnalyser::expression() {
         else {
             expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
         }
-        //ask! what did I mean by this my god
         if (_lex[_ind].string == "(") {
             _tid->GetTypeFunction(_lex[_ind - 1].string);
+            _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
             parameters();
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("expected \")\"");
@@ -330,6 +330,7 @@ void SyntaxAnalyser::expression() {
     }
 
     if (type()) {
+        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("type does not exist");
         expCheck.Process(_lex[_ind]);
         type_cast();
         expCheck.Process(_lex[_ind - 2]);
@@ -380,7 +381,6 @@ void SyntaxAnalyser::expression() {
             else {
                 expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
             }
-            //ask! ask what??
             expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
             if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
                 expCheck.Process(_lex[_ind]);
@@ -424,8 +424,6 @@ void SyntaxAnalyser::expression() {
 }
 
 void SyntaxAnalyser::parameters() {
-    //need to access function name
-    std::vector<std::string> parameter_types;
     int i = 0;
     do {
         gc();
