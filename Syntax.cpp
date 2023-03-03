@@ -157,7 +157,9 @@ void SyntaxAnalyser::object() {
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
+    _tid->OpenScope();
     member();
+    _tid->CloseScope();
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\"expected");
     gc();
 }
@@ -184,7 +186,6 @@ void SyntaxAnalyser::member() {
         else if (_lex[_ind + 1].type != "variable") throw std::logic_error("variable expected");
         std::string member_name = _lex[_ind + 1].type;
         if (_lex[_ind + 2].string == "(") {
-            //how to add member?
             functionDefinition();
             member();
             return;
@@ -193,6 +194,7 @@ void SyntaxAnalyser::member() {
         gc();
         if (_lex[_ind].string == ";") {
             gc();
+            _tid->AddVariable(member_type, member_name);
             member();
             return;
         }
@@ -202,6 +204,7 @@ void SyntaxAnalyser::member() {
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
             if (lex.string != member_type) throw std::logic_error("unexpected type");
+            _tid->AddVariable(member_type, member_name);
             member();
             return;
         }
