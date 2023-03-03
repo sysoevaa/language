@@ -247,11 +247,11 @@ void SyntaxAnalyser::overload() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"( \" expected");
     gc();
     std::string type2;
-    //how to check second parameter type?
     parameterDef();
     if (_parameter_def_arr.size() != 1) throw std::logic_error("incorrect number of parameters");
+    type2 = _parameter_def_arr[0].first;
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
-    _tid->AddOverload(type1, operator_, ret_type);
+    _tid->AddOverload(type2, operator_, ret_type);
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{ \" expected");
     gc();
