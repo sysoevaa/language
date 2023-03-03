@@ -27,7 +27,8 @@ class TID {
   void CloseScope();
   void AddVariable(std::string& type, std::string& name);
   std::string GetType(std::string& name);
-  void AddFunction(std::string& name, std::vector<std::pair<std::string, std::string>>& formal_parameters, std::string& return_type);
+  void AddFunction(std::string& name, std::vector<std::pair<std::string,
+                   std::string>>& formal_parameters, std::string& return_type);
   std::vector<std::string> GetParameters(std::string& func_name);
   void AddCast(std::string& type1, std::string& type2);
   bool GetCast(std::string& type1, std::string& type2);

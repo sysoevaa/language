@@ -605,8 +605,8 @@ void SyntaxAnalyser::functionDefinition() {
     if (_lex[_ind].string != ")") {
         throw std::logic_error("\")\" expected");
     }
-    //no function type included
-    _tid->AddFunction(f_name, formal_parameters);
+    //no function type included - done
+    _tid->AddFunction(f_name, formal_parameters, f_type);
     gc();
     if (_lex[_ind].string != "{") {
         throw std::logic_error("\"{\" expected");
