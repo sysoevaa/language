@@ -55,6 +55,7 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
     }
     if (type()) {
         std::string var_type = _lex[_ind].string;
+        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
         if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "cast") {
             type_cast_def();
@@ -111,6 +112,7 @@ void SyntaxAnalyser::globalNamespace() {
         return;
     }
     if (type()) {
+        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
         if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "cast") {
             type_cast_def();
@@ -176,6 +178,7 @@ void SyntaxAnalyser::member() {
         return;
     }
     if (type()) {
+        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
         std::string member_type = _lex[_ind].string;
         if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "overload") {
@@ -233,7 +236,8 @@ void SyntaxAnalyser::construct() {
 
 void SyntaxAnalyser::overload() {
     if (!type()) throw std::logic_error("type of function expected");
-    std::string type1 = _lex[_ind].string;
+    if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
+    std::string ret_type = _lex[_ind].string;
     gc();
     if (_lex[_ind].string != "overload") throw std::logic_error("\"overload\" expected");
     gc();
@@ -245,8 +249,9 @@ void SyntaxAnalyser::overload() {
     std::string type2;
     //how to check second parameter type?
     parameterDef();
+    if (_parameter_def_arr.size() != 1) throw std::logic_error("incorrect number of parameters");
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
-    _tid->AddOverload(type1, operator_, type2);
+    _tid->AddOverload(type1, operator_, ret_type);
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{ \" expected");
     gc();
@@ -415,12 +420,12 @@ void SyntaxAnalyser::parameters() {
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        if (lex.string != parameter_types[i]) throw std::logic_error("parameter types don't match");
+        if (lex.string != _parameter_arr[i]) throw std::logic_error("parameter types does not match");
     } while (_lex[_ind].string == ",");
 }
 
 void SyntaxAnalyser::parameterDef() {
-    //array as a parameter maybe?
+    _parameter_def_arr.clear();
     std::pair<std::string, std::string> par;
     if (_lex[_ind].string == ")") return;
     do {
@@ -503,7 +508,7 @@ void SyntaxAnalyser::lexpression() {
     }
     std::string name;
     if (type()) {
-        //check if struct exists
+        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("non existing type");
         gc();
         if (_lex[_ind].type == "variable") {
             _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
