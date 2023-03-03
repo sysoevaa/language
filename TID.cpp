@@ -70,9 +70,10 @@ std::string TID::GetType(std::string &name) {
     return ptr->GetType(name);
 }
 
-void TID::AddFunction(std::string &name, std::vector<std::pair<std::string, std::string>> &formal_parameters) {
+void TID::AddFunction(std::string &name, std::vector<std::pair<std::string, std::string>> &formal_parameters, std::string& return_type) {
     if (_functions.count(name) != 0) throw std::logic_error("There are two functions with the same name");
     _functions[name] = new TIDElement;
+    _functions[name]->SetType(return_type);
     for (auto& [a, b] : formal_parameters) {
         _functions[name]->AddVariable(a, b);
     }
@@ -127,3 +128,39 @@ std::string TID::GetTypeFunction(std::string &name) {
     if (_functions.count(name) == 0) throw std::logic_error("There is no function with used name");
     return _functions[name]->GetType("smth", true);
 }
+
+bool TID::IsTypeExist(std::string &type) {
+    if (type == "char") {
+        return true;
+    }
+    if (type == "int32") {
+        return true;
+    }
+    if (type == "int64") {
+        return true;
+    }
+    if (type == "float32") {
+        return true;
+    }
+    if (type == "float64") {
+        return true;
+    }
+    if (type == "string") {
+        return true;
+    }
+    if (type == "bool") {
+        return true;
+    }
+    return _structs.count(type);
+}
+
+std::string TID::GetCurrentReturnType() {
+    auto ptr = _current_tid;
+    while (ptr && ptr->GetType("smth", true) == "not a function") {
+        ptr = ptr->GetParent();
+    }
+    if (ptr) return ptr->GetType("smth", true);
+    throw std::logic_error("There is return out of function");
+}
+
+

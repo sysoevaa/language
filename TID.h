@@ -27,7 +27,7 @@ class TID {
   void CloseScope();
   void AddVariable(std::string& type, std::string& name);
   std::string GetType(std::string& name);
-  void AddFunction(std::string& name, std::vector<std::pair<std::string, std::string>>& formal_parameters);
+  void AddFunction(std::string& name, std::vector<std::pair<std::string, std::string>>& formal_parameters, std::string& return_type);
   std::vector<std::string> GetParameters(std::string& func_name);
   void AddCast(std::string& type1, std::string& type2);
   bool GetCast(std::string& type1, std::string& type2);
@@ -35,6 +35,8 @@ class TID {
   std::string GetTypeOverload(std::string& type1, std::string& type2, std::string& oper);
   std::string GetMember(std::string& type, std::string& name);
   std::string GetTypeFunction(std::string& name);
+  bool IsTypeExist(std::string& type);
+  std::string GetCurrentReturnType();
  private:
   std::map<std::string, TIDElement*> _functions;
   std::map<std::string, TIDElement*> _structs;
