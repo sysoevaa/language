@@ -239,28 +239,38 @@ void SyntaxAnalyser::construct() {
 
 void SyntaxAnalyser::overload() {
     if (!type()) throw std::logic_error("type of function expected");
+
     if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
+
     std::string ret_type = _lex[_ind].string;
     gc();
+
     if (_lex[_ind].string != "overload") throw std::logic_error("\"overload\" expected");
     gc();
+
     if (_lex[_ind].type != "binary") throw std::logic_error("binary operator expected");
     std::string operator_ = _lex[_ind].string;
     gc();
+
     if (_lex[_ind].string != "(") throw std::logic_error("\"( \" expected");
     gc();
+
     std::string type2;
     parameterDef();
     if (_parameter_def_arr.size() != 1) throw std::logic_error("incorrect number of parameters");
     type2 = _parameter_def_arr[0].first;
+
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     _tid->AddOverload(type2, operator_, ret_type);
     gc();
+
     if (_lex[_ind].string != "{") throw std::logic_error("\"{ \" expected");
     gc();
+
     _tid->OpenScope();
     namepace();
     _tid->CloseScope();
+
     if (_lex[_ind].string != "}") throw std::logic_error("\" } \" expected");
     gc();
 }
