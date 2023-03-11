@@ -849,6 +849,12 @@ void SyntaxAnalyser::variable_def() {
     std::string var_name = _lex[_ind].string;
     variable();
     _tid->AddVariable(var_type, var_name);
+    if (_lex[_ind].string == "(") {
+        _parameter_arr = _tid->GetParameters(var_type);
+        parameters();
+        if (_lex[_ind].string != ")") throw std::logic_error(") expected");
+        return;
+    }
     if (_lex[_ind].string != "=") return;
     gc();
     expression();
