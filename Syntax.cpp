@@ -555,6 +555,7 @@ void SyntaxAnalyser::lexpression() {
             throw std::logic_error("\"=\" expected");
         }
         _tid->GetTypeFunction(_lex[_ind - 1].string);
+        _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
         parameters();
         if (_lex[_ind].string != ")") {
             throw std::logic_error("\")\" expected");
