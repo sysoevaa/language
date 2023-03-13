@@ -5,7 +5,7 @@
 
 class SyntaxAnalyser {
  public:
-  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID) {}
+  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID), expCheck(_tid) {}
 
   void gc();
 

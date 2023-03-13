@@ -15,4 +15,4 @@ private:
     void Push(Lexeme lexeme);
     int GetPriority();
     void Merge();
-}
+};
