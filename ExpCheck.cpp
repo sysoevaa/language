@@ -111,6 +111,6 @@ void ExpCheck::TailMerge() {
     }
 }
 
-void Clear() {
+void ExpCheck::Clear() {
     _stack.clear();
 }
