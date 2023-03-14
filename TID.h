@@ -39,7 +39,7 @@ class TID {
   std::string GetTypeOverload(std::string& type1, std::string& type2, std::string& oper);
   std::string GetMember(std::string& type, std::string& name);
   std::string GetTypeFunction(std::string& name);
-  bool IsTypeExist(std::string& type);
+  int IsTypeExist(std::string& type);
   std::string GetCurrentReturnType();
  private:
   std::map<std::string, TIDElement*> _functions;

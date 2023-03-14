@@ -634,7 +634,7 @@ void SyntaxAnalyser::functionDefinition() {
     }
     gc();
     _save_type = f_type;
-    _tid->OpenScope();
+    //_tid->OpenScope();
     namepace();
     _tid->CloseScope();
     _save_type = "null";
@@ -877,16 +877,18 @@ void SyntaxAnalyser::string() {
 }
 
 void SyntaxAnalyser::array_def() {
+    std::string type_name;
     if (_lex[_ind].string != "array")  {
         throw std::logic_error("\"array\" expected");
     }
+    type_name += _lex[_ind].string;
     gc();
     if (!type()) throw std::logic_error("type expected");
-    //add array
     std::string arr_type = _lex[_ind].string;
     gc();
     std::string arr_name = _lex[_ind].string;
-    _tid->AddVariable(arr_type, arr_name);
+    auto add_name = "array " + arr_type;
+    _tid->AddVariable(add_name, arr_name);
     variable();
     if (_lex[_ind].string == "(") {
         gc();

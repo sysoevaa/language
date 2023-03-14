@@ -19,7 +19,7 @@ std::string TIDElement::GetType(std::string id, bool func) {
     return _id[id];
 }
 
-void TIDElement::AddVariable(std::string id, std::string type) {
+void TIDElement::AddVariable(std::string type, std::string id) {
     _id[id] = type;
 }
 
@@ -67,16 +67,20 @@ std::string TID::GetType(std::string &name) {
     while (ptr && ptr->GetType(name) == "undefined variable") {
         ptr = ptr->GetParent();
     }
+    if (!ptr) return "undefined variable";
     return ptr->GetType(name);
 }
 
 void TID::AddFunction(std::string &name, std::vector<std::pair<std::string, std::string>> &formal_parameters, std::string& return_type) {
     if (_functions.count(name) != 0) throw std::logic_error("There are two functions with the same name");
     _functions[name] = new TIDElement;
+    _functions[name] ->SetParent(_current_tid);
+    _current_tid = _functions[name];
     _functions[name]->SetType(return_type);
     for (auto& [a, b] : formal_parameters) {
         _functions[name]->AddVariable(a, b);
     }
+    //_current_tid = _functions[name];
 }
 
 std::vector<std::string> TID::GetParameters(std::string &func_name) {
@@ -115,7 +119,43 @@ void TID::AddOverload(std::string& type, std::string& oper, std::string& ret){
 }
 
 std::string TID::GetTypeOverload(std::string &type1, std::string &type2, std::string &oper) {
-    if (_functions.count(type1) == 0) throw std::logic_error("No such overload function");
+    if (IsTypeExist(type1) == 2 && IsTypeExist(type2) == 2) {
+        if (type1 == "int32" || type1 == "int64") {
+            if (type2 == "bool" || type2 == "int32" || type2 == "char") return type1;
+            if (type1 == "int32" || type2 == "int64" ||
+            type2 == "float32" || type2 == "float64") return type2;
+            if (type2 == "string") throw std::logic_error("There is no operator " +
+                    oper + " for types " + type1 + " and " + type2);
+        }
+        if (type1 == "string") {
+            if (type2 != "char" && oper != "+") throw std::logic_error("There is no operator " +
+                    oper + " for types " + type1 + " and " + type2);
+            return "string";
+        }
+        if (type1 == "char") {
+            if (type2 == "string") throw std::logic_error("There is no operator " +
+                    oper + " for types " + type1 + " and " + type2);
+            if (type2 == "float32" || type2 == "float64") return type2;
+            return "char";
+        }
+        if (type1 == "bool") {
+            if (type2 == "bool") {
+                if (oper == "&&" || oper == "||") return "bool";
+                return "int32";
+            }
+            if (type2 == "string") throw std::logic_error("There is no operator " +
+                    oper + " for types " + type1 + " and " + type2);
+            return type2;
+        }
+        if (type1 == "float32" || type1 == "float64") {
+            if (type2 == "string")
+                throw std::logic_error("There is no operator " +
+                    oper + " for types " + type1 + " and " + type2);
+            return type1;
+        }
+    }
+    if (_functions.count(type1) == 0) throw std::logic_error("There is no operator " +
+    oper + " for types " + type1 + " and " + type2);
     return _functions[type1]->GetOverloadType(type2, oper);
 }
 
@@ -129,27 +169,27 @@ std::string TID::GetTypeFunction(std::string &name) {
     return _functions[name]->GetType("smth", true);
 }
 
-bool TID::IsTypeExist(std::string &type) {
+int TID::IsTypeExist(std::string &type) {
     if (type == "char") {
-        return true;
+        return 2;
     }
     if (type == "int32") {
-        return true;
+        return 2;
     }
     if (type == "int64") {
-        return true;
+        return 2;
     }
     if (type == "float32") {
-        return true;
+        return 2;
     }
     if (type == "float64") {
-        return true;
+        return 2;
     }
     if (type == "string") {
-        return true;
+        return 2;
     }
     if (type == "bool") {
-        return true;
+        return 2;
     }
     return _structs.count(type);
 }
