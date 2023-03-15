@@ -307,7 +307,7 @@ void SyntaxAnalyser::expression() {
             gc();
             variable();
             std::string type_name = _tid->GetType(_lex[_ind - 3].string);
-            expCheck.Process(Lexeme("variable",  _tid->GetMember(type_name, _lex[_ind].string), 0));
+            expCheck.Process(Lexeme("variable",  _tid->GetMember(type_name, _lex[_ind - 1].string), 0));
             if (_lex[_ind].string == "(") {
                 _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
                 parameters();
