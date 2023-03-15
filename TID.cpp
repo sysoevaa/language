@@ -67,7 +67,7 @@ std::string TID::GetType(std::string &name) {
     while (ptr && ptr->GetType(name) == "undefined variable") {
         ptr = ptr->GetParent();
     }
-    if (!ptr) return "undefined variable";
+    if (!ptr) throw std::logic_error("using undefined variable");
     return ptr->GetType(name);
 }
 
@@ -112,8 +112,9 @@ bool TID::GetCast(std::string &type1, std::string &type2) {
     return false;
 }
 
-void TID::AddOverload(std::string& type, std::string& oper, std::string& ret){
+void TID::AddOverload(std::string& id, std::string& type, std::string& oper, std::string& ret){
     auto ptr = _current_tid->AddOverload(type, oper, ret);
+    ptr->AddVariable(type, id);
     ptr->SetParent(_current_tid);
     _current_tid = ptr;
 }
@@ -169,7 +170,7 @@ std::string TID::GetTypeFunction(std::string &name) {
     return _functions[name]->GetType("smth", true);
 }
 
-int TID::IsTypeExist(std::string &type) {
+int TID::IsTypeExist(std::string type) {
     if (type == "char") {
         return 2;
     }
@@ -191,7 +192,8 @@ int TID::IsTypeExist(std::string &type) {
     if (type == "bool") {
         return 2;
     }
-    return _structs.count(type);
+    if (_structs.find(type) == _structs.end()) return 0;
+    return 1;
 }
 
 std::string TID::GetCurrentReturnType() {

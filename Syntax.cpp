@@ -157,10 +157,11 @@ void SyntaxAnalyser::object() {
     if (_lex[_ind].string != "struct") throw std::logic_error("\"struct\" expected");
     gc();
     if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
+    _tid->AddStruct(_lex[_ind].string);
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
-    _tid->OpenScope();
+   // _tid->OpenScope();
     member();
     _tid->CloseScope();
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\"expected");
@@ -179,7 +180,7 @@ void SyntaxAnalyser::member() {
         return;
     }
     if (type()) {
-        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
+        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("type does not exist");
         std::string member_type = _lex[_ind].string;
         if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "overload") {
@@ -188,7 +189,7 @@ void SyntaxAnalyser::member() {
             return;
         }
         else if (_lex[_ind + 1].type != "variable") throw std::logic_error("variable expected");
-        std::string member_name = _lex[_ind + 1].type;
+        std::string member_name = _lex[_ind + 1].string;
         if (_lex[_ind + 2].string == "(") {
             functionDefinition();
             _tid->AddFunction(member_name, _parameter_def_arr, member_type);
@@ -261,7 +262,7 @@ void SyntaxAnalyser::overload() {
     type2 = _parameter_def_arr[0].first;
 
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
-    _tid->AddOverload(type2, operator_, ret_type);
+    _tid->AddOverload(_parameter_def_arr[0].second, type2, operator_, ret_type);
     gc();
 
     if (_lex[_ind].string != "{") throw std::logic_error("\"{ \" expected");

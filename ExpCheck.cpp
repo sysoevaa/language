@@ -91,7 +91,7 @@ void ExpCheck::Merge() {
     }
 
     std::string type1 = _stack[_stack.size() - 1].string, type2 = _stack[_stack.size() - 3].string;
-    std::string oper = _stack[_stack.size() - 1].string;
+    std::string oper = _stack[_stack.size() - 2].string;
 
     Lexeme lex("variable", _tid->GetTypeOverload(type1, type2, oper), 0);
 

@@ -34,12 +34,12 @@ class TID {
   std::vector<std::string> GetParameters(std::string& func_name);
   void AddCast(std::string& type1, std::string& type2);
   bool GetCast(std::string& type1, std::string& type2);
-  void AddOverload(std::string& type, std::string& oper, std::string& ret);
+  void AddOverload(std::string& id, std::string& type, std::string& oper, std::string& ret);
   void AddStruct(std::string& type);
   std::string GetTypeOverload(std::string& type1, std::string& type2, std::string& oper);
   std::string GetMember(std::string& type, std::string& name);
   std::string GetTypeFunction(std::string& name);
-  int IsTypeExist(std::string& type);
+  int IsTypeExist(std::string type);
   std::string GetCurrentReturnType();
  private:
   std::map<std::string, TIDElement*> _functions;

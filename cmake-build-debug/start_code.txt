@@ -1,12 +1,27 @@
-float64 g(float64 a, int32 b) {
-    return 2;
+struct BigInt {
+    array int32 num;
+    int32 n;
+
+    BigInt overload + (BigInt b) {
+        array int32 ans;
+        int32 len = n;
+        if (b.n > n) {
+            len = b.n;
+        }
+        for (int32 i = 0; i < n; ++i) {
+            ans[i] = num[i] + b[i];
+        }
+        BigInt ret;
+        ret.n = n;
+        ret.num = ans;
+        return ret;
+    }
 }
 
 exec int32 foo() {
-    int32 b;
-    int32 c = a + b;
-    float64 a_c;
-    float64 a = 1 + 2;
-    float64 b = a + (2 - 3) / 4 + g(a_c, b_c);
-    float64 c = a + b;
+    int32 n;
+    get(n);
+    BigInt b;
+    BigInt a;
+    BigInt c = a + b;
 }
