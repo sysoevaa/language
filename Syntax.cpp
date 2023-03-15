@@ -276,6 +276,17 @@ void SyntaxAnalyser::overload() {
 }
 
 void SyntaxAnalyser::expression() {
+    if (_lex[_ind].type == "number") {
+        std::string type_n = "float64";
+        expCheck.Process(Lexeme("variable", type_n, 0));
+        gc();
+        if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+            expCheck.Process(_lex[_ind]);
+            gc();
+            expression();
+        }
+        return;
+    }
     if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
         gc();
         if (_lex[_ind].string == "cast") {
@@ -296,18 +307,27 @@ void SyntaxAnalyser::expression() {
             variable();
             std::string type_name = _tid->GetType(_lex[_ind - 3].string);
             expCheck.Process(Lexeme("variable",  _tid->GetMember(type_name, _lex[_ind].string), 0));
+            if (_lex[_ind].string == "(") {
+                _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
+                parameters();
+                if (_lex[_ind].string != ")") {
+                    throw std::logic_error("expected \")\"");
+                }
+                gc();
+            }
         }
-        else {
-            expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
-        }
-        if (_lex[_ind].string == "(") {
-            _tid->GetTypeFunction(_lex[_ind - 1].string);
+        else if (_lex[_ind].string == "(") {
+            std::string type_f = _tid->GetTypeFunction(_lex[_ind - 1].string);
             _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
+            expCheck.Process(Lexeme("variable", type_f, 0));
             parameters();
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("expected \")\"");
             }
             gc();
+        }
+        else {
+            expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
         }
 
         if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
@@ -428,10 +448,14 @@ void SyntaxAnalyser::parameters() {
     do {
         gc();
         if (_lex[_ind].string == ")") return;
+        std::vector<Lexeme> stack = expCheck.GetStack();
+        expCheck.Clear();
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        if (lex.string != _parameter_arr[i]) throw std::logic_error("parameter types does not match");
+        expCheck.SetStack(stack);
+        if (lex.string != _parameter_arr[i]) throw std::logic_error("parameter types do not match");
+        ++i;
     } while (_lex[_ind].string == ",");
 }
 

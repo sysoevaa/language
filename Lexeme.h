@@ -46,7 +46,7 @@ class Analyser {
                   }
                   if (i == string.size()) divided.emplace_back("ERR", "Err", -1);
               }
-              for (; i < string.size() && (isLetter(string[i]) || isNumber(string[i])); ++i) {
+              for (; i < string.size() && (isLetter(string[i]) || isNumber(string[i]) || string[i] == '_'); ++i) {
                   lexeme_string += string[i];
               }
               if (type == 1) {

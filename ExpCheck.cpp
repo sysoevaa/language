@@ -64,9 +64,9 @@ int ExpCheck::GetPriority() {
 
 void ExpCheck::Merge() {
 
-    if (_stack[_stack.size() - 2].type == "variable") {
+    /*if (_stack[_stack.size() - 2].type == "variable") {
         return;
-    }
+    }*/
 
     if (_stack[_stack.size() - 1].string == ")" || _stack[_stack.size() - 1].string == "]") {
         _stack.pop_back();
@@ -113,4 +113,12 @@ void ExpCheck::TailMerge() {
 
 void ExpCheck::Clear() {
     _stack.clear();
+}
+
+std::vector<Lexeme> ExpCheck::GetStack() {
+    return _stack;
+}
+
+void ExpCheck::SetStack(std::vector<Lexeme> &stack) {
+    _stack = stack;
 }

@@ -1,5 +1,12 @@
+float64 g(float64 a, int32 b) {
+    return 2;
+}
+
 exec int32 foo() {
-    int32 a;
     int32 b;
     int32 c = a + b;
+    float64 a_c;
+    float64 a = 1 + 2;
+    float64 b = a + (2 - 3) / 4 + g(a_c, b_c);
+    float64 c = a + b;
 }
