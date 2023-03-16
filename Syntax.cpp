@@ -544,16 +544,21 @@ void SyntaxAnalyser::lexpression() {
     }
     std::string name;
     if (type()) {
-        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("non existing type");
+        //if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("non existing type");
         gc();
         if (_lex[_ind].type == "variable") {
+            if (!_tid->IsTypeExist(_lex[_ind - 1].string)) throw std::logic_error("non existing type");
             _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
             name = _lex[_ind].string;
             def = true;
             gc();
-        } else if (_lex[_ind - 1].type == "keyword") {
+        } else if (_tid->IsTypeExist(_lex[_ind - 1].string)) {
             throw std::logic_error("variable name expected");
         }
+        else {
+            name = _lex[_ind].string;
+        }
+        //} else if (_lex[_ind - 1].type == "keyword") {
     } else {
         throw std::logic_error("name expected");
     }
@@ -566,6 +571,7 @@ void SyntaxAnalyser::lexpression() {
         gc();
     }
     if (_lex[_ind].string == ".") {
+        if (def) throw std::logic_error("\"=\" expected");
         gc();
         if (_lex[_ind].type != "variable") {
             throw std::logic_error("method expected");
@@ -599,7 +605,7 @@ void SyntaxAnalyser::lexpression() {
     if (_lex[_ind].string == ";") {
         return;
     }
-    throw std::logic_error("unexpected symbol");
+    throw std::logic_error("expected action");
 
 }
 

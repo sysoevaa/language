@@ -1,4 +1,4 @@
-struct BigInt {
+/*struct BigInt {
     array int32 num;
     int32 n;
 
@@ -16,10 +16,11 @@ struct BigInt {
         ret.num = ans;
         return ret;
     }
-}
+}*/
 
 exec int32 foo() {
     int32 n;
+    n = 1;
     get(n);
     BigInt b;
     BigInt a;
