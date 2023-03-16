@@ -556,7 +556,7 @@ void SyntaxAnalyser::lexpression() {
             throw std::logic_error("variable name expected");
         }
         else {
-            name = _lex[_ind].string;
+            name = _lex[_ind - 1].string;
         }
         //} else if (_lex[_ind - 1].type == "keyword") {
     } else {
@@ -599,7 +599,8 @@ void SyntaxAnalyser::lexpression() {
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        if (_tid->GetType(name) != lex.string) throw std::logic_error("unexpected type");
+        if (_tid->GetType(name) != lex.string) throw std::logic_error("trying to put " + lex.string + " into " +
+        _tid->GetType(name));
         return;
     }
     if (_lex[_ind].string == ";") {
