@@ -507,7 +507,7 @@ void SyntaxAnalyser::determinantes() {
         }
         gc();
     } else if (_lex[_ind].string == "get") {
-        gc();
+        //gc();
         get();
         if (_lex[_ind].string != ";") {
             throw std::logic_error("\";\" expected");
@@ -569,6 +569,9 @@ void SyntaxAnalyser::lexpression() {
     if (_lex[_ind].string == "[") {
         gc();
         expression();
+        Lexeme lex = expCheck.GetType();
+        if (lex.string != "int32" || lex.string != "int64") std::logic_error("integer expected");
+        expCheck.Clear();
         //if (_lex[_ind].type != "number" || _lex[_ind].type != "variable") throw std::logic_error("index expected");
         //gc();
         if (_lex[_ind].string != "]") throw std::logic_error("\"]\" expected");
@@ -749,7 +752,11 @@ void SyntaxAnalyser::print() {
 void SyntaxAnalyser::get() {
     if (_lex[_ind].string != "get") throw std::logic_error("\"get\" expected");
     gc();
+    if (_lex[_ind].string != "(") throw std::logic_error("( expected");
+    gc();
     input();
+    if (_lex[_ind].string != ")") throw std::logic_error("( expected");
+    gc();
 }
 
 void SyntaxAnalyser::input() {

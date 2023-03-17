@@ -19,7 +19,7 @@ struct BigInt {
 }
 
 exec int32 foo() {
-    int32 n;
+    float64 n;
     n = 1;
     get(n);
     BigInt b;
