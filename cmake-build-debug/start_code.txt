@@ -8,8 +8,8 @@ struct BigInt {
         if (b.n > n) {
             len = b.n;
         }
-        for (float64 i = 0; i < n; ++i) {
-            ans[i] = num[i] + b[i];
+        for (int32 i; i < n; ++i) {
+            /*ans[i] = num[i] + b[i];*/
         }
         BigInt ret;
         ret.n = n;

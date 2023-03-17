@@ -543,6 +543,7 @@ void SyntaxAnalyser::lexpression() {
         return;
     }
     std::string name;
+    std::string type1;
     if (type()) {
         //if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("non existing type");
         gc();
@@ -550,6 +551,7 @@ void SyntaxAnalyser::lexpression() {
             if (!_tid->IsTypeExist(_lex[_ind - 1].string)) throw std::logic_error("non existing type");
             _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
             name = _lex[_ind].string;
+            type1 = _lex[_ind - 1].string;
             def = true;
             gc();
         } else if (_tid->IsTypeExist(_lex[_ind - 1].string)) {
@@ -557,6 +559,7 @@ void SyntaxAnalyser::lexpression() {
         }
         else {
             name = _lex[_ind - 1].string;
+            type1 = _tid->GetType(name);
         }
         //} else if (_lex[_ind - 1].type == "keyword") {
     } else {
@@ -565,8 +568,9 @@ void SyntaxAnalyser::lexpression() {
     //gc();
     if (_lex[_ind].string == "[") {
         gc();
-        if (_lex[_ind].type != "number" || _lex[_ind].type != "variable") throw std::logic_error("index expected");
-        gc();
+        expression();
+        //if (_lex[_ind].type != "number" || _lex[_ind].type != "variable") throw std::logic_error("index expected");
+        //gc();
         if (_lex[_ind].string != "]") throw std::logic_error("\"]\" expected");
         gc();
     }
@@ -577,8 +581,9 @@ void SyntaxAnalyser::lexpression() {
             throw std::logic_error("method expected");
         }
         std::string method = _lex[_ind].string;
-        std::string type1 = _tid->GetType(name);
-        _tid->GetMember(type1, method);
+        type1 = _tid->GetMember(type1, method);
+        //_tid->GetMember(type1, method);
+        //name = type1;
         gc();
     }
     if (_lex[_ind].string == "(") {
@@ -599,7 +604,7 @@ void SyntaxAnalyser::lexpression() {
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        if (_tid->GetType(name) != lex.string) throw std::logic_error("trying to put " + lex.string + " into " +
+        if (type1 != lex.string) throw std::logic_error("trying to put " + lex.string + " into " +
         _tid->GetType(name));
         return;
     }
