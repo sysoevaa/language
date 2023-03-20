@@ -1,6 +1,7 @@
 #include "Lexeme.h"
 #include "ExpCheck.h"
 #include "TID.h"
+#include <iostream>
 
 
 class SyntaxAnalyser {

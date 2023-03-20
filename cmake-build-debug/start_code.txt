@@ -1,4 +1,4 @@
-struct BigInt {
+/*struct BigInt {
     array int32 num;
     int32 n;
 
@@ -9,7 +9,7 @@ struct BigInt {
             len = b.n;
         }
         for (int32 i; i < n; ++i) {
-            /*ans[i] = num[i] + b[i];*/
+            ans[i] = num[i] + b[i];
         }
         BigInt ret;
         ret.n = n;
@@ -25,13 +25,9 @@ exec int32 foo() {
     BigInt b;
     BigInt a;
     BigInt c = a + b;
-}
+}*/
 
-/* exec int32 af() {
-    float64 v = 1;
-    v = 2;
-    float64 a = 1;
-    a = 2;
-    int64 b;
-    b = 3;
-} */
+exec int32 af() {
+    array float64 a;
+    a[0] = 1;
+}

@@ -345,6 +345,9 @@ void SyntaxAnalyser::expression() {
             }
             expCheck.Process(_lex[_ind]);
             gc();
+            Lexeme* arr_ch = expCheck.GetLast();
+            arr_ch->string = GetArrayType(arr_ch->string);
+            std::cout << "d" << arr_ch->string;
         }
         expCheck.TailMerge();
         return;
