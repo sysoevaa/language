@@ -210,7 +210,7 @@ int TID::IsTypeExist(std::string type) {
     if (type == "bool") {
         return 2;
     }
-    if (_structs.count(type) == 0) throw std::logic_error("using undefined type");
+    if (_structs.count(type) == 0) return 0;
     return 1;
 }
 

@@ -573,6 +573,8 @@ void SyntaxAnalyser::lexpression() {
     //gc();
     if (_lex[_ind].string == "[") {
         gc();
+        std::vector<Lexeme> stack = expCheck.GetStack();
+        expCheck.Clear();
         expression();
         Lexeme lex = expCheck.GetType();
         if (lex.string != "int32" || lex.string != "int64") std::logic_error("integer expected");
@@ -582,6 +584,7 @@ void SyntaxAnalyser::lexpression() {
         if (_lex[_ind].string != "]") throw std::logic_error("\"]\" expected");
         type1 = GetArrayType(type1);
         gc();
+        expCheck.SetStack(stack);
     }
     if (_lex[_ind].string == ".") {
         if (def) throw std::logic_error("\"=\" expected");
@@ -887,9 +890,13 @@ void SyntaxAnalyser::For() {
         }
         auto arr = _tid->GetType(_lex[_ind].string);
         auto type = GetArrayType(arr);
-        if (IsEqualTypes(type, defined_variable) == "error") {
-            throw std::logic_error("incorrect type of variable");
+        if (!_tid->GetCast(type, defined_variable)) {
+            throw std::logic_error("trying to put " + defined_variable + " into " + type);
         }
+        //_tid->GetCast(type, defined_variable);
+        /*if (IsEqualTypes(type, defined_variable) == "error") {
+            throw std::logic_error("incorrect type of variable");
+        }*/
         gc();
 
     } else if (diff == 2) {
