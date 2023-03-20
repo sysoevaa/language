@@ -27,11 +27,11 @@ exec int32 foo() {
     BigInt c = a + b;
 }
 
-/*exec int32 af() {
+/* exec int32 af() {
     float64 v = 1;
     v = 2;
     float64 a = 1;
     a = 2;
     int64 b;
     b = 3;
-}*/
+} */

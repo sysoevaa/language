@@ -852,13 +852,16 @@ void SyntaxAnalyser::dowhile() {
 void SyntaxAnalyser::For() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
-    variable_def();
+    //variable_def();
+    // here must be var def + differentiation to (var : arr) and (var = .. ; .. ; ..)
     if (_lex[_ind].string == ":") {
         gc();
-        //array check
         if (_lex[_ind].type != "variable") {
             throw std::logic_error("variable expected");
         }
+        auto arr = _tid->GetType(_lex[_ind].string);
+        auto type = GetArrayType(arr);
+        // check var_type == type
     } else if (_lex[_ind].string == ";") {
         gc();
         expression();
@@ -932,6 +935,7 @@ void SyntaxAnalyser::array_def() {
     gc();
     std::string arr_name = _lex[_ind].string;
     auto add_name = "array " + arr_type;
+
     _tid->AddVariable(add_name, arr_name);
     variable();
     if (_lex[_ind].string == "(") {
@@ -973,4 +977,16 @@ void SyntaxAnalyser::cycle_namespace() {
         cycle_namespace();
         return;
     }
+}
+
+std::string SyntaxAnalyser::GetArrayType(std::string &s) {
+    int i = 0;
+    std::string tmp = "array";
+    for (i = 0; i < 5; ++i) {
+        if (tmp[i] != s[i]) throw std::logic_error("array expected");
+    }
+    while (i < s.size() && s[i] == ' ') ++i;
+    std::string type;
+    while (i < s.size()) type += s[i];
+    return type;
 }

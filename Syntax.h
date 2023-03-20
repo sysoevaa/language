@@ -67,15 +67,16 @@ class SyntaxAnalyser {
 
   void cycle_namespace();
 
+  std::string GetArrayType(std::string& s);
+
   Lexeme GetLast() {
       return _lex[_ind];
   }
-
+  TID* _tid;
  private:
   std::vector<Lexeme> _lex;
   int _ind = 0;
   ExpCheck expCheck;
-  TID* _tid;
   std::vector<std::pair<std::string, std::string>> _parameter_def_arr;
   std::vector<std::string> _parameter_arr;
   std::string _save_type = "null";

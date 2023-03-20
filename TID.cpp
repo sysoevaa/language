@@ -155,9 +155,9 @@ std::string TID::GetTypeOverload(std::string &type1, std::string &type2, std::st
             return type1;
         }
     }
-    if (_functions.count(type1) == 0) throw std::logic_error("There is no operator " +
+    if (_structs.count(type1) == 0) throw std::logic_error("There is no operator " +
     oper + " for types " + type1 + " and " + type2);
-    return _functions[type1]->GetOverloadType(type2, oper);
+    return _structs[type1]->GetOverloadType(type2, oper);
 }
 
 std::string TID::GetMember(std::string &type, std::string &name) {
