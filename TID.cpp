@@ -171,6 +171,24 @@ std::string TID::GetTypeFunction(std::string &name) {
 }
 
 int TID::IsTypeExist(std::string type) {
+    int i = 0;
+    std::string tmp = "array";
+    bool is_array = true;
+    for (i = 0; i < 5; ++i) {
+        if (tmp[i] != type[i]) {
+            is_array = false;
+            break;
+        }
+    }
+    if (is_array) {
+        while (i < type.size() && type[i] == ' ') ++i;
+        std::string type1;
+        while (i < type.size()) {
+            type1 += type[i];
+            ++i;
+        }
+        type = type1;
+    }
     if (type == "char") {
         return 2;
     }
