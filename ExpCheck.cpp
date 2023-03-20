@@ -122,3 +122,7 @@ std::vector<Lexeme> ExpCheck::GetStack() {
 void ExpCheck::SetStack(std::vector<Lexeme> &stack) {
     _stack = stack;
 }
+
+Lexeme* ExpCheck::GetLast() {
+    return &_stack[_stack.size() - 1];
+}

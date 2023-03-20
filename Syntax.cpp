@@ -417,6 +417,8 @@ void SyntaxAnalyser::expression() {
                 }
                 expCheck.Process(_lex[_ind]);
                 gc();
+                Lexeme* arr_ch = expCheck.GetLast();
+                arr_ch->string = GetArrayType(arr_ch->string);
             }
             expCheck.TailMerge();
             return;
@@ -575,6 +577,7 @@ void SyntaxAnalyser::lexpression() {
         //if (_lex[_ind].type != "number" || _lex[_ind].type != "variable") throw std::logic_error("index expected");
         //gc();
         if (_lex[_ind].string != "]") throw std::logic_error("\"]\" expected");
+        type1 = GetArrayType(type1);
         gc();
     }
     if (_lex[_ind].string == ".") {
@@ -775,7 +778,8 @@ void SyntaxAnalyser::If() {
     expression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
-    if (lex.string != "bool" && lex.string != "int32" && lex.string != "int64") {
+    std::string b_string = "bool";
+    if (IsEqualTypes(lex.string, b_string) == "error") {
         throw std::logic_error("bool type expected");
     }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
@@ -797,7 +801,7 @@ void SyntaxAnalyser::If() {
             expression();
             Lexeme lex1 = expCheck.GetType();
             expCheck.Clear();
-            if (lex1.string != "bool" && lex1.string != "int32" && lex1.string != "int64") {
+            if (IsEqualTypes(lex.string, b_string) == "error") {
                 throw std::logic_error("bool type expected");
             }
             if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
@@ -819,7 +823,8 @@ void SyntaxAnalyser::While() {
     expression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
-    if (lex.string != "bool" && lex.string != "int32" && lex.string != "int64") {
+    std::string b_string = "bool";
+    if (IsEqualTypes(lex.string, b_string) == "error") {
         throw std::logic_error("bool type expected");
     }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
@@ -837,7 +842,8 @@ void SyntaxAnalyser::dowhile() {
     expression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
-    if (lex.string != "bool" && lex.string != "int32" && lex.string != "int64") {
+    std::string b_string = "bool";
+    if (IsEqualTypes(lex.string, b_string) == "error") {
         throw std::logic_error("bool type expected");
     }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
@@ -868,6 +874,8 @@ void SyntaxAnalyser::For() {
         }
         if (_lex[_ind].string == ":") diff = 1;
         else diff = 2;
+    } else {
+        throw std::logic_error("\";\" expected");
     }
     if (diff == 1) {
         gc();
@@ -886,14 +894,13 @@ void SyntaxAnalyser::For() {
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        if (lex.string != "bool" && lex.string != "int32" && lex.string != "int64") {
+        std::string b_string = "bool";
+        if (IsEqualTypes(lex.string, b_string) == "error") {
             throw std::logic_error("bool type expected");
         }
         if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
         gc();
         lexpression();
-    } else {
-        throw std::logic_error("\";\" expected");
     }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
