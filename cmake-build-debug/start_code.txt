@@ -25,9 +25,18 @@ exec int32 foo() {
     BigInt b;
     BigInt a;
     BigInt c = a + b;
+}
+
+struct Ap {
+    array int32 ans;
+    int32 bubble(float64 cup) {
+
+        return 2;
+    }
 }*/
 
 exec int32 af() {
     array float64 a;
-    a[0] = 1;
+    int32 i = 1;
+    a[0] = a[i] + a[1];
 }

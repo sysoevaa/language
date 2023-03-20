@@ -303,39 +303,9 @@ void SyntaxAnalyser::expression() {
             }
             return;
         }
-        if (_lex[_ind].string == ".") {
-            gc();
-            variable();
-            std::string type_name = _tid->GetType(_lex[_ind - 3].string);
-            expCheck.Process(Lexeme("variable",  _tid->GetMember(type_name, _lex[_ind - 1].string), 0));
-            if (_lex[_ind].string == "(") {
-                _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
-                parameters();
-                if (_lex[_ind].string != ")") {
-                    throw std::logic_error("expected \")\"");
-                }
-                gc();
-            }
-        }
-        else if (_lex[_ind].string == "(") {
-            std::string type_f = _tid->GetTypeFunction(_lex[_ind - 1].string);
-            _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
-            expCheck.Process(Lexeme("variable", type_f, 0));
-            parameters();
-            if (_lex[_ind].string != ")") {
-                throw std::logic_error("expected \")\"");
-            }
-            gc();
-        }
-        else {
-            expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
-        }
-
-        if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
-            expCheck.Process(_lex[_ind]);
-            gc();
-            expression();
-        }
+        bool is_arr = false;
+        auto type1 = _tid->GetType(_lex[_ind - 1].string);
+        expCheck.Process(Lexeme("variable", type1, 0));
         if (_lex[_ind].string == "[") {
             expCheck.Process(_lex[_ind]);
             gc();
@@ -347,8 +317,44 @@ void SyntaxAnalyser::expression() {
             gc();
             Lexeme* arr_ch = expCheck.GetLast();
             arr_ch->string = GetArrayType(arr_ch->string);
-            std::cout << "d" << arr_ch->string;
+            is_arr = true;
+            //std::cout << "d" << arr_ch->string;
         }
+        if (_lex[_ind].string == ".") {
+            gc();
+            variable();
+            Lexeme* member_ch = expCheck.GetLast();
+            member_ch->string = _tid->GetMember(type1, _lex[_ind - 1].string);
+            if (_lex[_ind].string == "(") {
+                _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
+                parameters();
+                if (_lex[_ind].string != ")") {
+                    throw std::logic_error("expected \")\"");
+                }
+                gc();
+            }
+        }
+        else if (_lex[_ind].string == "(") {
+            if (is_arr) throw std::logic_error("bracket can't go there");
+            std::string type_f = _tid->GetTypeFunction(_lex[_ind - 1].string);
+            _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
+            expCheck.Process(Lexeme("variable", type_f, 0));
+            parameters();
+            if (_lex[_ind].string != ")") {
+                throw std::logic_error("expected \")\"");
+            }
+            gc();
+        }
+        else {
+            //expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
+        }
+
+        if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+            expCheck.Process(_lex[_ind]);
+            gc();
+            expression();
+        }
+
         expCheck.TailMerge();
         return;
     }
@@ -524,7 +530,9 @@ void SyntaxAnalyser::determinantes() {
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-           if (lex.string != _tid->GetCurrentReturnType()) throw std::logic_error("incorrect return type");
+            auto return_type = _tid->GetCurrentReturnType();
+           if (!_tid->GetCast(return_type, lex.string)) throw std::logic_error("trying to return " + lex.string +
+           "in " + return_type + " function");
         }
         if (_lex[_ind].string != ";") {
             throw std::logic_error("\";\" expected");
@@ -617,7 +625,7 @@ void SyntaxAnalyser::lexpression() {
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         if (!_tid->GetCast(type1, lex.string)) throw std::logic_error("trying to put " + lex.string + " into " +
-        _tid->GetType(name));
+        type1);
         return;
     }
     if (_lex[_ind].string == ";") {
