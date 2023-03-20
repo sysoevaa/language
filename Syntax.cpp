@@ -613,7 +613,7 @@ void SyntaxAnalyser::lexpression() {
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        if (type1 != lex.string) throw std::logic_error("trying to put " + lex.string + " into " +
+        if (!_tid->GetCast(type1, lex.string)) throw std::logic_error("trying to put " + lex.string + " into " +
         _tid->GetType(name));
         return;
     }
@@ -893,6 +893,16 @@ void SyntaxAnalyser::For() {
         gc();
 
     } else if (diff == 2) {
+        if (_lex[_ind].string == "=") {
+            gc();
+            expression();
+            Lexeme lex1 = expCheck.GetType();
+            expCheck.Clear();
+            if (!_tid->GetCast(defined_variable, lex1.string)) {
+                throw std::logic_error("trying to put " + lex1.string + " into " + defined_variable);
+            }
+        }
+        if (_lex[_ind].string != ";") throw std::logic_error("; expected");
         gc();
         expression();
         Lexeme lex = expCheck.GetType();
