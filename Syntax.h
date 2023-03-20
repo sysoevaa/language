@@ -69,6 +69,8 @@ class SyntaxAnalyser {
 
   std::string GetArrayType(std::string& s);
 
+  std::string IsEqualTypes(std::string& type1, std::string& type2);
+
   Lexeme GetLast() {
       return _lex[_ind];
   }

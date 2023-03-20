@@ -854,15 +854,34 @@ void SyntaxAnalyser::For() {
     gc();
     //variable_def();
     // here must be var def + differentiation to (var : arr) and (var = .. ; .. ; ..)
-    if (_lex[_ind].string == ":") {
+    int diff = 0;
+    std::string defined_variable;
+    if (type()) {
+        gc();
+        if (type()) {
+            _tid->IsTypeExist(_lex[_ind - 1].string);
+            _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
+            defined_variable = _lex[_ind - 1].string;
+            gc();
+        } else {
+            defined_variable = _tid->GetType(_lex[_ind - 1].string);
+        }
+        if (_lex[_ind].string == ":") diff = 1;
+        else diff = 2;
+    }
+    if (diff == 1) {
         gc();
         if (_lex[_ind].type != "variable") {
             throw std::logic_error("variable expected");
         }
         auto arr = _tid->GetType(_lex[_ind].string);
         auto type = GetArrayType(arr);
-        // check var_type == type
-    } else if (_lex[_ind].string == ";") {
+        if (IsEqualTypes(type, defined_variable) == "error") {
+            throw std::logic_error("incorrect type of variable");
+        }
+        gc();
+
+    } else if (diff == 2) {
         gc();
         expression();
         Lexeme lex = expCheck.GetType();
@@ -987,6 +1006,14 @@ std::string SyntaxAnalyser::GetArrayType(std::string &s) {
     }
     while (i < s.size() && s[i] == ' ') ++i;
     std::string type;
-    while (i < s.size()) type += s[i];
+    while (i < s.size()) {
+        type += s[i];
+        ++i;
+    }
     return type;
+}
+
+std::string SyntaxAnalyser::IsEqualTypes(std::string& type1, std::string& type2) {
+    // compare two types and return result type
+    return type1;
 }
