@@ -684,7 +684,7 @@ void SyntaxAnalyser::lexpression() {
         type1);
         return;
     }
-    if (_lex[_ind].string == ";") {s
+    if (_lex[_ind].string == ";") {
         return;
     }
     throw std::logic_error("variable initialisation expected");
