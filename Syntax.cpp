@@ -1059,5 +1059,28 @@ std::string SyntaxAnalyser::GetArrayType(std::string &s) {
 
 std::string SyntaxAnalyser::IsEqualTypes(std::string& type1, std::string& type2) {
     // compare two types and return result type
-    return type1;
+    if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
+        if (type2 == "string") return "error";
+        if (type2 == "char") return type2;
+    }
+    if (type1 == "int32") {
+        return type2;
+    }
+    if (type1 == "int64") {
+        if (type2 == "float32" || type2 == "float64") return "float64";
+        return type1;
+    }
+    if (type1 == "float32") {
+        if (type2 == "int32") return type1;
+        return "float64";
+    }
+    if (type1 == "float64") return type1;
+    if (type1 == "char") {
+        if (type2 != "string") return type2;
+        return "error";
+    }
+    if (type1 == "string") {
+        if (type2 == "char") return type1;
+        return "error";
+    }
 }
