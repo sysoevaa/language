@@ -46,6 +46,7 @@ std::string TIDElement::GetOverloadType(std::string& type, std::string& oper) {
 
 TID::TID() {
     _current_tid = new TIDElement;
+
 }
 
 void TID::OpenScope() {
@@ -157,6 +158,7 @@ std::string TID::GetTypeOverload(std::string &type1, std::string &type2, std::st
             return type1;
         }
     }
+    if (IsTypeExist(type1) != 1) std::swap(type1, type2);
     if (_structs.count(type1) == 0) throw std::logic_error("There is no operator " +
     oper + " for types " + type1 + " and " + type2);
     return _structs[type1]->GetOverloadType(type2, oper);
