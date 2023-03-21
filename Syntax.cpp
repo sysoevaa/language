@@ -10,6 +10,9 @@ bool SyntaxAnalyser::type() {
     if (_lex[_ind].type == "variable") {
         return true;
     }
+    if (_lex[_ind].string == "void") {
+        return true;
+    }
     if (_lex[_ind].string == "char") {
         return true;
     }
@@ -192,8 +195,8 @@ void SyntaxAnalyser::member() {
         std::string member_name = _lex[_ind + 1].string;
         if (_lex[_ind + 2].string == "(") {
             functionDefinition();
-            _tid->AddFunction(member_name, _parameter_def_arr, member_type);
-            _parameter_def_arr.clear();
+            //_tid->AddFunction(member_name, _parameter_def_arr, member_type);
+            //_parameter_def_arr.clear();
             member();
             return;
         }
@@ -532,11 +535,17 @@ void SyntaxAnalyser::determinantes() {
             expCheck.Clear();
             auto return_type = _tid->GetCurrentReturnType();
            if (!_tid->GetCast(return_type, lex.string)) throw std::logic_error("trying to return " + lex.string +
-           "in " + return_type + " function");
+           " in " + return_type + " function");
+        }
+        else {
+            if (_tid->GetCurrentReturnType() != "void") {
+                throw std::logic_error("retrun expression expected in non-void type function");
+            }
         }
         if (_lex[_ind].string != ";") {
             throw std::logic_error("\";\" expected");
         }
+
         gc();
     } else {
         throw std::logic_error("unexpected symbols");

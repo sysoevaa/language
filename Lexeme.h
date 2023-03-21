@@ -156,6 +156,9 @@ class Analyser {
 
  private:
   bool isTypeOne(std::string& string) const{
+      if (string == "void") {
+          return true;
+      }
       if (string == "for") {
           return true;
       }
