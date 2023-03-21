@@ -3,6 +3,7 @@
 TIDElement::TIDElement() {
     _type = "not a function";
     _parent = nullptr;
+    _construct = nullptr;
 }
 
 void TIDElement::SetParent(TIDElement *parent) {
@@ -43,10 +44,17 @@ std::string TIDElement::GetOverloadType(std::string& type, std::string& oper) {
     return _overload[{type, oper}]->GetType("smth", true);
 }
 
+TIDElement* TIDElement::AddConstructor(std::vector<std::pair<std::string, std::string>> &id) {
+    _construct = new TIDElement;
+    for (auto [a, b] : id) {
+        _construct->AddVariable(a, b);
+    }
+    return _construct;
+}
+
 
 TID::TID() {
     _current_tid = new TIDElement;
-
 }
 
 void TID::OpenScope() {
@@ -235,4 +243,10 @@ void TID::AddStruct(std::string &type) {
     _structs[type] = new TIDElement;
     _structs[type] ->SetParent(_current_tid);
     _current_tid = _structs[type];
+}
+
+void TID::AddConstructor(std::vector<std::pair<std::string, std::string>> &id) {
+    auto ptr = _current_tid->AddConstructor(id);
+    ptr->SetParent(_current_tid);
+    _current_tid = ptr;
 }

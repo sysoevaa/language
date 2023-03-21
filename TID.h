@@ -14,12 +14,13 @@ class TIDElement {
   std::map<std::string, std::string> GetId();
   TIDElement* AddOverload(std::string& type, std::string& oper, std::string& ret);
   std::string GetOverloadType(std::string& type, std::string& oper);
-
+  TIDElement* AddConstructor(std::vector<std::pair<std::string, std::string>>& id);
  protected:
   std::map<std::string, std::string> _id; // variable name, type
   std::map<std::pair<std::string, std::string>, TIDElement*> _overload;
   std::string _type;
   TIDElement *_parent;
+  TIDElement* _construct;
 };
 
 class TID {
@@ -36,6 +37,7 @@ class TID {
   bool GetCast(std::string& type1, std::string& type2);
   void AddOverload(std::string& id, std::string& type, std::string& oper, std::string& ret);
   void AddStruct(std::string& type);
+  void AddConstructor(std::vector<std::pair<std::string, std::string>>& id);
   std::string GetTypeOverload(std::string& type1, std::string& type2, std::string& oper);
   std::string GetMember(std::string& type, std::string& name);
   std::string GetTypeFunction(std::string& name);

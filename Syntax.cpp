@@ -234,7 +234,8 @@ void SyntaxAnalyser::construct() {
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
-    _tid->OpenScope();
+    _tid->AddConstructor(_parameter_def_arr);
+    //_tid->OpenScope();
     namepace();
     _tid->CloseScope();
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
