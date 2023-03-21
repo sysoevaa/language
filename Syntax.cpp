@@ -613,8 +613,14 @@ void SyntaxAnalyser::lexpression() {
     //gc();
     if (_lex[_ind].string == "(") {
         if (def) {
-
+            _parameter_arr = _tid->GetParameters(type1);
+            parameters();
             throw std::logic_error("\"=\" expected");
+            if (_lex[_ind].string != ")") {
+                throw std::logic_error("\")\" expected");
+            }
+            gc();
+            return;
         }
         _tid->GetTypeFunction(_lex[_ind - 1].string);
         _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
