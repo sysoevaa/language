@@ -327,8 +327,8 @@ void SyntaxAnalyser::expression() {
         auto type1 = _tid->GetType(_lex[_ind - 1].string);
         expCheck.Process(Lexeme("variable", type1, 0));
 
-        Lexeme* exp_last = expCheck.GetLast();
-        std::cout << "exp_last = " << exp_last->string << "\n";
+        Lexeme exp_last = expCheck.GetLast();
+        std::cout << "exp_last = " << exp_last.string << "\n";
         //array check
         if (_lex[_ind].string == "[") {
             expCheck.Process(_lex[_ind]);
@@ -339,15 +339,17 @@ void SyntaxAnalyser::expression() {
             }
             expCheck.Process(_lex[_ind]);
             gc();
-            std::cout << "exp_last = " << exp_last->string << "\n";
-            exp_last->string = GetArrayType(exp_last->string);
+            std::cout << "exp_last = " << exp_last.string << "\n";
+            expCheck.ChangeLast(GetArrayType(exp_last.string));
+            exp_last = expCheck.GetLast();
         }
 
         while (_lex[_ind].string == ".") {
             gc();
             variable();
             type1 = _tid->GetMember(type1, _lex[_ind - 1].string);
-            exp_last->string = type1;
+            expCheck.ChangeLast(type1);
+            exp_last = expCheck.GetLast();
             if (_lex[_ind].string == "(") {
                 _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
                 parameters();
@@ -366,7 +368,8 @@ void SyntaxAnalyser::expression() {
                 }
                 expCheck.Process(_lex[_ind]);
                 gc();
-                exp_last->string = GetArrayType(exp_last->string);
+                expCheck.ChangeLast(GetArrayType(exp_last.string));
+                exp_last = expCheck.GetLast();
             }
         }
 
@@ -428,7 +431,7 @@ void SyntaxAnalyser::expression() {
         auto type1 = _tid->GetType(_lex[_ind - 1].string);
         expCheck.Process(Lexeme("variable", type1, 0));
 
-        Lexeme* exp_last = expCheck.GetLast();
+        Lexeme exp_last = expCheck.GetLast();
 
         //array check
         if (_lex[_ind].string == "[") {
@@ -440,14 +443,16 @@ void SyntaxAnalyser::expression() {
             }
             expCheck.Process(_lex[_ind]);
             gc();
-            exp_last->string = GetArrayType(exp_last->string);
+            expCheck.ChangeLast(GetArrayType(exp_last.string));
+            exp_last = expCheck.GetLast();
         }
 
         while (_lex[_ind].string == ".") {
             gc();
             variable();
             type1 = _tid->GetMember(type1, _lex[_ind - 1].string);
-            exp_last->string = type1;
+            expCheck.ChangeLast(type1);
+            exp_last = expCheck.GetLast();
             if (_lex[_ind].string == "[") {
                 expCheck.Process(_lex[_ind]);
                 gc();
@@ -457,7 +462,8 @@ void SyntaxAnalyser::expression() {
                 }
                 expCheck.Process(_lex[_ind]);
                 gc();
-                exp_last->string = GetArrayType(exp_last->string);
+                expCheck.ChangeLast(GetArrayType(exp_last.string));
+                exp_last = expCheck.GetLast();
             }
         }
 
