@@ -29,6 +29,7 @@ void ExpCheck::Process(Lexeme lexeme) {
         return;
     }
 
+
     if (lexeme.type == "variable") {
         Push(lexeme);
         return;
