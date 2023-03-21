@@ -29,6 +29,7 @@ void ExpCheck::Process(Lexeme lexeme) {
         return;
     }
 
+
     if (lexeme.type == "variable") {
         Push(lexeme);
         return;
@@ -123,6 +124,10 @@ void ExpCheck::SetStack(std::vector<Lexeme> &stack) {
     _stack = stack;
 }
 
-Lexeme* ExpCheck::GetLast() {
-    return &_stack[_stack.size() - 1];
+Lexeme ExpCheck::GetLast() {
+    return _stack[_stack.size() - 1];
+}
+
+void ExpCheck::ChangeLast(std::string s) {
+    _stack[_stack.size() - 1].string = s;
 }

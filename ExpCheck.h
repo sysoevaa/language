@@ -7,7 +7,8 @@ public:
     ExpCheck(TID* tid) : _tid(tid) { }
     void Process(Lexeme lexeme);
     Lexeme GetType();
-    Lexeme* GetLast();
+    Lexeme GetLast();
+    void ChangeLast(std::string s);
     void TailMerge();
     void Clear();
     std::vector<Lexeme> GetStack();
