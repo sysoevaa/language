@@ -613,6 +613,7 @@ void SyntaxAnalyser::lexpression() {
     //gc();
     if (_lex[_ind].string == "(") {
         if (def) {
+
             throw std::logic_error("\"=\" expected");
         }
         _tid->GetTypeFunction(_lex[_ind - 1].string);
@@ -679,11 +680,11 @@ void SyntaxAnalyser::lexpression() {
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
-        if (!_tid->GetCast(type1, lex.string)) throw std::logic_error("trying to put " + lex.string + " into " +
+        if (IsEqualTypes(type1, lex.string) == "error") throw std::logic_error("trying to put " + lex.string + " into " +
         type1);
         return;
     }
-    if (_lex[_ind].string == ";") {
+    if (_lex[_ind].string == ";") {s
         return;
     }
     throw std::logic_error("variable initialisation expected");
