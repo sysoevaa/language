@@ -948,6 +948,8 @@ void SyntaxAnalyser::dowhile() {
 
 void SyntaxAnalyser::For() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
+
+    _tid->OpenScope();
     gc();
     //variable_def();
     // here must be var def + differentiation to (var : arr) and (var = .. ; .. ; ..)
@@ -1011,7 +1013,7 @@ void SyntaxAnalyser::For() {
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
-    _tid->OpenScope();
+
     cycle_namespace();
     _tid->CloseScope();
 }
