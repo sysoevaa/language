@@ -1076,7 +1076,7 @@ void SyntaxAnalyser::array_def() {
         expCheck.Clear();
         std::string int_type = "int32";
         if (IsEqualTypes(lex.string, int_type) == "error") {
-            throw std::logic_error("trying to put " + lex.string + " into " + arr_type);
+            throw std::logic_error("int type expected");
         }
         if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
         gc();
