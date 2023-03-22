@@ -25,7 +25,13 @@ exec int32 foo() {
     BigInt b;
     BigInt a;
     BigInt c = a + b;
-}*/
+}
+
+Ap cast(int32 moo) {
+    Ap k;
+    return k;
+}
+*/
 
 struct Ap {
     array int32 ans;
@@ -41,13 +47,14 @@ struct Ap {
 
 }
 
-int32 CACA() {
-    return 1;
+int32 CACA(int64 p) {
+    p = 1;
+    return p;
 }
 
-Ap cast(int32 moo) {
 
-}
+
+
 
 struct Bp {
     array Ap cap;
@@ -63,9 +70,8 @@ exec void af() {
     array Bp cupas;
     string s;
     float32 moo = 1;
-    Ap v = Ap cast moo;
     Ap castro(1);
-    int32 gp =( CACA() + 1);
+    int32 gp =( CACA(2) + 1);
     cupas[0].cap[0].ans[0] = 1;
     array float64 a;
     int32 i = 1;

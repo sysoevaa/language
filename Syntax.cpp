@@ -808,6 +808,10 @@ void SyntaxAnalyser::type_cast_def() {
     //problem with return
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
     gc();
+    if (!IAMRETURNINGSOMETHING) {
+        throw std::logic_error("cast must return something");
+    }
+    IAMRETURNINGSOMETHING = false;
 }
 
 void SyntaxAnalyser::print() {
