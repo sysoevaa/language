@@ -87,5 +87,6 @@ class SyntaxAnalyser {
   std::string _save_type = "null";
   std::string object_name;
   bool is_method = false;
+  bool is_in_function = false;
   bool IAMRETURNINGSOMETHING = false;
 };

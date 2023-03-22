@@ -230,6 +230,7 @@ void SyntaxAnalyser::member() {
 }
 
 void SyntaxAnalyser::construct() {
+    is_in_function = true;
     if (_lex[_ind].string != "construct") throw std::logic_error("\"construct \" expected");
     gc();
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
@@ -245,6 +246,7 @@ void SyntaxAnalyser::construct() {
     _tid->CloseScope();
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
     gc();
+    is_in_function = false;
 }
 
 void SyntaxAnalyser::overload() {
@@ -561,6 +563,7 @@ void SyntaxAnalyser::determinantes() {
         }
         gc();
     } else if (_lex[_ind].string == "return") {
+        if (!is_in_function) throw std::logic_error("return outside of function");
         gc();
         if (_lex[_ind].string != ";") {
             expression();
@@ -749,6 +752,7 @@ void SyntaxAnalyser::namepace() {
 }
 
 void SyntaxAnalyser::functionDefinition() {
+    is_in_function = true;
     if (!type()) {
         throw std::logic_error("type expected");
     }
@@ -791,6 +795,7 @@ void SyntaxAnalyser::functionDefinition() {
         throw std::logic_error("function with non-void type must return something");
     }
     IAMRETURNINGSOMETHING = false;
+    is_in_function = false;
 }
 
 void SyntaxAnalyser::type_cast() {
@@ -806,6 +811,7 @@ void SyntaxAnalyser::type_cast() {
 }
 
 void SyntaxAnalyser::type_cast_def() {
+    is_in_function = true;
     if (!type()) throw std::logic_error("\"type\" expected");
     std::string cast_type_to = _lex[_ind].string;
     if (!_tid->IsTypeExist(cast_type_to)) throw std::logic_error("type " + cast_type_to + " does not exist");
@@ -834,6 +840,7 @@ void SyntaxAnalyser::type_cast_def() {
         throw std::logic_error("cast must return something");
     }
     IAMRETURNINGSOMETHING = false;
+    is_in_function = true;
 }
 
 void SyntaxAnalyser::print() {
