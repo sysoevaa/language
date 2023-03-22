@@ -200,6 +200,7 @@ void SyntaxAnalyser::member() {
             functionDefinition();
             //_tid->AddFunction(member_name, _parameter_def_arr, member_type);
             //_parameter_def_arr.clear();
+            _tid->AddMethod()
             member();
             return;
         }

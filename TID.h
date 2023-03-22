@@ -47,7 +47,7 @@ class TID {
   int IsTypeExist(std::string type);
   std::string GetCurrentReturnType();
   bool IsFunctionExist(std::string& id);
-  void AddMethod(std::vector<std::pair<std::string, std::string>>& id);
+  void AddMethod(std::vector<std::pair<std::string, std::string>>& id, std::string& name);
   void GetMethodParameters(std::string& struct_name, std::string& method_name);
  private:
   std::map<std::string, TIDElement*> _functions;
