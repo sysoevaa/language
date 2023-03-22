@@ -17,7 +17,7 @@ class TIDElement {
   TIDElement* AddConstructor(std::vector<std::pair<std::string, std::string>>& id);
   TIDElement* AddMethod(std::vector<std::pair<std::string, std::string>>& id, std::string& name, std::string& ret);
   std::vector<std::string> GetMethodParam(std::string& method_name);
-
+  std::vector<std::string> GetConstructorParam();
  protected:
   std::map<std::string, std::string> _id; // variable name, type
   std::map<std::pair<std::string, std::string>, TIDElement*> _overload;
@@ -51,6 +51,7 @@ class TID {
   void AddMethod(std::vector<std::pair<std::string, std::string>>& id, std::string& name, std::string& ret);
   std::vector<std::string> GetMethodParameters(std::string& struct_name, std::string& method_name);
   std::string GetMethodType(std::string& struct_name, std::string& method_name);
+  std::vector<std::string> GetConstructorParameters(std::string& struct_name);
  private:
   std::map<std::string, TIDElement*> _functions;
   std::map<std::string, TIDElement*> _structs;

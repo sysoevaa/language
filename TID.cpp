@@ -72,6 +72,15 @@ std::vector<std::string> TIDElement::GetMethodParam(std::string& method_name) {
     return vt;
 }
 
+std::vector<std::string> TIDElement::GetConstructorParam() {
+    if (_construct == nullptr) throw std::logic_error("struct does not have any constructor");
+    std::vector<std::string> id;
+    for (auto [type, name] : _construct->_id) {
+        id.push_back(type);
+    }
+    return id;
+}
+
 TID::TID() {
     _current_tid = new TIDElement;
 }
@@ -292,4 +301,9 @@ std::vector<std::string> TID::GetMethodParameters(std::string &struct_name, std:
 
 std::string TID::GetMethodType(std::string &struct_name, std::string &method_name) {
     return _structs[struct_name]->GetType(method_name, true);
+}
+
+
+std::vector<std::string> TID::GetConstructorParameters(std::string &struct_name) {
+    return _structs[struct_name]->GetConstructorParam();
 }
