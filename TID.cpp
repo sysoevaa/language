@@ -20,7 +20,7 @@ std::string TIDElement::GetType(std::string id, bool func) {
     return _id[id];
 }
 
-void TIDElement::AddVariable(std::string type, std::string id) {
+void TIDElement::AddVariable(std::string& type, std::string& id) {
     _id[id] = type;
 }
 
@@ -46,6 +46,8 @@ std::string TIDElement::GetOverloadType(std::string& type, std::string& oper) {
 
 TIDElement* TIDElement::AddConstructor(std::vector<std::pair<std::string, std::string>> &id) {
     _construct = new TIDElement;
+    std::string str = "void";
+    _construct->SetType(str);
     for (auto [a, b] : id) {
         _construct->AddVariable(a, b);
     }
@@ -102,7 +104,7 @@ std::vector<std::string> TID::GetParameters(std::string &func_name) {
 }
 
 
-void TID::AddCast(std::string &type1, std::string &type2) {
+void TID::AddCast(std::string &type1, std::string &type2, std::string& id) {
     bool find = false;
     for (auto& [a, b] : _cast) {
         if (a.first == type1 && a.first == type2) find = true;
@@ -110,6 +112,10 @@ void TID::AddCast(std::string &type1, std::string &type2) {
     if (find) throw std::logic_error("There are two casts with the same types");
     auto ptr = new TIDElement;
     ptr ->SetParent(_current_tid);
+    ptr ->SetType(type1);
+    //ptr->ChangeCast();
+    _current_tid = ptr;
+    ptr->AddVariable(type2, id);
     _cast.push_back({{type1, type2}, ptr});
 }
 
@@ -234,7 +240,9 @@ std::string TID::GetCurrentReturnType() {
     while (ptr && ptr->GetType("smth", true) == "not a function") {
         ptr = ptr->GetParent();
     }
-    if (ptr) return ptr->GetType("smth", true);
+    if (ptr) {
+        return ptr->GetType("smth", true);
+    }
     throw std::logic_error("There is return out of function");
 }
 

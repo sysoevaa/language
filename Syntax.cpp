@@ -58,7 +58,7 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
     }
     if (type()) {
         std::string var_type = _lex[_ind].string;
-        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
+        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("type does not exist");
         if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "cast") {
             type_cast_def();
@@ -116,7 +116,7 @@ void SyntaxAnalyser::globalNamespace() {
         return;
     }
     if (type()) {
-        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
+        if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("type does not exist");
         if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "cast") {
             type_cast_def();
@@ -176,7 +176,7 @@ void SyntaxAnalyser::member() {
     if (_lex[_ind].string == "construct") {
         construct();
         std::string void_ = "void";
-        _tid->AddFunction(object_name, _parameter_def_arr, void_);
+        //_tid->AddFunction(object_name, _parameter_def_arr, void_);
         member();
         return;
     }
@@ -247,7 +247,7 @@ void SyntaxAnalyser::construct() {
 void SyntaxAnalyser::overload() {
     if (!type()) throw std::logic_error("type of function expected");
 
-    if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::string("type does not exist");
+    if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("type does not exist");
 
     std::string ret_type = _lex[_ind].string;
     gc();
@@ -799,10 +799,10 @@ void SyntaxAnalyser::type_cast_def() {
     variable();
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
-    _tid->AddCast(cast_type_to, cast_type_from);
+    _tid->AddCast(cast_type_to, cast_type_from, _lex[_ind - 2].string);
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
-    _tid->OpenScope();
+    //_tid->OpenScope();
     namepace();
     _tid->CloseScope();
     //problem with return
