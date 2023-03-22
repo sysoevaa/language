@@ -87,7 +87,9 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-            if (var_type != lex.string) throw std::logic_error("unexpected type");
+            if (IsEqualTypes(var_type, lex.string) == "error") {
+                throw std::logic_error("trying to put " + lex.string + " into " + var_type);
+            }
             if (_lex[_ind].string == ";") gc();
             _tid->AddVariable(var_type, var_name);
             globalNamespaceNoExec();
@@ -302,6 +304,11 @@ void SyntaxAnalyser::expression() {
         }
         return;
     }
+    if (_lex[_ind].type == "string" || _lex[_ind].type == "char") {
+        expCheck.Process(_lex[_ind]);
+        gc();
+        return;
+    }
     if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
         gc();
         if (_lex[_ind].string == "cast") {
@@ -432,11 +439,8 @@ void SyntaxAnalyser::expression() {
         return;
     }
 
-    if (_lex[_ind].type == "string") {
-        expCheck.Process(_lex[_ind]);
-        gc();
-        return;
-    }
+
+
 
     if (_lex[_ind].type == "unary") {
         expCheck.Process(_lex[_ind]);

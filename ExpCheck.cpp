@@ -35,7 +35,7 @@ void ExpCheck::Process(Lexeme lexeme) {
         return;
     }
 
-    if (lexeme.type == "string") {
+    if (lexeme.type == "string" || lexeme.type == "char") {
         lexeme.string = lexeme.type;
         Push(lexeme);
         return;

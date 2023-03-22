@@ -40,7 +40,7 @@ class Analyser {
               // lexeme_string += string[i];
               // ++i;
               if (type == 1 || type == 2) {
-                  while (i < string.size() && (string[i] != '\"' || string[i] != '\"')) {
+                  while (i < string.size() && (string[i] != '\"' && string[i] != '\'')) {
                       lexeme_string += string[i];
                       ++i;
                   }
