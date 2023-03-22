@@ -34,6 +34,12 @@ void ExpCheck::Process(Lexeme lexeme) {
         Push(lexeme);
         return;
     }
+
+    if (lexeme.type == "string") {
+        lexeme.string = lexeme.type;
+        Push(lexeme);
+        return;
+    }
 }
 
 void ExpCheck::Push(Lexeme lexeme) {
