@@ -44,6 +44,7 @@ class TID {
   std::string GetTypeFunction(std::string& name);
   int IsTypeExist(std::string type);
   std::string GetCurrentReturnType();
+  bool IsFunctionExist(std::string& id);
  private:
   std::map<std::string, TIDElement*> _functions;
   std::map<std::string, TIDElement*> _structs;

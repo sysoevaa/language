@@ -593,22 +593,29 @@ void SyntaxAnalyser::lexpression() {
     std::string name;
     std::string type1;
     if (type()) {
-
-        gc();
-
-        if (_lex[_ind].type == "variable") {
-            if (!_tid->IsTypeExist(_lex[_ind - 1].string)) throw std::logic_error("non existing type");
-            _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
-            name = _lex[_ind].string;
-            type1 = _lex[_ind - 1].string;
-            def = true;
+        if (_tid->IsFunctionExist(_lex[_ind].string)) {
+            _parameter_arr = _tid->GetParameters(_lex[_ind].string);
             gc();
-        } else if (_tid->IsTypeExist(_lex[_ind - 1].string)) {
-            throw std::logic_error("variable name expected");
-        }
-        else {
-            name = _lex[_ind - 1].string;
-            type1 = _tid->GetType(name);
+            parameters();
+            if (_lex[_ind].string != ")") {
+                throw std::logic_error("\")\" expected");
+            }
+            gc();
+        } else {
+            gc();
+            if (_lex[_ind].type == "variable") {
+                if (!_tid->IsTypeExist(_lex[_ind - 1].string)) throw std::logic_error("non existing type");
+                _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
+                name = _lex[_ind].string;
+                type1 = _lex[_ind - 1].string;
+                def = true;
+                gc();
+            } else if (_tid->IsTypeExist(_lex[_ind - 1].string)) {
+                throw std::logic_error("variable name expected");
+            } else {
+                name = _lex[_ind - 1].string;
+                type1 = _tid->GetType(name);
+            }
         }
         //} else if (_lex[_ind - 1].type == "keyword") {
     } else {
@@ -743,7 +750,7 @@ void SyntaxAnalyser::functionDefinition() {
         throw std::logic_error("\"(\" expected");
     }
     gc();
-    std::vector<std::pair<std::string, std::string>> formal_parameters;
+    //std::vector<std::pair<std::string, std::string>> formal_parameters;
     //should we make an array as a parameter?
     parameterDef();
     if (_lex[_ind].string != ")") {
@@ -757,7 +764,7 @@ void SyntaxAnalyser::functionDefinition() {
     }
     gc();
     _save_type = f_type;
-    //_tid->OpenScope();
+    _tid->OpenScope();
     namepace();
     _tid->CloseScope();
     _save_type = "null";

@@ -258,3 +258,7 @@ void TID::AddConstructor(std::vector<std::pair<std::string, std::string>> &id) {
     ptr->SetParent(_current_tid);
     _current_tid = ptr;
 }
+
+bool TID::IsFunctionExist(std::string& id) {
+    return _functions.count(id);
+}
