@@ -862,7 +862,11 @@ void SyntaxAnalyser::print() {
         _lex[_ind].type != "char" && _lex[_ind].type != "number") {
         throw std::logic_error("expression expected");
     }
-    if (_lex[_ind].type == "variable") _tid->GetType(_lex[_ind].string);
+    std::string type1;
+    if (_lex[_ind].type == "variable") {
+        type1 = _tid->GetType(_lex[_ind].string);
+        if (_tid->IsTypeExist(type1) != 2) throw std::logic_error("bad type");
+    }
     gc();
     if (_lex[_ind].string == ")") {
         gc();
@@ -870,15 +874,18 @@ void SyntaxAnalyser::print() {
     } else if (_lex[_ind].string != ",") {
         throw std::logic_error("\",\" expected");
     } else {
-        gc();
         do {
-            if (_lex[_ind].type != "variable" || _lex[_ind].type != "string" ||
-                _lex[_ind].type != "char" || _lex[_ind].type != "number") {
+            gc();
+            if (_lex[_ind].type != "variable" && _lex[_ind].type != "string" &&
+                _lex[_ind].type != "char" && _lex[_ind].type != "number") {
                 throw std::logic_error("expression expected");
+            }
+            if (_lex[_ind].type == "variable") {
+                type1 = _tid->GetType(_lex[_ind].string);
+                if (_tid->IsTypeExist(type1) != 2) throw std::logic_error("bad type");
             }
             gc();
         } while (_lex[_ind].string == ",");
-        gc();
         if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     }
     gc();
@@ -895,7 +902,8 @@ void SyntaxAnalyser::get() {
 }
 
 void SyntaxAnalyser::input() {
-    _tid->GetType(_lex[_ind].string);
+    auto type1 = _tid->GetType(_lex[_ind].string);
+    if (_tid->IsTypeExist(type1) != 2) throw std::logic_error("bad type");
     variable();
     while (_lex[_ind].string == ",") {
         gc();
