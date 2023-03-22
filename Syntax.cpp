@@ -351,19 +351,23 @@ void SyntaxAnalyser::expression() {
         while (_lex[_ind].string == ".") {
             gc();
             variable();
-            type1 = _tid->GetMember(type1, _lex[_ind - 1].string);
-            expCheck.ChangeLast(type1);
-            exp_last = expCheck.GetLast();
             if (_lex[_ind].string == "(") {
-                _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
+                _parameter_arr = _tid->GetMethodParameters(type1, _lex[_ind - 1].string);
                 parameters();
+                _parameter_arr.clear();
+                type1 = _tid->GetMethodType(type1, _lex[_ind - 1].string);
+                expCheck.ChangeLast(type1);
                 if (_lex[_ind].string != ")") {
                     throw std::logic_error("expected \")\"");
                 }
                 gc();
                 break;
             }
-            else if (_lex[_ind].string == "[") {
+            type1 = _tid->GetMember(type1, _lex[_ind - 1].string);
+            expCheck.ChangeLast(type1);
+            exp_last = expCheck.GetLast();
+
+            if (_lex[_ind].string == "[") {
                 expCheck.Process(_lex[_ind]);
                 gc();
                 expression();
@@ -666,17 +670,22 @@ void SyntaxAnalyser::lexpression() {
             throw std::logic_error("method expected");
         }
         std::string method = _lex[_ind].string;
-        type1 = _tid->GetMember(type1, method);
         gc();
+
         if (_lex[_ind].string == "(") {
-            _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
+            _parameter_arr = _tid->GetMethodParameters(type1, _lex[_ind - 1].string);
             parameters();
+            _parameter_arr.clear();
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("\")\" expected");
             }
             gc();
             return;
         }
+
+        type1 = _tid->GetMember(type1, method);
+
+
         if (_lex[_ind].string == "[") {
             gc();
             expCheck.Clear();
