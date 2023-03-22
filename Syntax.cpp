@@ -955,6 +955,8 @@ void SyntaxAnalyser::dowhile() {
 
 void SyntaxAnalyser::For() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
+
+    _tid->OpenScope();
     gc();
     //variable_def();
     // here must be var def + differentiation to (var : arr) and (var = .. ; .. ; ..)
@@ -982,7 +984,7 @@ void SyntaxAnalyser::For() {
         }
         auto arr = _tid->GetType(_lex[_ind].string);
         auto type = GetArrayType(arr);
-        if (!_tid->GetCast(type, defined_variable)) {
+        if (IsEqualTypes(defined_variable, type) == "error") {
             throw std::logic_error("trying to put " + defined_variable + " into " + type);
         }
         //_tid->GetCast(type, defined_variable);
@@ -997,7 +999,7 @@ void SyntaxAnalyser::For() {
             expression();
             Lexeme lex1 = expCheck.GetType();
             expCheck.Clear();
-            if (!_tid->GetCast(defined_variable, lex1.string)) {
+            if (IsEqualTypes(lex1.string, defined_variable) == "error") {
                 throw std::logic_error("trying to put " + lex1.string + " into " + defined_variable);
             }
         }
@@ -1018,7 +1020,7 @@ void SyntaxAnalyser::For() {
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
-    _tid->OpenScope();
+
     cycle_namespace();
     _tid->CloseScope();
 }
@@ -1083,7 +1085,7 @@ void SyntaxAnalyser::array_def() {
         expCheck.Clear();
         std::string int_type = "int32";
         if (IsEqualTypes(lex.string, int_type) == "error") {
-            throw std::logic_error("trying to put " + lex.string + " into " + arr_type);
+            throw std::logic_error("int type expected");
         }
         if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
         gc();
