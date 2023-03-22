@@ -66,7 +66,7 @@ TIDElement *TIDElement::AddMethod(std::vector<std::pair<std::string, std::string
 std::vector<std::string> TIDElement::GetMethodParam(std::string& method_name) {
     std::vector<std::string> vt;
     if (_methods.count(method_name) == 0) throw std::logic_error("Undefined method name");
-    for (auto [type, nm] : _methods[method_name]->_id) {
+    for (auto [nm, type] : _methods[method_name]->_id) {
         vt.push_back(type);
     }
     return vt;
