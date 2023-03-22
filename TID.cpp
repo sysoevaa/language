@@ -75,7 +75,7 @@ std::vector<std::string> TIDElement::GetMethodParam(std::string& method_name) {
 std::vector<std::string> TIDElement::GetConstructorParam() {
     if (_construct == nullptr) throw std::logic_error("struct does not have any constructor");
     std::vector<std::string> id;
-    for (auto [type, name] : _construct->_id) {
+    for (auto [name, type] : _construct->_id) {
         id.push_back(type);
     }
     return id;
