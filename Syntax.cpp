@@ -199,8 +199,8 @@ void SyntaxAnalyser::member() {
         if (_lex[_ind + 2].string == "(") {
             functionDefinition();
             //_tid->AddFunction(member_name, _parameter_def_arr, member_type);
-            //_parameter_def_arr.clear();
-            _tid->AddMethod()
+            _tid->AddMethod(_parameter_def_arr, member_name, member_type);
+            _parameter_def_arr.clear();
             member();
             return;
         }
@@ -1171,4 +1171,5 @@ std::string SyntaxAnalyser::IsEqualTypes(std::string& type1, std::string& type2)
         if (type2 == "char") return type1;
         return "error";
     }
+    return "error";
 }
