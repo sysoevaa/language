@@ -116,7 +116,7 @@ void TID::AddCast(std::string &type1, std::string &type2) {
 
 bool TID::GetCast(std::string &type1, std::string &type2) {
     if (type1 == "void" || type2 == "void") return false;
-    if (IsTypeExist(type1) == 2 && IsTypeExist(type2) == 2) return true;
+    //if (IsTypeExist(type1) == 2 && IsTypeExist(type2) == 2) return true;
     for (auto& [a, b] : _cast) {
         if (a.first == type1 && a.second == type2) return true;
     }

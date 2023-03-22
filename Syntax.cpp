@@ -559,7 +559,7 @@ void SyntaxAnalyser::determinantes() {
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
             auto return_type = _tid->GetCurrentReturnType();
-           if (!_tid->GetCast(return_type, lex.string)) throw std::logic_error("trying to return " + lex.string +
+           if (IsEqualTypes(return_type, lex.string) == "error") throw std::logic_error("trying to return " + lex.string +
            " in " + return_type + " function");
         }
         else {
@@ -642,7 +642,7 @@ void SyntaxAnalyser::lexpression() {
         expression();
         Lexeme lex = expCheck.GetType();
         std::string int_type1 = "int32", int_type2 = "int64";
-        if (!_tid->GetCast(int_type1, lex.string) && !_tid->GetCast(int_type2, lex.string)) {
+        if (IsEqualTypes(int_type1, lex.string) == "error") {
             throw std::logic_error("integer expected");
         }
         expCheck.Clear();
@@ -674,7 +674,7 @@ void SyntaxAnalyser::lexpression() {
             expression();
             Lexeme lex = expCheck.GetType();
             std::string int_type1 = "int32", int_type2 = "int64";
-            if (!_tid->GetCast(int_type1, lex.string) && !_tid->GetCast(int_type2, lex.string)) {
+            if (IsEqualTypes(int_type1, lex.string) == "error") {
                 throw std::logic_error("integer expected");
             }
             expCheck.Clear();
@@ -1127,6 +1127,11 @@ std::string SyntaxAnalyser::GetArrayType(std::string &s) {
 
 std::string SyntaxAnalyser::IsEqualTypes(std::string& type1, std::string& type2) {
     // compare two types and return result type
+    if (_tid->IsTypeExist(type1) != 2 || _tid->IsTypeExist(type2) != 2) {
+        if (_tid->GetCast(type1, type2)) return type1;
+        if (_tid->GetCast(type2, type1)) return type2;
+        return "error";
+    }
     if (type1 == type2) return type1;
     if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
         if (type2 == "string") return "error";

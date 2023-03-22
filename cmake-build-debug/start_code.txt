@@ -33,6 +33,8 @@ Ap cast(int32 moo) {
 }
 */
 
+int32 i;
+
 struct Ap {
     array int32 ans;
     construct (int32 i) {
@@ -67,6 +69,10 @@ void Grabbles() {
 }
 
 exec void af() {
+
+    int32 a = i;
+    Ap i;
+    a = i;
     array Bp cupas;
     string s;
     float32 moo = 1;
