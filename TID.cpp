@@ -63,11 +63,13 @@ TIDElement *TIDElement::AddMethod(std::vector<std::pair<std::string, std::string
     return _methods[name];
 }
 
-std::vector<std::string> TIDElement::GetMethodParam() {
+std::vector<std::string> TIDElement::GetMethodParam(std::string& method_name) {
     std::vector<std::string> vt;
-    for (auto [type, nm] : _id) {
-
+    if (_methods.count(method_name) == 0) throw std::logic_error("Undefined method name");
+    for (auto [type, nm] : _methods[method_name]->_id) {
+        vt.push_back(type);
     }
+    return vt;
 }
 
 TID::TID() {
@@ -285,10 +287,9 @@ void TID::AddMethod(std::vector<std::pair<std::string, std::string>> &id, std::s
 }
 
 std::vector<std::string> TID::GetMethodParameters(std::string &struct_name, std::string &method_name) {
-    std::vector<std::string> ret;
-    auto vt = _structs[struct_name]->
+    return _structs[struct_name]->GetMethodParam(method_name);
 }
 
 std::string TID::GetMethodType(std::string &struct_name, std::string &method_name) {
-    return std::__cxx11::string();
+    return _structs[struct_name]->GetType(method_name, true);
 }
