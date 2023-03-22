@@ -54,6 +54,21 @@ TIDElement* TIDElement::AddConstructor(std::vector<std::pair<std::string, std::s
     return _construct;
 }
 
+TIDElement *TIDElement::AddMethod(std::vector<std::pair<std::string, std::string>> &id, std::string& name, std::string& ret) {
+    _methods[name] = new TIDElement;
+    _methods[name]->SetType(ret);
+    for (auto [type, nm] : id) {
+        _methods[name]->AddVariable(type, nm);
+    }
+    return _methods[name];
+}
+
+std::vector<std::string> TIDElement::GetMethodParam() {
+    std::vector<std::string> vt;
+    for (auto [type, nm] : _id) {
+
+    }
+}
 
 TID::TID() {
     _current_tid = new TIDElement;
@@ -261,4 +276,19 @@ void TID::AddConstructor(std::vector<std::pair<std::string, std::string>> &id) {
 
 bool TID::IsFunctionExist(std::string& id) {
     return _functions.count(id);
+}
+
+void TID::AddMethod(std::vector<std::pair<std::string, std::string>> &id, std::string& name, std::string& ret) {
+    auto ptr = _current_tid->AddMethod(id, name, ret);
+    ptr->SetParent(_current_tid);
+    _current_tid = ptr;
+}
+
+std::vector<std::string> TID::GetMethodParameters(std::string &struct_name, std::string &method_name) {
+    std::vector<std::string> ret;
+    auto vt = _structs[struct_name]->
+}
+
+std::string TID::GetMethodType(std::string &struct_name, std::string &method_name) {
+    return std::__cxx11::string();
 }
