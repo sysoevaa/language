@@ -572,6 +572,7 @@ void SyntaxAnalyser::determinantes() {
         }
 
         gc();
+        IAMRETURNINGSOMETHING = true;
     } else {
         throw std::logic_error("unexpected symbols");
     }
@@ -764,6 +765,10 @@ void SyntaxAnalyser::functionDefinition() {
         throw std::logic_error("\"}\" expected");
     }
     gc();
+    if (!IAMRETURNINGSOMETHING && f_type != "void") {
+        throw std::logic_error("function with non-void type must return something");
+    }
+    IAMRETURNINGSOMETHING = false;
 }
 
 void SyntaxAnalyser::type_cast() {
@@ -781,14 +786,16 @@ void SyntaxAnalyser::type_cast() {
 void SyntaxAnalyser::type_cast_def() {
     if (!type()) throw std::logic_error("\"type\" expected");
     std::string cast_type_to = _lex[_ind].string;
+    if (!_tid->IsTypeExist(cast_type_to)) throw std::logic_error("type " + cast_type_to + " does not exist");
     gc();
     if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
     gc();
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     if (!type()) throw std::logic_error("type expected");
-    gc();
     std::string cast_type_from = _lex[_ind].string;
+    gc();
+    if (!_tid->IsTypeExist(cast_type_from)) throw std::logic_error("type " + cast_type_from + " does not exist");
     variable();
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();

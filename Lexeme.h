@@ -219,6 +219,13 @@ class Analyser {
       if (string == "overload") {
           return true;
       }
+      if (string == "break") {
+          return true;
+      }
+      if (string == "continue") {
+          return true;
+      }
+
 
       return false;
   }

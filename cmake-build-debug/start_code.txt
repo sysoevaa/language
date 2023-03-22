@@ -33,9 +33,19 @@ struct Ap {
         ans[0] = i;
     }
 
+
+
     int32 bubble(float64 cup) {
         return ans[0];
     }
+
+}
+
+int32 CACA() {
+    return 1;
+}
+
+Ap cast(int32 moo) {
 
 }
 
@@ -43,10 +53,17 @@ struct Bp {
     array Ap cap;
 }
 
-exec int32 af() {
+void Grabbles() {
+    int32 a;
+    a = a + 1;
+    return;
+}
+
+exec void af() {
     array Bp cupas;
     string s;
-    Ap castro(2);
+    Ap castro(1);
+    int32 gp =( CACA() + 1);
     cupas[0].cap[0].ans[0] = 1;
     array float64 a;
     int32 i = 1;

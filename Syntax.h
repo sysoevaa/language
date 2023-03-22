@@ -73,7 +73,9 @@ class SyntaxAnalyser {
   std::string IsEqualTypes(std::string& type1, std::string& type2);
 
   Lexeme GetLast() {
-      return _lex[_ind];
+      if (_lex[_ind].string == "END") return _lex[_ind];
+      if (_ind == 0) return _lex[_ind];
+      return _lex[_ind - 1];
   }
   TID* _tid;
  private:
@@ -84,4 +86,5 @@ class SyntaxAnalyser {
   std::vector<std::string> _parameter_arr;
   std::string _save_type = "null";
   std::string object_name;
+  bool IAMRETURNINGSOMETHING = false;
 };

@@ -23,7 +23,7 @@ int main() {
     try {
         syntax_analyser.program();
     } catch (std::exception& e) {
-        std::cout << "Error found at lexeme: " << syntax_analyser.GetLast().string << " in line " << syntax_analyser.GetLast().num << "\n";
+        std::cout << "Error found at lexeme: \"" << syntax_analyser.GetLast().string << "\" in line " << syntax_analyser.GetLast().num << "\n";
         std::cout << e.what();
         return 1;
     }
