@@ -86,5 +86,6 @@ class SyntaxAnalyser {
   std::vector<std::string> _parameter_arr;
   std::string _save_type = "null";
   std::string object_name;
+  bool is_method = false;
   bool IAMRETURNINGSOMETHING = false;
 };

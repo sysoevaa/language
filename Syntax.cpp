@@ -197,10 +197,12 @@ void SyntaxAnalyser::member() {
         else if (_lex[_ind + 1].type != "variable") throw std::logic_error("variable expected");
         std::string member_name = _lex[_ind + 1].string;
         if (_lex[_ind + 2].string == "(") {
+            is_method = true;
             functionDefinition();
             //_tid->AddFunction(member_name, _parameter_def_arr, member_type);
             _tid->AddMethod(_parameter_def_arr, member_name, member_type);
             _parameter_def_arr.clear();
+            is_method = false;
             member();
             return;
         }
@@ -767,8 +769,10 @@ void SyntaxAnalyser::functionDefinition() {
     if (_lex[_ind].string != ")") {
         throw std::logic_error("\")\" expected");
     }
-    _tid->AddFunction(f_name, _parameter_def_arr, f_type);
-    _parameter_def_arr.clear();
+    if (!is_method) {
+        _tid->AddFunction(f_name, _parameter_def_arr, f_type);
+        _parameter_def_arr.clear();
+    }
     gc();
     if (_lex[_ind].string != "{") {
         throw std::logic_error("\"{\" expected");
