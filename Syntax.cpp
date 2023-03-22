@@ -777,7 +777,7 @@ void SyntaxAnalyser::type_cast() {
     gc();
     if (_lex[_ind].string != "cast") throw std::logic_error("\"cast\" expected");
     gc();
-    std::string type2 = _lex[_ind].string;
+    std::string type2 = _tid->GetType(_lex[_ind].string);
     if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
     gc();
     if (!_tid->GetCast(type1, type2)) throw std::logic_error("no such cast exists");
@@ -799,6 +799,7 @@ void SyntaxAnalyser::type_cast_def() {
     variable();
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
+    _tid->AddCast(cast_type_to, cast_type_from);
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
     _tid->OpenScope();
@@ -1122,6 +1123,7 @@ std::string SyntaxAnalyser::GetArrayType(std::string &s) {
 
 std::string SyntaxAnalyser::IsEqualTypes(std::string& type1, std::string& type2) {
     // compare two types and return result type
+    if (type1 == type2) return type1;
     if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
         if (type2 == "string") return "error";
         if (type2 == "char") return type2;

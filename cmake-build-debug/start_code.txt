@@ -62,6 +62,8 @@ void Grabbles() {
 exec void af() {
     array Bp cupas;
     string s;
+    float32 moo = 1;
+    Ap v = Ap cast moo;
     Ap castro(1);
     int32 gp =( CACA() + 1);
     cupas[0].cap[0].ans[0] = 1;
