@@ -18,6 +18,7 @@ class TIDElement {
   TIDElement* AddMethod(std::vector<std::pair<std::string, std::string>>& id, std::string& name, std::string& ret);
   std::vector<std::string> GetMethodParam(std::string& method_name);
   std::vector<std::string> GetConstructorParam();
+  std::string GetMethodType(std::string& method_name);
  protected:
   std::map<std::string, std::string> _id; // variable name, type
   std::map<std::pair<std::string, std::string>, TIDElement*> _overload;

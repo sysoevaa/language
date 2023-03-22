@@ -80,6 +80,10 @@ std::vector<std::string> TIDElement::GetConstructorParam() {
     }
     return id;
 }
+std::string TIDElement::GetMethodType(std::string &method_name) {
+    if (_methods.count(method_name) == 0) throw std::logic_error("There is no method with this name");
+    return _methods[method_name]->GetType("smth", true);
+}
 
 TID::TID() {
     _current_tid = new TIDElement;
@@ -300,7 +304,7 @@ std::vector<std::string> TID::GetMethodParameters(std::string &struct_name, std:
 }
 
 std::string TID::GetMethodType(std::string &struct_name, std::string &method_name) {
-    return _structs[struct_name]->GetType(method_name, true);
+    return _structs[struct_name]->GetMethodType(method_name);
 }
 
 
