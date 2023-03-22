@@ -198,9 +198,11 @@ void SyntaxAnalyser::member() {
         std::string member_name = _lex[_ind + 1].string;
         if (_lex[_ind + 2].string == "(") {
             is_method = true;
+            method_return_type = member_type;
+            method_name = member_name;
             functionDefinition();
             //_tid->AddFunction(member_name, _parameter_def_arr, member_type);
-            _tid->AddMethod(_parameter_def_arr, member_name, member_type);
+
             _parameter_def_arr.clear();
             is_method = false;
             member();
@@ -775,6 +777,10 @@ void SyntaxAnalyser::functionDefinition() {
     }
     if (!is_method) {
         _tid->AddFunction(f_name, _parameter_def_arr, f_type);
+        _parameter_def_arr.clear();
+    }
+    else {
+        _tid->AddMethod(_parameter_def_arr, method_name, method_return_type);
         _parameter_def_arr.clear();
     }
     gc();
