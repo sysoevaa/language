@@ -15,10 +15,12 @@ class TIDElement {
   TIDElement* AddOverload(std::string& type, std::string& oper, std::string& ret);
   std::string GetOverloadType(std::string& type, std::string& oper);
   TIDElement* AddConstructor(std::vector<std::pair<std::string, std::string>>& id);
+  TIDElement* AddMethod(std::vector<std::pair<std::string, std::string>>& id);
 
  protected:
   std::map<std::string, std::string> _id; // variable name, type
   std::map<std::pair<std::string, std::string>, TIDElement*> _overload;
+  std::map<std::string, TIDElement*> method;
   std::string _type;
   TIDElement *_parent;
   TIDElement* _construct;
@@ -45,6 +47,8 @@ class TID {
   int IsTypeExist(std::string type);
   std::string GetCurrentReturnType();
   bool IsFunctionExist(std::string& id);
+  void AddMethod(std::vector<std::pair<std::string, std::string>>& id);
+  void GetMethodParameters(std::string& struct_name, std::string& method_name);
  private:
   std::map<std::string, TIDElement*> _functions;
   std::map<std::string, TIDElement*> _structs;

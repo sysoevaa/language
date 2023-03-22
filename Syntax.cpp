@@ -494,6 +494,7 @@ void SyntaxAnalyser::parameters() {
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         expCheck.SetStack(stack);
+        if (_parameter_arr.size() <= i) throw std::logic_error("Incorrect parameters in function call");
         if (IsEqualTypes(lex.string, _parameter_arr[i]) == "error") throw std::logic_error("parameter types do not match");
         ++i;
     } while (_lex[_ind].string == ",");
