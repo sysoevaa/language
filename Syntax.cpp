@@ -633,6 +633,7 @@ void SyntaxAnalyser::lexpression() {
         }
         gc();
         return;
+        //a
     }
 
     if (_lex[_ind].string == "[") {
