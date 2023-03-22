@@ -510,6 +510,7 @@ void SyntaxAnalyser::parameters() {
         if (IsEqualTypes(lex.string, _parameter_arr[i]) == "error") throw std::logic_error("parameter types do not match");
         ++i;
     } while (_lex[_ind].string == ",");
+    if (i < _parameter_arr.size()) throw std::logic_error("not enough parameters");
 }
 
 void SyntaxAnalyser::parameterDef() {
