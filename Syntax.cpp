@@ -238,11 +238,12 @@ void SyntaxAnalyser::construct() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     parameterDef();
+    _tid->AddConstructor(_parameter_def_arr);
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
-    _tid->AddConstructor(_parameter_def_arr);
+
     //_tid->OpenScope();
     namepace();
     _tid->CloseScope();
@@ -637,7 +638,7 @@ void SyntaxAnalyser::lexpression() {
     //gc();
     if (_lex[_ind].string == "(") {
         if (def) {
-            _parameter_arr = _tid->GetParameters(type1);
+            _parameter_arr = _tid->GetConstructorParameters(type1);
             parameters();
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("\")\" expected");
