@@ -360,9 +360,10 @@ void SyntaxAnalyser::expression() {
             variable();
             if (_lex[_ind].string == "(") {
                 _parameter_arr = _tid->GetMethodParameters(type1, _lex[_ind - 1].string);
+                std::string method_name_ = _lex[_ind - 1].string;
                 parameters();
                 _parameter_arr.clear();
-                type1 = _tid->GetMethodType(type1, _lex[_ind - 1].string);
+                type1 = _tid->GetMethodType(type1, method_name_);
                 expCheck.ChangeLast(type1);
                 if (_lex[_ind].string != ")") {
                     throw std::logic_error("expected \")\"");
@@ -499,7 +500,10 @@ void SyntaxAnalyser::parameters() {
     int i = 0;
     do {
         gc();
-        if (_lex[_ind].string == ")") return;
+        if (_lex[_ind].string == ")") {
+            if (i < _parameter_arr.size()) throw std::logic_error("not enough parameters");
+            return;
+        }
         std::vector<Lexeme> stack = expCheck.GetStack();
         expCheck.Clear();
         expression();
