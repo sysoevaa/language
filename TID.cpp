@@ -57,8 +57,8 @@ TIDElement* TIDElement::AddConstructor(std::vector<std::pair<std::string, std::s
 TIDElement *TIDElement::AddMethod(std::vector<std::pair<std::string, std::string>> &id, std::string& name, std::string& ret) {
     _methods[name] = new TIDElement;
     _methods[name]->SetType(ret);
-    for (auto [nm, type] : id) {
-        _methods[name]->AddVariable(type, nm);
+    for (auto [type, nm] : id) {
+        _methods[name]->AddVariable(nm, type);
     }
     return _methods[name];
 }
