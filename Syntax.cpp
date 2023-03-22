@@ -331,7 +331,7 @@ void SyntaxAnalyser::expression() {
         expCheck.Process(Lexeme("variable", type1, 0));
 
         Lexeme exp_last = expCheck.GetLast();
-        std::cout << "exp_last = " << exp_last.string << "\n";
+        //std::cout << "exp_last = " << exp_last.string << "\n";
         //array check
         if (_lex[_ind].string == "[") {
             expCheck.Process(_lex[_ind]);
@@ -342,7 +342,7 @@ void SyntaxAnalyser::expression() {
             }
             expCheck.Process(_lex[_ind]);
             gc();
-            std::cout << "exp_last = " << exp_last.string << "\n";
+            //std::cout << "exp_last = " << exp_last.string << "\n";
             expCheck.ChangeLast(GetArrayType(exp_last.string));
             exp_last = expCheck.GetLast();
         }
@@ -494,7 +494,7 @@ void SyntaxAnalyser::parameters() {
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         expCheck.SetStack(stack);
-        if (lex.string != _parameter_arr[i]) throw std::logic_error("parameter types do not match");
+        if (IsEqualTypes(lex.string, _parameter_arr[i]) == "error") throw std::logic_error("parameter types do not match");
         ++i;
     } while (_lex[_ind].string == ",");
 }
@@ -618,7 +618,6 @@ void SyntaxAnalyser::lexpression() {
         if (def) {
             _parameter_arr = _tid->GetParameters(type1);
             parameters();
-            throw std::logic_error("\"=\" expected");
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("\")\" expected");
             }
