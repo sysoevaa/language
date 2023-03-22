@@ -197,10 +197,14 @@ void SyntaxAnalyser::member() {
         else if (_lex[_ind + 1].type != "variable") throw std::logic_error("variable expected");
         std::string member_name = _lex[_ind + 1].string;
         if (_lex[_ind + 2].string == "(") {
+            is_method = true;
+            method_return_type = member_type;
+            method_name = member_name;
             functionDefinition();
             //_tid->AddFunction(member_name, _parameter_def_arr, member_type);
-            _tid->AddMethod(_parameter_def_arr, member_name, member_type);
+
             _parameter_def_arr.clear();
+            is_method = false;
             member();
             return;
         }
@@ -228,21 +232,24 @@ void SyntaxAnalyser::member() {
 }
 
 void SyntaxAnalyser::construct() {
+    is_in_function = true;
     if (_lex[_ind].string != "construct") throw std::logic_error("\"construct \" expected");
     gc();
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     parameterDef();
+    _tid->AddConstructor(_parameter_def_arr);
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
-    _tid->AddConstructor(_parameter_def_arr);
+
     //_tid->OpenScope();
     namepace();
     _tid->CloseScope();
     if (_lex[_ind].string != "}") throw std::logic_error("\"}\" expected");
     gc();
+    is_in_function = false;
 }
 
 void SyntaxAnalyser::overload() {
@@ -559,6 +566,7 @@ void SyntaxAnalyser::determinantes() {
         }
         gc();
     } else if (_lex[_ind].string == "return") {
+        if (!is_in_function) throw std::logic_error("return outside of function");
         gc();
         if (_lex[_ind].string != ";") {
             expression();
@@ -630,7 +638,7 @@ void SyntaxAnalyser::lexpression() {
     //gc();
     if (_lex[_ind].string == "(") {
         if (def) {
-            _parameter_arr = _tid->GetParameters(type1);
+            _parameter_arr = _tid->GetConstructorParameters(type1);
             parameters();
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("\")\" expected");
@@ -747,6 +755,7 @@ void SyntaxAnalyser::namepace() {
 }
 
 void SyntaxAnalyser::functionDefinition() {
+    is_in_function = true;
     if (!type()) {
         throw std::logic_error("type expected");
     }
@@ -767,8 +776,14 @@ void SyntaxAnalyser::functionDefinition() {
     if (_lex[_ind].string != ")") {
         throw std::logic_error("\")\" expected");
     }
-    _tid->AddFunction(f_name, _parameter_def_arr, f_type);
-    _parameter_def_arr.clear();
+    if (!is_method) {
+        _tid->AddFunction(f_name, _parameter_def_arr, f_type);
+        _parameter_def_arr.clear();
+    }
+    else {
+        _tid->AddMethod(_parameter_def_arr, method_name, method_return_type);
+        _parameter_def_arr.clear();
+    }
     gc();
     if (_lex[_ind].string != "{") {
         throw std::logic_error("\"{\" expected");
@@ -787,6 +802,7 @@ void SyntaxAnalyser::functionDefinition() {
         throw std::logic_error("function with non-void type must return something");
     }
     IAMRETURNINGSOMETHING = false;
+    is_in_function = false;
 }
 
 void SyntaxAnalyser::type_cast() {
@@ -802,6 +818,7 @@ void SyntaxAnalyser::type_cast() {
 }
 
 void SyntaxAnalyser::type_cast_def() {
+    is_in_function = true;
     if (!type()) throw std::logic_error("\"type\" expected");
     std::string cast_type_to = _lex[_ind].string;
     if (!_tid->IsTypeExist(cast_type_to)) throw std::logic_error("type " + cast_type_to + " does not exist");
@@ -830,6 +847,7 @@ void SyntaxAnalyser::type_cast_def() {
         throw std::logic_error("cast must return something");
     }
     IAMRETURNINGSOMETHING = false;
+    is_in_function = true;
 }
 
 void SyntaxAnalyser::print() {
