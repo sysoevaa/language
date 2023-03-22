@@ -83,4 +83,5 @@ class SyntaxAnalyser {
   std::vector<std::pair<std::string, std::string>> _parameter_def_arr;
   std::vector<std::string> _parameter_arr;
   std::string _save_type = "null";
+  std::string object_name;
 };

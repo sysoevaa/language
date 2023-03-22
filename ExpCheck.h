@@ -13,7 +13,6 @@ public:
     void Clear();
     std::vector<Lexeme> GetStack();
     void SetStack(std::vector<Lexeme>& stack);
-
 private:
     std::vector<Lexeme> _stack;
     TID* _tid;

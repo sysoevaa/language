@@ -161,6 +161,7 @@ void SyntaxAnalyser::object() {
     gc();
     if (_lex[_ind].type != "variable") throw std::logic_error("variable expected");
     _tid->AddStruct(_lex[_ind].string);
+    object_name = _lex[_ind].string;
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
@@ -174,6 +175,8 @@ void SyntaxAnalyser::object() {
 void SyntaxAnalyser::member() {
     if (_lex[_ind].string == "construct") {
         construct();
+        std::string void_ = "void";
+        _tid->AddFunction(object_name, _parameter_def_arr, void_);
         member();
         return;
     }
@@ -224,7 +227,6 @@ void SyntaxAnalyser::member() {
 }
 
 void SyntaxAnalyser::construct() {
-    //blyaaa eshe constructori suka
     if (_lex[_ind].string != "construct") throw std::logic_error("\"construct \" expected");
     gc();
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
