@@ -975,7 +975,7 @@ void SyntaxAnalyser::For() {
         }
         auto arr = _tid->GetType(_lex[_ind].string);
         auto type = GetArrayType(arr);
-        if (!_tid->GetCast(type, defined_variable)) {
+        if (IsEqualTypes(defined_variable, type) == "error") {
             throw std::logic_error("trying to put " + defined_variable + " into " + type);
         }
         //_tid->GetCast(type, defined_variable);
@@ -990,7 +990,7 @@ void SyntaxAnalyser::For() {
             expression();
             Lexeme lex1 = expCheck.GetType();
             expCheck.Clear();
-            if (!_tid->GetCast(defined_variable, lex1.string)) {
+            if (IsEqualTypes(lex1.string, defined_variable) == "error") {
                 throw std::logic_error("trying to put " + lex1.string + " into " + defined_variable);
             }
         }
