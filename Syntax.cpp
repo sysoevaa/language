@@ -118,6 +118,7 @@ void SyntaxAnalyser::globalNamespace() {
         return;
     }
     if (type()) {
+        std::string var_type = _lex[_ind].string;
         if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("type does not exist");
         if (_ind + 2 >= _lex.size()) throw std::logic_error("unexpected end of file");
         if (_lex[_ind + 1].string == "cast") {
@@ -131,24 +132,25 @@ void SyntaxAnalyser::globalNamespace() {
             globalNamespace();
             return;
         }
+        std::string var_name = _lex[_ind + 1].string;
         gc();
         gc();
-        if (_lex[_ind + 2].string == ";") {
-            _tid->AddVariable(_lex[_ind].string, _lex[_ind + 1].string);
+        if (_lex[_ind].string == ";") {
             gc();
+            _tid->AddVariable(var_type, var_name);
             globalNamespace();
             return;
         }
         if (_lex[_ind + 2].string == "=") {
-            _tid->AddVariable(_lex[_ind].string, _lex[_ind + 1].string);
-            std::string type = _lex[_ind].string;
             gc();
             expression();
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
-            if (lex.string != type) {
-                throw std::logic_error("trying to put " + lex.string + " into the " + type);
+            if (IsEqualTypes(var_type, lex.string) == "error") {
+                throw std::logic_error("trying to put " + lex.string + " into " + var_type);
             }
+            if (_lex[_ind].string == ";") gc();
+            _tid->AddVariable(var_type, var_name);
             globalNamespace();
             return;
         }
