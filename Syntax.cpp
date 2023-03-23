@@ -255,6 +255,7 @@ void SyntaxAnalyser::construct() {
 }
 
 void SyntaxAnalyser::overload() {
+    is_in_function = true;
     if (!type()) throw std::logic_error("type of function expected");
 
     if (!_tid->IsTypeExist(_lex[_ind].string)) throw std::logic_error("type does not exist");
@@ -290,6 +291,7 @@ void SyntaxAnalyser::overload() {
 
     if (_lex[_ind].string != "}") throw std::logic_error("\" } \" expected");
     gc();
+    is_in_function = false;
 }
 
 void SyntaxAnalyser::expression() {
