@@ -290,6 +290,7 @@ void SyntaxAnalyser::overload() {
     _tid->OpenScope();
     namepace();
     _tid->CloseScope();
+    _tid->CloseScope();
 
     if (_lex[_ind].string != "}") throw std::logic_error("\" } \" expected");
     gc();
@@ -805,6 +806,7 @@ void SyntaxAnalyser::functionDefinition() {
     _save_type = f_type;
     _tid->OpenScope();
     namepace();
+    _tid->CloseScope();
     _tid->CloseScope();
     _save_type = "null";
     if (_lex[_ind].string != "}") {
