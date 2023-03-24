@@ -519,7 +519,7 @@ void SyntaxAnalyser::parameters() {
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         expCheck.SetStack(stack);
-        if (_parameter_arr.size() <= i) throw std::logic_error("Incorrect parameters in function call");
+        if (_parameter_arr.size() <= i) throw std::logic_error("too much parameters in function call");
         if (IsEqualTypes(lex.string, _parameter_arr[i]) == "error") throw std::logic_error("parameter types do not match");
         ++i;
     } while (_lex[_ind].string == ",");
@@ -1197,22 +1197,44 @@ std::string SyntaxAnalyser::IsEqualTypes(std::string& type1, std::string& type2)
         if (_tid->GetCast(type2, type1)) return type2;
         return "error";
     }
+    if (type1 == "bool") {
+        if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
+            return type2;
+        }
+    }
+    if (type2 == "bool")  {
+        if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
+            return type1;
+        }
+    }
     if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
         if (type2 == "string") return "error";
         if (type2 == "char") return type2;
     }
     if (type1 == "int32") {
-        return type2;
+        if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
+            return type2;
+        }
     }
     if (type1 == "int64") {
         if (type2 == "float32" || type2 == "float64") return "float64";
-        return type1;
+        if (type2 == "int32" || type2 == "int64") {
+            return type1;
+        }
+
     }
     if (type1 == "float32") {
         if (type2 == "int32") return type1;
-        return "float64";
+        if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
+            return "float64";
+        }
+
     }
-    if (type1 == "float64") return type1;
+    if (type1 == "float64") {
+        if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
+            return type1;
+        }
+    }
     if (type1 == "char") {
         if (type2 != "string") return type2;
         return "error";
