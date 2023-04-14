@@ -1,12 +1,22 @@
-//
-// Created by А ну да on 14.04.2023.
-//
+#pragma once
+#include <vector>
+#include "Lexeme.h"
 
 #ifndef LANGUAGE_POLIZGENERATOR_H
 #define LANGUAGE_POLIZGENERATOR_H
 
+struct PolizCell {
+
+};
+
 
 class PolizGenerator {
+public:
+    void Push(Lexeme lex);
+
+private:
+    std::vector<PolizCell> _stack;
+    std::vector<int> _last_jmp;
 
 };
 

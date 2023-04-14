@@ -4,6 +4,5 @@
 
 #include "PolizGenerator.h"
 
-struct PolizCell {
 
-};
+
