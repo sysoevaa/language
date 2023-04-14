@@ -14,4 +14,4 @@ add_executable(language
         TID.h
         TID.cpp
         ExpCheck.cpp
-        ExpCheck.h Overloader.cpp Overloader.h)
+        ExpCheck.h Overloader.cpp Overloader.h PolizGenerator.cpp PolizGenerator.h)
