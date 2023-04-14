@@ -9,6 +9,13 @@ struct PolizCell {
 
 };
 
+struct PolizOperator : PolizCell {
+
+};
+
+struct PolizValuable
+
+
 
 class PolizGenerator {
 public:
