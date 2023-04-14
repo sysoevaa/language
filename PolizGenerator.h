@@ -13,7 +13,9 @@ struct PolizOperator : PolizCell {
 
 };
 
-struct PolizValuable
+struct PolizValuable : PolizCell {
+
+};
 
 
 
