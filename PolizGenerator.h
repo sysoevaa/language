@@ -5,16 +5,25 @@
 #ifndef LANGUAGE_POLIZGENERATOR_H
 #define LANGUAGE_POLIZGENERATOR_H
 
-struct PolizCell {
+struct ValType {
 
+};
+
+struct PolizCell {
+    int type;
 };
 
 struct PolizOperator : PolizCell {
-
+    int address;
+    std::string string;
 };
 
 struct PolizValuable : PolizCell {
+    ValType value;
+};
 
+struct PolizJump : PolizCell {
+    int address;
 };
 
 
