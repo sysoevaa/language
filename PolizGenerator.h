@@ -5,6 +5,14 @@
 #ifndef LANGUAGE_POLIZGENERATOR_H
 #define LANGUAGE_POLIZGENERATOR_H
 
+//COMMANDS:
+// ADD
+// GET
+// WRITE
+// JUMP
+// FALSE JUMP
+//
+
 struct ValType {
 
 };
@@ -33,7 +41,7 @@ public:
     void Push(Lexeme lex);
 
 private:
-    std::vector<PolizCell> _stack;
+    std::vector<PolizCell*> _stack;
     std::vector<int> _last_jmp;
 
 };
