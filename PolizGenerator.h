@@ -30,7 +30,7 @@ struct PolizAdd : public PolizCell {
 };
 
 struct PolizGet : public PolizCell {
-    ValType value;
+
 };
 
 struct PolizWrite : public PolizCell {
