@@ -6,16 +6,18 @@
 #define LANGUAGE_POLIZGENERATOR_H
 
 //COMMANDS:
-// ADD
-// GET
-// WRITE
-// JUMP
-// FALSE JUMP
-// OPERATOR JUMP
-// SYMBOL
+// ADD - add variable to the variable list
+// GET - get variable's value
+// WRITE - re-write variable's value
+// JUMP - jump to position in poliz
+// FALSE JUMP - if expression is false, jump to position in poliz
+// OPERATOR JUMP - jump to the definition of the operator
+// RETURN TO CUR POS - jump to current pos in poliz after function end
+// SYMBOL - just a symbol, such as ";", "+" (without definition), "="(maybe?), "1", "104"
 //TO PROCESS THE OPERATOR WE SHOULD GO THROUGH THE EXPRESSION TWICE:
 //  1. FORMING THE DIJKSTRA
 //  2. PERFORMING THE DIJKSTRA AND ASSIGNING EACH OPERATOR THEIR CORRESPONDING DEFINITIONS
+//Uncertainties : not sure, how to compare types and how to perform casts; how do we count numerical literals..?
 
 struct ValType {
 
@@ -30,11 +32,11 @@ struct PolizAdd : public PolizCell {
 };
 
 struct PolizGet : public PolizCell {
-
+    std::string name;
 };
 
 struct PolizWrite : public PolizCell {
-    int address;
+    std::string name;
 };
 
 struct PolizJump : public PolizCell {
@@ -43,6 +45,10 @@ struct PolizJump : public PolizCell {
 
 struct PolizFalseJump : public PolizCell {
     int pos;
+};
+
+struct PolizReturn : public PolizCell {
+
 };
 
 struct PolizSymbol : public PolizCell {
