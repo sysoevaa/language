@@ -12,7 +12,7 @@
 // JUMP
 // FALSE JUMP
 // OPERATOR JUMP
-//OPERATORS COULD
+// SYMBOL
 //TO PROCESS THE OPERATOR WE SHOULD GO THROUGH THE EXPRESSION TWICE:
 //  1. FORMING THE DIJKSTRA
 //  2. PERFORMING THE DIJKSTRA AND ASSIGNING EACH OPERATOR THEIR CORRESPONDING DEFINITIONS
@@ -25,19 +25,29 @@ struct PolizCell {
     int type;
 };
 
-struct PolizOperator : public PolizCell {
-    int address;
-    std::string string;
+struct PolizAdd : public PolizCell {
+
 };
 
-struct PolizValuable : public PolizCell {
+struct PolizGet : public PolizCell {
     ValType value;
 };
 
-struct PolizJump : public PolizCell {
+struct PolizWrite : public PolizCell {
     int address;
 };
 
+struct PolizJump : public PolizCell {
+    int pos;
+};
+
+struct PolizFalseJump : public PolizCell {
+    int pos;
+};
+
+struct PolizSymbol : public PolizCell {
+    std::string string;
+};
 
 
 class PolizGenerator {
