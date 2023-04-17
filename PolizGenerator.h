@@ -25,16 +25,16 @@ struct PolizCell {
     int type;
 };
 
-struct PolizOperator : PolizCell {
+struct PolizOperator : public PolizCell {
     int address;
     std::string string;
 };
 
-struct PolizValuable : PolizCell {
+struct PolizValuable : public PolizCell {
     ValType value;
 };
 
-struct PolizJump : PolizCell {
+struct PolizJump : public PolizCell {
     int address;
 };
 
