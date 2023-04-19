@@ -86,7 +86,10 @@ struct PolizFuncJump : public PolizCell {
     int pos;
 };
 
-struct Poliz
+struct PolizMethodJump : public  PolizCell {
+
+};
+
 
 
 class PolizGenerator {
