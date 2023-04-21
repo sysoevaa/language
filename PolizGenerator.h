@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 #include "Lexeme.h"
 
 #ifndef LANGUAGE_POLIZGENERATOR_H
@@ -86,11 +87,24 @@ struct PolizFuncJump : public PolizCell {
     int pos;
 };
 
-struct PolizMethodJump : public  PolizCell {
-
+struct PolizMethodJump : public PolizCell {
+    int pos;
 };
 
+class DefinitionList {
+private:
+    std::map<std::string, int> _funcList;
+    std::map<std::string, std::map<std::string, int>> _methodList;
 
+public:
+    void AddFunc(std::string name, int pos) {
+        _funcList[name] = pos;
+    }
+
+    void AddMethod(std::string typeName, std::string methodName, int pos) {
+        _methodList[typeName][methodName] = pos;
+    }
+};
 
 class PolizGenerator {
 public:
