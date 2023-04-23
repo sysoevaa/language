@@ -41,69 +41,113 @@
 //структурой воот
 //
 //
+//ADD - 1
+//GET -
 //
 //
 //
-//
-//
+
+enum Command {
+    ADD = 1,
+    GET = 2,
+    WRITE = 3,
+    JUMP = 4,
+    FALSEJUMP = 5,
+    RETURN = 6,
+    SYMBOL = 7,
+    FUNCJUMP = 8,
+    METHODJUMP = 9,
+    INPUT = 10,
+    OUTPUT = 11
+};
+
 
 struct ValType {
 
 };
 
 struct PolizCell {
-    int type;
+    PolizCell(Command _type) : type(_type) { }
+    Command type;
 };
 
 struct PolizAdd : public PolizCell {
-
+    PolizAdd() : PolizCell(ADD) { }
 };
 
 struct PolizGet : public PolizCell {
+    PolizGet(std::string _name) : PolizCell(GET), name(_name) { }
     std::string name;
 };
 
 struct PolizWrite : public PolizCell {
+    PolizWrite(std::string _name) : PolizCell(WRITE), name(_name) { }
     std::string name;
 };
 
 struct PolizJump : public PolizCell {
+    PolizJump(int _pos) : PolizCell(JUMP), pos(_pos) { }
     int pos;
 };
 
 struct PolizFalseJump : public PolizCell {
+    PolizFalseJump(int _pos) : PolizCell(FALSEJUMP), pos(_pos) { }
     int pos;
 };
 
 struct PolizReturn : public PolizCell {
-
+    PolizReturn() : PolizCell(RETURN) { }
 };
 
 struct PolizSymbol : public PolizCell {
+    PolizSymbol(std::string _string) : PolizCell(SYMBOL), string(_string) { }
     std::string string;
 };
 
 struct PolizFuncJump : public PolizCell {
+    PolizFuncJump(int _pos) : PolizCell(FUNCJUMP), pos(_pos) { }
     int pos;
 };
 
 struct PolizMethodJump : public PolizCell {
+    PolizMethodJump(int _pos) : PolizCell(METHODJUMP), pos(_pos) { }
     int pos;
+};
+
+struct PolizOutput : public PolizCell {
+    PolizOutput() : PolizCell(OUTPUT) { }
+};
+
+struct PolizInput : public PolizCell {
+    PolizInput() : PolizCell(INPUT) { }
+};
+
+struct OverloadParameters {
+    OverloadParameters(std::string _type1, std::string _type2, std::string _op) :
+    type1(_type1), type2(_type2), op(_op) { }
+    std::string type1;
+    std::string type2;
+    std::string op;
 };
 
 class DefinitionList {
 private:
     std::map<std::string, int> _funcList;
     std::map<std::string, std::map<std::string, int>> _methodList;
+    std::map<std::pair<std::string, std::pair<std::string, std::string>>, int> _overloadList;
+    std::map<std::pair<std::string, std::string>, int> _castList;
 
 public:
-    void AddFunc(std::string name, int pos) {
-        _funcList[name] = pos;
-    }
+    void AddFunc(std::string name, int pos);
+    void AddMethod(std::string typeName, std::string methodName, int pos);
+    void AddOverload(std::string type1, std::string type2, std::string op, int pos);
+    void AddCast(std::string type1, std::string type2, int pos);
 
-    void AddMethod(std::string typeName, std::string methodName, int pos) {
-        _methodList[typeName][methodName] = pos;
-    }
+    const int GetFunc(std::string name);
+    const int GetMethod(std::string typeName, std::string methodName);
+    const int GetOverload(std::string type1, std::string type2, std::string op);
+    const int GetCast(std::string type1, std::string type2);
+
 };
 
 class PolizGenerator {
