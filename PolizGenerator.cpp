@@ -39,3 +39,31 @@ const int DefinitionList::GetOverload(std::string type1, std::string type2, std:
     return _overloadList[ { op, { type1, type2 } } ];
 }
 
+void PolizGenerator::Push(const Lexeme& lex) {
+    PolizCell* ptr;
+    //if (lex.type == "")
+}
+
+void PolizGenerator::Push(PolizCell *cell) {
+    _stack.push_back(cell);
+
+}
+
+void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme> &_lex) {
+    std::vector<Lexeme> oper;
+    for (int i = begin; i < end; ++i) {
+        if (_lex[i].type == "binary") {
+            while (!oper.empty() && oper.back().priority >= _lex[i].priority) {
+                Push(oper.back());
+                oper.pop_back();
+            }
+            oper.push_back(_lex[i]);
+        } else {
+            Push(_lex[i]);
+        }
+    }
+    while (!oper.empty()) {
+        Push(oper.back());
+        oper.pop_back();
+    }
+}

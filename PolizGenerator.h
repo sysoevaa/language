@@ -58,7 +58,8 @@ enum Command {
     FUNCJUMP = 8,
     METHODJUMP = 9,
     INPUT = 10,
-    OUTPUT = 11
+    OUTPUT = 11,
+    OPERATOR = 12
 };
 
 
@@ -76,12 +77,12 @@ struct PolizAdd : public PolizCell {
 };
 
 struct PolizGet : public PolizCell {
-    PolizGet(std::string _name) : PolizCell(GET), name(_name) { }
+    PolizGet(const std::string& _name) : PolizCell(GET), name(_name) { }
     std::string name;
 };
 
 struct PolizWrite : public PolizCell {
-    PolizWrite(std::string _name) : PolizCell(WRITE), name(_name) { }
+    PolizWrite(const std::string& _name) : PolizCell(WRITE), name(_name) { }
     std::string name;
 };
 
@@ -100,7 +101,7 @@ struct PolizReturn : public PolizCell {
 };
 
 struct PolizSymbol : public PolizCell {
-    PolizSymbol(std::string _string) : PolizCell(SYMBOL), string(_string) { }
+    PolizSymbol(const std::string& _string) : PolizCell(SYMBOL), string(_string) { }
     std::string string;
 };
 
@@ -122,9 +123,14 @@ struct PolizInput : public PolizCell {
     PolizInput() : PolizCell(INPUT) { }
 };
 
+struct PolizOperator : public PolizCell {
+    PolizOperator() : PolizCell(OPERATOR) {};
+    int pos; // -1 if it has already defined
+};
+
 struct OverloadParameters {
     OverloadParameters(std::string _type1, std::string _type2, std::string _op) :
-    type1(_type1), type2(_type2), op(_op) { }
+            type1(_type1), type2(_type2), op(_op) { }
     std::string type1;
     std::string type2;
     std::string op;
@@ -152,12 +158,13 @@ public:
 
 class PolizGenerator {
 public:
-    void Push(Lexeme lex);
-
+    void Push(const Lexeme& lex);
+    void Push(PolizCell* cell);
+    void MakeExpression(int begin, int end, const std::vector<Lexeme>& _lex);
 private:
     std::vector<PolizCell*> _stack;
     std::vector<int> _last_jmp;
-
+    std::vector<Lexeme> _expr_stack;
 };
 
 
