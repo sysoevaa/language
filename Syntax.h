@@ -7,7 +7,7 @@
 
 class SyntaxAnalyser {
  public:
-  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID), expCheck(_tid), _gen(new PolizGenerator){}
+  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID), expCheck(_tid), _gen(new PolizGenerator(_tid)){}
 
   void gc();
 

@@ -51,6 +51,7 @@ void PolizGenerator::Push(PolizCell *cell) {
 
 void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme> &_lex) {
     std::vector<Lexeme> oper;
+    int st_idx = (int) _stack.size();
     for (int i = begin; i < end; ++i) {
         if (_lex[i].type == "binary") {
             while (!oper.empty() && oper.back().priority >= _lex[i].priority) {
@@ -65,5 +66,47 @@ void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme
     while (!oper.empty()) {
         Push(oper.back());
         oper.pop_back();
+    }
+    std::vector<PolizCell*> current;
+    for (int i = st_idx; i < _stack.size(); ++i) {
+        if (_stack[i]->type != OPERATOR) {
+            current.push_back(_stack[i]);
+        } else {
+            auto symb = _stack[i];
+            auto first = current.back();
+            current.pop_back();
+            auto second = current.back();
+            current.pop_back();
+            std::string f, s;
+            if (first->type == GET) {
+                f = dynamic_cast<PolizGet*>(first)->name;
+                f = _tid->GetType(f);
+            } else {
+                bool type = true;
+                for (auto c : dynamic_cast<PolizSymbol*>(first)->string) {
+                    if (c < '0' || c > '9') type = false;
+                }
+                if (type) {
+                    f = "float64";
+                } else {
+                    f = "string";
+                }
+            }
+            if (second->type == GET) {
+                s = dynamic_cast<PolizGet*>(first)->name;
+                s = _tid->GetType(f);
+            } else {
+                bool type = true;
+                for (auto c : dynamic_cast<PolizSymbol*>(second)->string) {
+                    if (c < '0' || c > '9') type = false;
+                }
+                if (type) {
+                    s = "float64";
+                } else {
+                    s = "string";
+                }
+            }
+
+        }
     }
 }

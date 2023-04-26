@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include "Lexeme.h"
+#include "TID.h"
 
 #ifndef LANGUAGE_POLIZGENERATOR_H
 #define LANGUAGE_POLIZGENERATOR_H
@@ -68,8 +69,10 @@ struct ValType {
 };
 
 struct PolizCell {
+public:
     PolizCell(Command _type) : type(_type) { }
     Command type;
+    virtual void f() {int aboba;}
 };
 
 struct PolizAdd : public PolizCell {
@@ -77,6 +80,7 @@ struct PolizAdd : public PolizCell {
 };
 
 struct PolizGet : public PolizCell {
+public:
     PolizGet(const std::string& _name) : PolizCell(GET), name(_name) { }
     std::string name;
 };
@@ -126,6 +130,7 @@ struct PolizInput : public PolizCell {
 struct PolizOperator : public PolizCell {
     PolizOperator() : PolizCell(OPERATOR) {};
     int pos; // -1 if it has already defined
+    std::string oper;
 };
 
 struct OverloadParameters {
@@ -158,6 +163,7 @@ public:
 
 class PolizGenerator {
 public:
+    PolizGenerator(TID* tid) : _tid(tid) {}
     void Push(const Lexeme& lex);
     void Push(PolizCell* cell);
     void MakeExpression(int begin, int end, const std::vector<Lexeme>& _lex);
@@ -165,6 +171,7 @@ private:
     std::vector<PolizCell*> _stack;
     std::vector<int> _last_jmp;
     std::vector<Lexeme> _expr_stack;
+    TID* _tid;
 };
 
 
