@@ -39,14 +39,8 @@ const int DefinitionList::GetOverload(std::string type1, std::string type2, std:
     return _overloadList[ { op, { type1, type2 } } ];
 }
 
-void PolizGenerator::Push(const Lexeme& lex) {
-    PolizCell* ptr;
-    //if (lex.type == "")
-}
-
 void PolizGenerator::Push(PolizCell *cell) {
     _stack.push_back(cell);
-
 }
 
 void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme> &_lex) {
@@ -55,16 +49,18 @@ void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme
     for (int i = begin; i < end; ++i) {
         if (_lex[i].type == "binary") {
             while (!oper.empty() && oper.back().priority >= _lex[i].priority) {
-                Push(oper.back());
+                Push(new PolizOperator(oper.back().string));
                 oper.pop_back();
             }
             oper.push_back(_lex[i]);
         } else {
-            Push(_lex[i]);
+            if (_lex[i].type == "variable") {
+                Push(new PolizGet(_lex[i].string, _tid->GetType(_lex[i].string)));
+            }
         }
     }
     while (!oper.empty()) {
-        Push(oper.back());
+        Push(new PolizOperator(oper.back().string));
         oper.pop_back();
     }
     std::vector<PolizCell*> current;
@@ -72,7 +68,7 @@ void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme
         if (_stack[i]->type != OPERATOR) {
             current.push_back(_stack[i]);
         } else {
-            auto symb = _stack[i];
+            auto symb = dynamic_cast<PolizOperator*>(_stack[i])->oper;
             auto first = current.back();
             current.pop_back();
             auto second = current.back();
@@ -93,8 +89,7 @@ void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme
                 }
             }
             if (second->type == GET) {
-                s = dynamic_cast<PolizGet*>(first)->name;
-                s = _tid->GetType(f);
+                s = dynamic_cast<PolizGet*>(first)->type;
             } else {
                 bool type = true;
                 for (auto c : dynamic_cast<PolizSymbol*>(second)->string) {
@@ -106,7 +101,60 @@ void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme
                     s = "string";
                 }
             }
-
+            if (_tid->IsTypeExist(f) == 2 && _tid->IsTypeExist(s) == 2) {
+                dynamic_cast<PolizOperator*>(_stack[i])->pos = -1;
+            } else {
+                dynamic_cast<PolizOperator*>(_stack[i])->pos = _list->GetOverload(f, s, symb);
+            }
+            current.push_back(new PolizGet("idk", GetResType(f, s, symb)));
         }
     }
+}
+
+std::string PolizGenerator::GetResType(std::string &type1, std::string &type2, std::string &op) {
+    if (type1 == "bool") {
+        if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
+            return type2;
+        }
+    }
+    if (type2 == "bool")  {
+        if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
+            return type1;
+        }
+    }
+    if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
+        if (type2 == "string") return "error";
+        if (type2 == "char") return type2;
+    }
+    if (type1 == "int32") {
+        if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
+            return type2;
+        }
+    }
+    if (type1 == "int64") {
+        if (type2 == "float32" || type2 == "float64") return "float64";
+        if (type2 == "int32" || type2 == "int64") {
+            return type1;
+        }
+    }
+    if (type1 == "float32") {
+        if (type2 == "int32") return type1;
+        if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
+            return "float64";
+        }
+    }
+    if (type1 == "float64") {
+        if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
+            return type1;
+        }
+    }
+    if (type1 == "char") {
+        if (type2 != "string") return type2;
+        return "error";
+    }
+    if (type1 == "string") {
+        if (type2 == "char") return type1;
+        return "error";
+    }
+    return _tid->GetTypeOverload(type2, type1, op);
 }

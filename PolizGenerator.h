@@ -81,8 +81,9 @@ struct PolizAdd : public PolizCell {
 
 struct PolizGet : public PolizCell {
 public:
-    PolizGet(const std::string& _name) : PolizCell(GET), name(_name) { }
+    PolizGet(const std::string& _name, const std::string& _type) : PolizCell(GET), name(_name), type(_type) { }
     std::string name;
+    std::string type;
 };
 
 struct PolizWrite : public PolizCell {
@@ -128,7 +129,7 @@ struct PolizInput : public PolizCell {
 };
 
 struct PolizOperator : public PolizCell {
-    PolizOperator() : PolizCell(OPERATOR) {};
+    PolizOperator(std::string& op) : PolizCell(OPERATOR), oper(op) {};
     int pos; // -1 if it has already defined
     std::string oper;
 };
@@ -163,8 +164,7 @@ public:
 
 class PolizGenerator {
 public:
-    PolizGenerator(TID* tid) : _tid(tid) {}
-    void Push(const Lexeme& lex);
+    PolizGenerator(TID* tid) : _tid(tid), _list(new DefinitionList) {}
     void Push(PolizCell* cell);
     void MakeExpression(int begin, int end, const std::vector<Lexeme>& _lex);
 private:
@@ -172,6 +172,8 @@ private:
     std::vector<int> _last_jmp;
     std::vector<Lexeme> _expr_stack;
     TID* _tid;
+    DefinitionList* _list;
+    std::string GetResType(std::string& type1, std::string& type2, std::string& op);
 };
 
 

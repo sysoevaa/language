@@ -34,7 +34,7 @@ class TID {
   void OpenScope();
   void CloseScope();
   void AddVariable(std::string& type, std::string& name);
-  std::string GetType(std::string& name);
+  std::string GetType(const std::string& name);
   void AddFunction(std::string& name, std::vector<std::pair<std::string,
                    std::string>>& formal_parameters, std::string& return_type);
   std::vector<std::string> GetParameters(std::string& func_name);

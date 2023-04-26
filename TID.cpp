@@ -103,7 +103,7 @@ void TID::AddVariable(std::string &type, std::string &name) {
     _current_tid->AddVariable(type, name);
 }
 
-std::string TID::GetType(std::string &name) {
+std::string TID::GetType(const std::string &name) {
     auto ptr = _current_tid;
     while (ptr && ptr->GetType(name) == "undefined variable") {
         ptr = ptr->GetParent();
