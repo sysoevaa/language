@@ -22,6 +22,7 @@ void DefinitionList::AddCast(std::string type1, std::string type2, int pos) {
     _castList[{type1, type2}] = pos;
     _castList[{type2, type1}] = pos;
     //gg
+    //gggg
 }
 
 const int DefinitionList::GetFunc(std::string name) {
