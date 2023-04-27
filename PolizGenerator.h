@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include "Lexeme.h"
+#include "TID.h"
 
 #ifndef LANGUAGE_POLIZGENERATOR_H
 #define LANGUAGE_POLIZGENERATOR_H
@@ -58,7 +59,8 @@ enum Command {
     FUNCJUMP = 8,
     METHODJUMP = 9,
     INPUT = 10,
-    OUTPUT = 11
+    OUTPUT = 11,
+    OPERATOR = 12
 };
 
 
@@ -67,8 +69,10 @@ struct ValType {
 };
 
 struct PolizCell {
+public:
     PolizCell(Command _type) : type(_type) { }
     Command type;
+    virtual void f() {int aboba;}
 };
 
 struct PolizAdd : public PolizCell {
@@ -76,12 +80,14 @@ struct PolizAdd : public PolizCell {
 };
 
 struct PolizGet : public PolizCell {
-    PolizGet(std::string _name) : PolizCell(GET), name(_name) { }
+public:
+    PolizGet(const std::string& _name, const std::string& _type) : PolizCell(GET), name(_name), type(_type) { }
     std::string name;
+    std::string type;
 };
 
 struct PolizWrite : public PolizCell {
-    PolizWrite(std::string _name) : PolizCell(WRITE), name(_name) { }
+    PolizWrite(const std::string& _name) : PolizCell(WRITE), name(_name) { }
     std::string name;
 };
 
@@ -100,7 +106,7 @@ struct PolizReturn : public PolizCell {
 };
 
 struct PolizSymbol : public PolizCell {
-    PolizSymbol(std::string _string) : PolizCell(SYMBOL), string(_string) { }
+    PolizSymbol(const std::string& _string) : PolizCell(SYMBOL), string(_string) { }
     std::string string;
 };
 
@@ -122,9 +128,15 @@ struct PolizInput : public PolizCell {
     PolizInput() : PolizCell(INPUT) { }
 };
 
+struct PolizOperator : public PolizCell {
+    PolizOperator(std::string& op) : PolizCell(OPERATOR), oper(op) {};
+    int pos; // -1 if it has already defined
+    std::string oper;
+};
+
 struct OverloadParameters {
     OverloadParameters(std::string _type1, std::string _type2, std::string _op) :
-    type1(_type1), type2(_type2), op(_op) { }
+            type1(_type1), type2(_type2), op(_op) { }
     std::string type1;
     std::string type2;
     std::string op;
@@ -152,12 +164,16 @@ public:
 
 class PolizGenerator {
 public:
-    void Push(Lexeme lex);
-
+    PolizGenerator(TID* tid) : _tid(tid), _list(new DefinitionList) {}
+    void Push(PolizCell* cell);
+    void MakeExpression(int begin, int end, const std::vector<Lexeme>& _lex);
 private:
     std::vector<PolizCell*> _stack;
     std::vector<int> _last_jmp;
-
+    std::vector<Lexeme> _expr_stack;
+    TID* _tid;
+    DefinitionList* _list;
+    std::string GetResType(std::string& type1, std::string& type2, std::string& op);
 };
 
 

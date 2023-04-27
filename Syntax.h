@@ -2,11 +2,12 @@
 #include "ExpCheck.h"
 #include "TID.h"
 #include <iostream>
+#include "PolizGenerator.h"
 
 
 class SyntaxAnalyser {
  public:
-  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID), expCheck(_tid) {}
+  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID), expCheck(_tid), _gen(new PolizGenerator(_tid)){}
 
   void gc();
 
@@ -91,4 +92,7 @@ class SyntaxAnalyser {
   bool IAMRETURNINGSOMETHING = false;
   std::string method_return_type = "null";
   std::string method_name = "null";
+  int _begin_index, _end_index;
+  PolizGenerator* _gen;
+
 };
