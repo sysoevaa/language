@@ -21,6 +21,7 @@ void DefinitionList::AddOverload(std::string type1, std::string type2, std::stri
 void DefinitionList::AddCast(std::string type1, std::string type2, int pos) {
     _castList[{type1, type2}] = pos;
     _castList[{type2, type1}] = pos;
+    //gg
 }
 
 const int DefinitionList::GetFunc(std::string name) {
