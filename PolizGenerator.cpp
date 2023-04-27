@@ -160,3 +160,23 @@ std::string PolizGenerator::GetResType(std::string &type1, std::string &type2, s
     }
     return _tid->GetTypeOverload(type2, type1, op);
 }
+
+void CycleSetter::OpenScope(int startPos) {
+    _scopeStack.push({startPos, std::vector<PolizJump*>()});
+}
+
+void CycleSetter::CloseScope(int endPos) {
+    std::vector<PolizJump*> tmp = _scopeStack.top().second;
+    for (auto i : tmp) {
+        i->pos = endPos;
+    }
+    _scopeStack.pop();
+}
+
+const int CycleSetter::GetContinue() {
+    return _scopeStack.top().first;
+}
+
+void CycleSetter::PushBreak(PolizJump *breakToPush) {
+    _scopeStack.top().second.push_back(breakToPush);
+}

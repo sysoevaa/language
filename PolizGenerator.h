@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <stack>
 #include "Lexeme.h"
 #include "TID.h"
 
@@ -174,6 +175,18 @@ private:
     TID* _tid;
     DefinitionList* _list;
     std::string GetResType(std::string& type1, std::string& type2, std::string& op);
+};
+
+class CycleSetter {
+public:
+    CycleSetter() { }
+    void OpenScope(int startPos);
+    void CloseScope(int endPos);
+    const int GetContinue();
+    void PushBreak(PolizJump* breakToPush);
+
+private :
+    std::stack<std::pair<int, std::vector<PolizJump*>>> _scopeStack;
 };
 
 
