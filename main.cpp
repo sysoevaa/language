@@ -10,8 +10,6 @@ int main() {
     Analyser analyser;
     std::string not_divided;
     char k;
-
-    // 
     while (in_stream.get(k)) {
         not_divided.push_back(k);
     }
