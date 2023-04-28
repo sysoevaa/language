@@ -308,6 +308,13 @@ void SyntaxAnalyser::overload() {
     gc();
     is_in_function = false;
 }
+//сделать унарочку
+void SyntaxAnalyser::unaryProcess(std::string type) {
+    if (_lex[_ind].type == "unary") {
+        if (_tid->IsTypeExist(type) != 2) throw std::logic_error("unary can't be applied to that type");
+        gc();
+    }
+}
 
 void SyntaxAnalyser::expression() {
     if (_lex[_ind].type == "number") {
@@ -514,6 +521,7 @@ void SyntaxAnalyser::expression() {
         return;
 
     }
+
     throw std::logic_error("unexpected symbols");
 }
 
