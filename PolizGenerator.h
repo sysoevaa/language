@@ -60,7 +60,8 @@ enum Command {
     METHODJUMP = 9,
     INPUT = 10,
     OUTPUT = 11,
-    OPERATOR = 12
+    OPERATOR = 12,
+    BRACKET = 13
 };
 
 
@@ -129,9 +130,10 @@ struct PolizInput : public PolizCell {
 };
 
 struct PolizOperator : public PolizCell {
-    PolizOperator(std::string& op) : PolizCell(OPERATOR), oper(op) {};
+    PolizOperator(std::string& op, int priority) : PolizCell(OPERATOR), oper(op), prior(priority) {};
     int pos; // -1 if it has already defined
     std::string oper;
+    int prior;
 };
 
 struct OverloadParameters {
@@ -164,9 +166,14 @@ public:
 
 class PolizGenerator {
 public:
-    PolizGenerator(TID* tid) : _tid(tid), _list(new DefinitionList) {}
+    PolizGenerator(TID* tid, DefinitionList* list) : _tid(tid), _list(list) {}
     void Push(PolizCell* cell);
+    void AddFunction(const std::string& func_name);
+    void AddCast(const std::string& type1, const std::string type2);
+    void AddMethod(const std::string& strct, const std::string& method);
     void MakeExpression(int begin, int end, const std::vector<Lexeme>& _lex);
+    void Erase();
+
 private:
     std::vector<PolizCell*> _stack;
     std::vector<int> _last_jmp;
