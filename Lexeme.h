@@ -138,9 +138,11 @@ class Analyser {
               lexeme_string += string[i];
               ++i;
               divided.push_back(Lexeme("punct", lexeme_string, num));
+              if (divided.back().string == ".") {
+                  divided.back().priority = 10;
+              }
               continue;
           }
-
           if (isBracket(string[i])) {
               lexeme_string += string[i];
               ++i;

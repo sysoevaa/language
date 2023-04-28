@@ -45,9 +45,7 @@ void PolizGenerator::Push(PolizCell *cell) {
     _stack.push_back(cell);
 }
 
-void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme> &_lex) {
-    std::vector<Lexeme> oper
-}
+
 
 std::string PolizGenerator::GetResType(std::string &type1, std::string &type2, std::string &op) {
     if (type1 == "bool") {
@@ -95,6 +93,27 @@ std::string PolizGenerator::GetResType(std::string &type1, std::string &type2, s
         return "error";
     }
     return _tid->GetTypeOverload(type2, type1, op);
+}
+
+void PolizGenerator::AddFunction(const std::string &func_name) {
+    Push(new PolizFuncJump(_list->GetFunc(func_name)));
+}
+
+void PolizGenerator::AddCast(const std::string &type1, const std::string& type2) {
+    Push(new PolizFuncJump(_list->GetCast(type1, type2)));
+}
+
+void PolizGenerator::AddMethod(const std::string &strct, const std::string &method) {
+    Push(new PolizOperator((std::string&)".", -1));
+    dynamic_cast<PolizOperator*>(_stack.back())->pos = _list->GetMethod(strct, method);
+}
+
+void PolizGenerator::Erase() {
+    _stack.pop_back();
+}
+
+void PolizGenerator::MakeExpression() {
+
 }
 
 void CycleSetter::OpenScope(int startPos) {

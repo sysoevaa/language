@@ -170,13 +170,13 @@ public:
     PolizGenerator(TID* tid, DefinitionList* list) : _tid(tid), _list(list) {}
     void Push(PolizCell* cell);
     void AddFunction(const std::string& func_name);
-    void AddCast(const std::string& type1, const std::string type2);
+    void AddCast(const std::string& type1, const std::string& type2);
     void AddMethod(const std::string& strct, const std::string& method);
-    void MakeExpression(int begin, int end, const std::vector<Lexeme>& _lex);
+    void MakeExpression();
     void Erase();
 
 private:
-    std::vector<PolizCell*> _stack;
+    std::vector<PolizCell*> _stack, _res_stack;
     std::vector<int> _last_jmp;
     std::vector<Lexeme> _expr_stack;
     TID* _tid;

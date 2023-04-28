@@ -407,13 +407,13 @@ void SyntaxAnalyser::expression() {
                 // break;
                 continue;
             }
-            _gen->Push(new PolizOperator((std::string& ) ".", 0));
+            _gen->Push(new PolizOperator((std::string& ) ".", -1));
             type1 = _tid->GetMember(type1, _lex[_ind - 1].string);
             _gen->Push(new PolizGet(_lex[_ind - 1].string, type1));
             expCheck.ChangeLast(type1);
             exp_last = expCheck.GetLast();
             if (_lex[_ind].string == "[") {
-                _gen->Push(new PolizOperator((std::string& )"[]", 0));
+                _gen->Push(new PolizOperator((std::string& )"[]", -1));
                 expCheck.Process(_lex[_ind]);
                 gc();
                 expression();
@@ -476,7 +476,7 @@ void SyntaxAnalyser::expression() {
 
 
 
-    if (_lex[_ind].type == "unary") {
+    if (_lex[_ind].type == "unary") { // rewritten
         expCheck.Process(_lex[_ind]);
         gc();
 
@@ -484,8 +484,8 @@ void SyntaxAnalyser::expression() {
 
         auto type1 = _tid->GetType(_lex[_ind - 1].string);
         expCheck.Process(Lexeme("variable", type1, 0));
-        _gen->Push(new PolizGet(_lex[_ind - 1].string, type1));
-        _gen->Push(new PolizOperator(_lex[_ind - 1].string, -1));
+        /*_gen->Push(new PolizGet(_lex[_ind - 1].string, type1));
+        _gen->Push(new PolizOperator(_lex[_ind - 1].string, -1));*/
         Lexeme exp_last = expCheck.GetLast();
 
         //array check
