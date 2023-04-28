@@ -726,7 +726,7 @@ void SyntaxAnalyser::lexpression() {
                 throw std::logic_error("\")\" expected");
             }
             gc();
-            return;
+
         }
 
         type1 = _tid->GetMember(type1, method);
