@@ -137,6 +137,11 @@ struct PolizOperator : public PolizCell {
     int prior;
 };
 
+struct PolizBracket : public PolizCell {
+    PolizBracket(char br) : PolizCell(BRACKET), sym(br) {};
+    char sym;
+};
+
 struct OverloadParameters {
     OverloadParameters(std::string _type1, std::string _type2, std::string _op) :
             type1(_type1), type2(_type2), op(_op) { }
@@ -176,9 +181,8 @@ public:
     void Erase();
 
 private:
-    std::vector<PolizCell*> _stack, _res_stack;
+    std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;
-    std::vector<Lexeme> _expr_stack;
     TID* _tid;
     DefinitionList* _list;
     std::string GetResType(std::string& type1, std::string& type2, std::string& op);

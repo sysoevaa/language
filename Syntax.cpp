@@ -84,11 +84,7 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
         }
         if (_lex[_ind].string == "=") {
             gc();
-            _begin_index = _ind;
             expression();
-            _end_index = _ind;
-            _gen->MakeExpression(_begin_index, _end_index, _lex);
-            _begin_index = _end_index = -1;
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
             if (IsEqualTypes(var_type, lex.string) == "error") {
@@ -147,11 +143,7 @@ void SyntaxAnalyser::globalNamespace() {
         }
         if (_lex[_ind + 2].string == "=") {
             gc();
-            _begin_index = _ind;
             expression();
-            _end_index = _ind;
-            _gen->MakeExpression(_begin_index, _end_index, _lex);
-            _begin_index = _end_index = -1;
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
             if (IsEqualTypes(var_type, lex.string) == "error") {
@@ -230,11 +222,7 @@ void SyntaxAnalyser::member() {
         }
         if (_lex[_ind].string == "=") {
             gc();
-            _begin_index = _ind;
             expression();
-            _end_index = _ind;
-            _gen->MakeExpression(_begin_index, _end_index, _lex);
-            _begin_index = _end_index = -1;
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
             if (lex.string != member_type) throw std::logic_error("unexpected type");
@@ -374,14 +362,14 @@ void SyntaxAnalyser::expression() {
         //std::cout << "exp_last = " << exp_last.string << "\n";
         //array check
         if (_lex[_ind].string == "[") {
-            _gen->Push(new PolizOperator((std::string &) "[]", 0));
-            _gen->Push(new PolizCell(BRACKET));
+            _gen->Push(new PolizBracket('['));
             expCheck.Process(_lex[_ind]);
             gc();
             expression();
             if (_lex[_ind].string != "]") {
                 throw std::logic_error ("] expected");
             }
+            _gen->Push(new PolizBracket(']'));
             expCheck.Process(_lex[_ind]);
             gc();
             //std::cout << "exp_last = " << exp_last.string << "\n";
@@ -413,13 +401,14 @@ void SyntaxAnalyser::expression() {
             expCheck.ChangeLast(type1);
             exp_last = expCheck.GetLast();
             if (_lex[_ind].string == "[") {
-                _gen->Push(new PolizOperator((std::string& )"[]", -1));
+                _gen->Push(new PolizBracket('['));
                 expCheck.Process(_lex[_ind]);
                 gc();
                 expression();
                 if (_lex[_ind].string != "]") {
                     throw std::logic_error ("] expected");
                 }
+                _gen->Push(new PolizBracket(']'));
                 expCheck.Process(_lex[_ind]);
                 gc();
                 expCheck.ChangeLast(GetArrayType(exp_last.string));
@@ -613,11 +602,7 @@ void SyntaxAnalyser::determinantes() {
         if (!is_in_function) throw std::logic_error("return outside of function");
         gc();
         if (_lex[_ind].string != ";") {
-            _begin_index = _ind;
             expression();
-            _end_index = _ind;
-            _gen->MakeExpression(_begin_index, _end_index, _lex);
-            _begin_index = _end_index = -1;
             Lexeme lex = expCheck.GetType();
             expCheck.Clear();
             auto return_type = _tid->GetCurrentReturnType();
@@ -708,11 +693,7 @@ void SyntaxAnalyser::lexpression() {
     if (_lex[_ind].string == "[") {
         gc();
         expCheck.Clear();
-        _begin_index = _ind;
         expression();
-        _end_index = _ind;
-        _gen->MakeExpression(_begin_index, _end_index, _lex);
-        _begin_index = _end_index = -1;
         Lexeme lex = expCheck.GetType();
         std::string int_type1 = "int32", int_type2 = "int64";
         if (IsEqualTypes(int_type1, lex.string) == "error") {
@@ -749,11 +730,7 @@ void SyntaxAnalyser::lexpression() {
         if (_lex[_ind].string == "[") {
             gc();
             expCheck.Clear();
-            _begin_index = _ind;
             expression();
-            _end_index = _ind;
-            _gen->MakeExpression(_begin_index, _end_index, _lex);
-            _begin_index = _end_index = -1;
             Lexeme lex = expCheck.GetType();
             std::string int_type1 = "int32", int_type2 = "int64";
             if (IsEqualTypes(int_type1, lex.string) == "error") {
@@ -769,11 +746,7 @@ void SyntaxAnalyser::lexpression() {
 
     if (_lex[_ind].string == "=") {
         gc();
-        _begin_index = _ind;
         expression();
-        _end_index = _ind;
-        _gen->MakeExpression(_begin_index, _end_index, _lex);
-        _begin_index = _end_index = -1;
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         if (IsEqualTypes(type1, lex.string) == "error") throw std::logic_error("trying to put " + lex.string + " into " +
@@ -973,11 +946,7 @@ void SyntaxAnalyser::input() {
 void SyntaxAnalyser::If() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
-    _begin_index = _ind;
     expression();
-    _end_index = _ind;
-    _gen->MakeExpression(_begin_index, _end_index, _lex);
-    _begin_index = _end_index = -1;
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
     std::string b_string = "bool";
@@ -1000,11 +969,7 @@ void SyntaxAnalyser::If() {
             gc();
             if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
             gc();
-            _begin_index = _ind;
             expression();
-            _end_index = _ind;
-            _gen->MakeExpression(_begin_index, _end_index, _lex);
-            _begin_index = _end_index = -1;
             Lexeme lex1 = expCheck.GetType();
             expCheck.Clear();
             if (IsEqualTypes(lex.string, b_string) == "error") {
@@ -1026,11 +991,7 @@ void SyntaxAnalyser::If() {
 void SyntaxAnalyser::While() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
-    _begin_index = _ind;
     expression();
-    _end_index = _ind;
-    _gen->MakeExpression(_begin_index, _end_index, _lex);
-    _begin_index = _end_index = -1;
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
     std::string b_string = "bool";
@@ -1049,11 +1010,7 @@ void SyntaxAnalyser::While() {
 void SyntaxAnalyser::dowhile() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
-    _begin_index = _ind;
     expression();
-    _end_index = _ind;
-    _gen->MakeExpression(_begin_index, _end_index, _lex);
-    _begin_index = _end_index = -1;
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
     std::string b_string = "bool";
@@ -1112,11 +1069,7 @@ void SyntaxAnalyser::For() {
     } else if (diff == 2) {
         if (_lex[_ind].string == "=") {
             gc();
-            _begin_index = _ind;
             expression();
-            _end_index = _ind;
-            _gen->MakeExpression(_begin_index, _end_index, _lex);
-            _begin_index = _end_index = -1;
             Lexeme lex1 = expCheck.GetType();
             expCheck.Clear();
             if (IsEqualTypes(lex1.string, defined_variable) == "error") {
@@ -1125,11 +1078,7 @@ void SyntaxAnalyser::For() {
         }
         if (_lex[_ind].string != ";") throw std::logic_error("; expected");
         gc();
-        _begin_index = _ind;
         expression();
-        _end_index = _ind;
-        _gen->MakeExpression(_begin_index, _end_index, _lex);
-        _begin_index = _end_index = -1;
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         std::string b_string = "bool";
@@ -1169,11 +1118,7 @@ void SyntaxAnalyser::variable_def() {
     }
     if (_lex[_ind].string != "=") return;
     gc();
-    _begin_index = _ind;
     expression();
-    _end_index = _ind;
-    _gen->MakeExpression(_begin_index, _end_index, _lex);
-    _begin_index = _end_index = -1;
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
     if (lex.string != var_type) throw std::logic_error("trying to put " + lex.string + " into " + var_type);
@@ -1208,11 +1153,7 @@ void SyntaxAnalyser::array_def() {
     variable();
     if (_lex[_ind].string == "(") {
         gc();
-        _begin_index = _ind;
         expression();
-        _end_index = _ind;
-        _gen->MakeExpression(_begin_index, _end_index, _lex);
-        _begin_index = _end_index = -1;
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         std::string int_type = "int32";

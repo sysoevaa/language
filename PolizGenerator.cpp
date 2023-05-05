@@ -45,8 +45,6 @@ void PolizGenerator::Push(PolizCell *cell) {
     _stack.push_back(cell);
 }
 
-
-
 std::string PolizGenerator::GetResType(std::string &type1, std::string &type2, std::string &op) {
     if (type1 == "bool") {
         if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
@@ -113,7 +111,36 @@ void PolizGenerator::Erase() {
 }
 
 void PolizGenerator::MakeExpression() {
-
+    for (int i = 0; i < (int)_stack.size(); ++i) {
+        if (_stack[i]->type == BRACKET) {
+            auto cur = dynamic_cast<PolizBracket*>(_stack[i]);
+            if (cur->sym == '[' || cur->sym == '(') {
+                _op_stack.push_back(cur);
+            } else {
+                while (_op_stack.back()->type != BRACKET && dynamic_cast<PolizBracket*>(_op_stack.back())->sym !=
+                                                                     (cur->sym == ')'? '(' : '[')) {
+                    _res_stack.push_back(_op_stack.back());
+                    _op_stack.pop_back();
+                }
+                _op_stack.pop_back();
+                if (cur->sym == ']') {
+                    _res_stack.push_back(new PolizOperator((std::string&) "[]", -1));
+                }
+            }
+        } else if (_stack[i]->type == SYMBOL || _stack[i]->type == GET) {
+            _res_stack.push_back(_stack[i]);
+        } else if (_stack[i]->type == OPERATOR) {
+            auto cur = dynamic_cast<PolizOperator*> (_stack[i]);
+            while (dynamic_cast<PolizOperator*>(_op_stack.back())->prior >= cur->prior) {
+                if (dynamic_cast<PolizOperator*>(_op_stack.back())->oper != "**") {
+                    _res_stack.push_back(_op_stack.back());
+                    _op_stack.pop_back();
+                } else {
+                    if (cur->prior == )
+                }
+            }
+        }
+    }
 }
 
 void CycleSetter::OpenScope(int startPos) {
