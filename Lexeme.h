@@ -139,7 +139,7 @@ class Analyser {
               ++i;
               divided.push_back(Lexeme("punct", lexeme_string, num));
               if (divided.back().string == ".") {
-                  divided.back().priority = 10;
+                  divided.back().priority = 0;
               }
               continue;
           }

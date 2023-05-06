@@ -65,11 +65,6 @@ enum Command {
     BRACKET = 13
 };
 
-
-struct ValType {
-
-};
-
 struct PolizCell {
 public:
     PolizCell(Command _type) : type(_type) { }
@@ -113,13 +108,17 @@ struct PolizSymbol : public PolizCell {
 };
 
 struct PolizFuncJump : public PolizCell {
-    PolizFuncJump(int _pos) : PolizCell(FUNCJUMP), pos(_pos) { }
-    int pos;
+    PolizFuncJump(int _pos, int _count, std::string& _type) :
+    PolizCell(FUNCJUMP), pos(_pos), count(_count), type(_type) { }
+    int pos, count; // position and amount of parameters;
+    std::string type;
 };
 
 struct PolizMethodJump : public PolizCell {
-    PolizMethodJump(int _pos) : PolizCell(METHODJUMP), pos(_pos) { }
-    int pos;
+    PolizMethodJump(int _pos, int _count, std::string& _type) :
+    PolizCell(METHODJUMP), pos(_pos), count(_count), type(_type) { }
+    int pos, count;
+    std::string type;
 };
 
 struct PolizOutput : public PolizCell {
@@ -174,18 +173,18 @@ class PolizGenerator {
 public:
     PolizGenerator(TID* tid, DefinitionList* list) : _tid(tid), _list(list) {}
     void Push(PolizCell* cell);
-    void AddFunction(const std::string& func_name);
-    void AddCast(const std::string& type1, const std::string& type2);
-    void AddMethod(const std::string& strct, const std::string& method);
+    void AddFunction(std::string& func_name);
+    void AddCast(std::string& type1, std::string& type2);
+    void AddMethod(std::string& strct, std::string& method);
     void MakeExpression();
     void Erase();
-
+    void SetJumps(int begin, int end);
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;
     TID* _tid;
     DefinitionList* _list;
-    std::string GetResType(std::string& type1, std::string& type2, std::string& op);
+    std::pair<std::string, int> GetResType(PolizCell* first, PolizCell* second, std::string& op);
 };
 
 class CycleSetter {
