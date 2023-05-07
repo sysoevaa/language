@@ -55,8 +55,7 @@ void PolizGenerator::AddCast( std::string &type1,  std::string& type2) {
 }
 
 void PolizGenerator::AddMethod( std::string &strct,  std::string &method) {
-    Push(new PolizOperator((std::string&)".", 0));
-    dynamic_cast<PolizOperator*>(_stack.back())->pos = _list->GetMethod(strct, method);
+    _stack.push_back(new Poli)
 }
 
 void PolizGenerator::Erase() {
@@ -100,6 +99,8 @@ void PolizGenerator::MakeExpression() {
             }
         } else if (_stack[i]->type == FUNCJUMP) {
             _res_stack.push_back(_stack[i]);
+        } else if (_stack[i]->type == METHODJUMP) {
+
         }
     }
     SetJumps(begin, (int)_res_stack.size());
@@ -234,6 +235,10 @@ void PolizGenerator::print(std::ofstream &out) {
             out << "method call to " << dynamic_cast<PolizMethodJump*>(cell)->pos << '\n';
         } else if (cell->type == SYMBOL) {
             out << "symbol " << dynamic_cast<PolizSymbol*>(cell)->string << '\n';
+        } else if (cell->type == INPUT) {
+            out << "get from user variable\n";
+        } else if (cell->type == OUTPUT) {
+            out << "print variable\n";
         }
     }
 }

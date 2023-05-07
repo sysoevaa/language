@@ -381,7 +381,7 @@ void SyntaxAnalyser::expression() {
             gc();
             variable();
             if (_lex[_ind].string == "(") {
-                _gen->AddMethod(_tid->GetType(_lex[_ind - 2].string), _lex[_ind - 1].string);
+                //_gen->AddMethod(_tid->GetType(_lex[_ind - 2].string), _lex[_ind - 1].string);
                 _parameter_arr = _tid->GetMethodParameters(type1, _lex[_ind - 1].string);
                 std::string method_name_ = _lex[_ind - 1].string;
                 parameters();
