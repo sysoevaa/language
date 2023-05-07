@@ -61,7 +61,8 @@ enum Command {
     METHODJUMP = 9,
     INPUT = 10,
     OUTPUT = 11,
-    OPERATOR = 12
+    OPERATOR = 12,
+    EXECMARKER = 13
 };
 
 
@@ -133,6 +134,10 @@ struct PolizOperator : public PolizCell {
     PolizOperator(std::string& op) : PolizCell(OPERATOR), oper(op) {};
     int pos; // -1 if it has already defined
     std::string oper;
+};
+
+struct PolizExecMarker : public PolizCell {
+    PolizExecMarker() : PolizCell(EXECMARKER) { };
 };
 
 struct OverloadParameters {
