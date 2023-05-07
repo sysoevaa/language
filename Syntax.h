@@ -7,8 +7,9 @@
 
 class SyntaxAnalyser {
  public:
-  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID), expCheck(_tid), _gen(new PolizGenerator(_tid)){}
-
+  SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID), expCheck(_tid), _list(new DefinitionList) {
+      _gen = new PolizGenerator(_tid, _list);
+  }
   void gc();
 
   bool type();
@@ -96,5 +97,5 @@ class SyntaxAnalyser {
   std::string method_name = "null";
   int _begin_index, _end_index;
   PolizGenerator* _gen;
-
+  DefinitionList* _list;
 };

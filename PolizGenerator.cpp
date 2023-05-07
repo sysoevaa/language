@@ -45,120 +45,202 @@ void PolizGenerator::Push(PolizCell *cell) {
     _stack.push_back(cell);
 }
 
-void PolizGenerator::MakeExpression(int begin, int end, const std::vector<Lexeme> &_lex) {
-    std::vector<Lexeme> oper;
-    int st_idx = (int) _stack.size();
-    for (int i = begin; i < end; ++i) {
-        if (_lex[i].type == "binary") {
-            while (!oper.empty() && oper.back().priority >= _lex[i].priority) {
-                Push(new PolizOperator(oper.back().string));
-                oper.pop_back();
+void PolizGenerator::AddFunction(std::string &func_name) {
+    auto type = _tid->GetTypeFunction(func_name);
+    Push(new PolizFuncJump(_list->GetFunc(func_name), _tid->GetParameters(func_name).size(), type));
+}
+
+void PolizGenerator::AddCast( std::string &type1,  std::string& type2) {
+    Push(new PolizFuncJump(_list->GetCast(type1, type2), 1, type2));
+}
+
+void PolizGenerator::AddMethod( std::string &strct,  std::string &method) {
+    _stack.push_back(new Poli)
+}
+
+void PolizGenerator::Erase() {
+    _stack.pop_back();
+}
+
+void PolizGenerator::MakeExpression() {
+    int begin = _res_stack.size();
+    for (int i = 0; i < (int)_stack.size(); ++i) {
+        if (_stack[i]->type == BRACKET) {
+            auto cur = dynamic_cast<PolizBracket*>(_stack[i]);
+            if (cur->sym == '[' || cur->sym == '(') {
+                _op_stack.push_back(cur);
+            } else {
+                while (_op_stack.back()->type != BRACKET && dynamic_cast<PolizBracket*>(_op_stack.back())->sym !=
+                                                                     (cur->sym == ')'? '(' : '[')) {
+                    _res_stack.push_back(_op_stack.back());
+                    _op_stack.pop_back();
+                }
+                _op_stack.pop_back();
+                if (cur->sym == ']') {
+                    _res_stack.push_back(new PolizOperator((std::string&) "[]", -1));
+                }
             }
-            oper.push_back(_lex[i]);
-        } else {
-            if (_lex[i].type == "variable") {
-                Push(new PolizGet(_lex[i].string, _tid->GetType(_lex[i].string)));
+        } else if (_stack[i]->type == SYMBOL || _stack[i]->type == GET) {
+            _res_stack.push_back(_stack[i]);
+        } else if (_stack[i]->type == OPERATOR) {
+            auto cur = dynamic_cast<PolizOperator*> (_stack[i]);
+            while (dynamic_cast<PolizOperator*>(_op_stack.back())->prior >= cur->prior) {
+                if (dynamic_cast<PolizOperator*>(_op_stack.back())->oper != "**") {
+                    _res_stack.push_back(_op_stack.back());
+                    _op_stack.pop_back();
+                } else {
+                    if (cur->prior != dynamic_cast<PolizOperator*>(_op_stack.back())->prior) {
+                        break;
+                    } else {
+                        _res_stack.push_back(_op_stack.back());
+                        _op_stack.pop_back();
+                    }
+                }
             }
+        } else if (_stack[i]->type == FUNCJUMP) {
+            _res_stack.push_back(_stack[i]);
+        } else if (_stack[i]->type == METHODJUMP) {
+
         }
     }
-    while (!oper.empty()) {
-        Push(new PolizOperator(oper.back().string));
-        oper.pop_back();
-    }
-    std::vector<PolizCell*> current;
-    for (int i = st_idx; i < _stack.size(); ++i) {
-        if (_stack[i]->type != OPERATOR) {
-            current.push_back(_stack[i]);
-        } else {
-            auto symb = dynamic_cast<PolizOperator*>(_stack[i])->oper;
-            auto first = current.back();
-            current.pop_back();
-            auto second = current.back();
-            current.pop_back();
-            std::string f, s;
-            if (first->type == GET) {
-                f = dynamic_cast<PolizGet*>(first)->name;
-                f = _tid->GetType(f);
-            } else {
-                bool type = true;
-                for (auto c : dynamic_cast<PolizSymbol*>(first)->string) {
-                    if (c < '0' || c > '9') type = false;
-                }
-                if (type) {
-                    f = "float64";
-                } else {
-                    f = "string";
-                }
+    SetJumps(begin, (int)_res_stack.size());
+}
+
+void PolizGenerator::SetJumps(int begin, int end) {
+    std::vector<PolizCell*> cur;
+    for (int i = begin; i < end; ++i) {
+        if (_res_stack[i]->type == GET || _res_stack[i]->type == SYMBOL) {
+            cur.push_back(_res_stack[i]);
+        } else if (_res_stack[i]->type == FUNCJUMP) {
+            for (int j = 0; j < dynamic_cast<PolizFuncJump*>(_res_stack[i])->count; ++j) {
+                cur.pop_back();
             }
-            if (second->type == GET) {
-                s = dynamic_cast<PolizGet*>(first)->type;
-            } else {
-                bool type = true;
-                for (auto c : dynamic_cast<PolizSymbol*>(second)->string) {
-                    if (c < '0' || c > '9') type = false;
-                }
-                if (type) {
-                    s = "float64";
-                } else {
-                    s = "string";
-                }
+            cur.push_back(new PolizGet("RETURN FROM FUNCTION", dynamic_cast<PolizFuncJump*>(_res_stack[i])->type));
+        } else if (_res_stack[i]->type == OPERATOR) {
+            auto first = cur.back(); cur.pop_back();
+            auto second = cur.back(); cur.pop_back();
+            if (dynamic_cast<PolizOperator*>(_res_stack[i])->oper == ".") {
+                _tid->GetMember(dynamic_cast<PolizGet *>(second)->type, dynamic_cast<PolizGet *>(first)->name);
+                break;
             }
-            if (_tid->IsTypeExist(f) == 2 && _tid->IsTypeExist(s) == 2) {
-                dynamic_cast<PolizOperator*>(_stack[i])->pos = -1;
-            } else {
-                dynamic_cast<PolizOperator*>(_stack[i])->pos = _list->GetOverload(f, s, symb);
+            auto [res, jmp] = GetResType(second, first, dynamic_cast<PolizOperator*>(_res_stack[i])->oper);
+            cur.push_back(new PolizGet("VALUE FROM EXPR)",res));
+            dynamic_cast<PolizOperator*>(_res_stack[i])->pos = jmp;
+
+        } else if (_res_stack[i]->type == METHODJUMP) {
+            for (int j = 0; j < dynamic_cast<PolizMethodJump*>(_res_stack[i])->count; ++j) {
+                cur.pop_back();
             }
-            current.push_back(new PolizGet("idk", GetResType(f, s, symb)));
+            cur.push_back(new PolizGet("RETURN FROM METHOD", dynamic_cast<PolizMethodJump*>(_res_stack[i])->type));
         }
     }
 }
 
-std::string PolizGenerator::GetResType(std::string &type1, std::string &type2, std::string &op) {
+std::pair<std::string, int> PolizGenerator::GetResType(PolizCell *first, PolizCell *second, std::string &op) {
+    std::string type1, type2;
+    if (first->type == SYMBOL) {
+        auto val = dynamic_cast<PolizSymbol*>(first)->string;
+        bool num = true;
+        for (auto c : val) {
+            if (c >= '9' || c <= '0') {
+                num = false;
+            }
+        }
+        if (num) {
+            type1 = "float64";
+        } else {
+            type1 = "string";
+        }
+    } else {
+        type1 = dynamic_cast<PolizGet*>(first)->type;
+    }
+    if (second->type == SYMBOL) {
+        auto val = dynamic_cast<PolizSymbol*>(second)->string;
+        bool num = true;
+        for (auto c : val) {
+            if (c >= '9' || c <= '0') {
+                num = false;
+            }
+        }
+        if (num) {
+            type2 = "float64";
+        } else {
+            type2 = "string";
+        }
+    } else {
+        type2 = dynamic_cast<PolizGet*>(first)->type;
+    }
     if (type1 == "bool") {
         if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
-            return type2;
+            return {type2, -1};
         }
     }
     if (type2 == "bool")  {
         if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
-            return type1;
+            return {type1, -1};
         }
     }
     if (type1 == "int32" || type1 == "int64" || type1 == "float32" || type1 == "float64") {
-        if (type2 == "string") return "error";
-        if (type2 == "char") return type2;
+        if (type2 == "string") return {"error", -1};
+        if (type2 == "char") return {type2, -1};
     }
     if (type1 == "int32") {
         if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
-            return type2;
+            return {type2, -1};
         }
     }
     if (type1 == "int64") {
-        if (type2 == "float32" || type2 == "float64") return "float64";
+        if (type2 == "float32" || type2 == "float64") return {"float64", -1};
         if (type2 == "int32" || type2 == "int64") {
-            return type1;
+            return {type1, -1};
         }
     }
     if (type1 == "float32") {
-        if (type2 == "int32") return type1;
+        if (type2 == "int32") return {type1, -1};
         if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
-            return "float64";
+            return {"float64", -1};
         }
     }
     if (type1 == "float64") {
         if (type2 == "int32" || type2 == "int64" || type2 == "float32" || type2 == "float64") {
-            return type1;
+            return {type1, -1};
         }
     }
     if (type1 == "char") {
-        if (type2 != "string") return type2;
-        return "error";
+        if (type2 != "string") return {type2, -1};
+        return {"error", -1};
     }
     if (type1 == "string") {
-        if (type2 == "char") return type1;
-        return "error";
+        if (type2 == "char") return {type1, -1};
+        return {"error", -1};
     }
-    return _tid->GetTypeOverload(type2, type1, op);
+    return {_tid->GetTypeOverload(type2, type1, op), _list->GetOverload(type2, type1, op)}; // maybe here is a mistake
+}
+
+void PolizGenerator::print(std::ofstream &out) {
+    for (auto cell : _res_stack) {
+        if (cell->type == OPERATOR) {
+            out << "operator " << dynamic_cast<PolizOperator*>(cell)->oper;
+            int ref = dynamic_cast<PolizOperator*>(cell)->pos;
+            if (ref != -1) out << " defined in " << ref << '\n';
+        } else if (cell->type == GET) {
+            out << "get " << dynamic_cast<PolizGet*>(cell)->name << '\n';
+        } else if (cell->type == JUMP) {
+            out << "jump to " << dynamic_cast<PolizJump*>(cell)->pos << '\n';
+        } else if (cell->type == FALSEJUMP) {
+            out << "false jump to " << dynamic_cast<PolizFalseJump*>(cell)->pos << '\n';
+        } else if (cell->type == FUNCJUMP) {
+            out << "function call to " << dynamic_cast<PolizFuncJump*>(cell)->pos << '\n';
+        } else if (cell->type == METHODJUMP) {
+            out << "method call to " << dynamic_cast<PolizMethodJump*>(cell)->pos << '\n';
+        } else if (cell->type == SYMBOL) {
+            out << "symbol " << dynamic_cast<PolizSymbol*>(cell)->string << '\n';
+        } else if (cell->type == INPUT) {
+            out << "get from user variable\n";
+        } else if (cell->type == OUTPUT) {
+            out << "print variable\n";
+        }
+    }
 }
 
 void CycleSetter::OpenScope(int startPos) {

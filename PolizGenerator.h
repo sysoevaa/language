@@ -62,12 +62,7 @@ enum Command {
     INPUT = 10,
     OUTPUT = 11,
     OPERATOR = 12,
-    EXECMARKER = 13
-};
-
-
-struct ValType {
-
+    BRACKET = 13
 };
 
 struct PolizCell {
@@ -134,10 +129,6 @@ struct PolizOperator : public PolizCell {
     PolizOperator(std::string& op) : PolizCell(OPERATOR), oper(op) {};
     int pos; // -1 if it has already defined
     std::string oper;
-};
-
-struct PolizExecMarker : public PolizCell {
-    PolizExecMarker() : PolizCell(EXECMARKER) { };
 };
 
 struct OverloadParameters {
