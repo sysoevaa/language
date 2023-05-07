@@ -4,6 +4,7 @@
 #include <stack>
 #include "Lexeme.h"
 #include "TID.h"
+#include <fstream>
 
 #ifndef LANGUAGE_POLIZGENERATOR_H
 #define LANGUAGE_POLIZGENERATOR_H
@@ -179,6 +180,7 @@ public:
     void MakeExpression();
     void Erase();
     void SetJumps(int begin, int end);
+    void print(std::ofstream& out);
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;

@@ -216,6 +216,28 @@ std::pair<std::string, int> PolizGenerator::GetResType(PolizCell *first, PolizCe
     return {_tid->GetTypeOverload(type2, type1, op), _list->GetOverload(type2, type1, op)}; // maybe here is a mistake
 }
 
+void PolizGenerator::print(std::ofstream &out) {
+    for (auto cell : _res_stack) {
+        if (cell->type == OPERATOR) {
+            out << "operator " << dynamic_cast<PolizOperator*>(cell)->oper;
+            int ref = dynamic_cast<PolizOperator*>(cell)->pos;
+            if (ref != -1) out << " defined in " << ref << '\n';
+        } else if (cell->type == GET) {
+            out << "get " << dynamic_cast<PolizGet*>(cell)->name << '\n';
+        } else if (cell->type == JUMP) {
+            out << "jump to " << dynamic_cast<PolizJump*>(cell)->pos << '\n';
+        } else if (cell->type == FALSEJUMP) {
+            out << "false jump to " << dynamic_cast<PolizFalseJump*>(cell)->pos << '\n';
+        } else if (cell->type == FUNCJUMP) {
+            out << "function call to " << dynamic_cast<PolizFuncJump*>(cell)->pos << '\n';
+        } else if (cell->type == METHODJUMP) {
+            out << "method call to " << dynamic_cast<PolizMethodJump*>(cell)->pos << '\n';
+        } else if (cell->type == SYMBOL) {
+            out << "symbol " << dynamic_cast<PolizSymbol*>(cell)->string << '\n';
+        }
+    }
+}
+
 void CycleSetter::OpenScope(int startPos) {
     _scopeStack.push({startPos, std::vector<PolizJump*>()});
 }
