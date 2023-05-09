@@ -1,0 +1,9 @@
+symbol 1
+symbol 2
+get a
+get a
+operator * 
+get b
+get a
+operator * 
+operator + 

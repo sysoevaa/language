@@ -54,8 +54,8 @@ void PolizGenerator::AddCast( std::string &type1,  std::string& type2) {
     Push(new PolizFuncJump(_list->GetCast(type1, type2), 1, type2));
 }
 
-void PolizGenerator::AddMethod( std::string &strct,  std::string &method) {
-    _stack.push_back(new Poli)
+void PolizGenerator::AddMethod(int cnt, std::string& name, std::string& type) {
+    _stack.push_back(new PolizMethodJump(-1, cnt, type, name));
 }
 
 void PolizGenerator::Erase() {
@@ -84,7 +84,7 @@ void PolizGenerator::MakeExpression() {
             _res_stack.push_back(_stack[i]);
         } else if (_stack[i]->type == OPERATOR) {
             auto cur = dynamic_cast<PolizOperator*> (_stack[i]);
-            while (dynamic_cast<PolizOperator*>(_op_stack.back())->prior >= cur->prior) {
+            while (_op_stack.size() > 0 && _op_stack.back()->type == OPERATOR && dynamic_cast<PolizOperator*>(_op_stack.back())->prior <= cur->prior) {
                 if (dynamic_cast<PolizOperator*>(_op_stack.back())->oper != "**") {
                     _res_stack.push_back(_op_stack.back());
                     _op_stack.pop_back();
@@ -97,13 +97,17 @@ void PolizGenerator::MakeExpression() {
                     }
                 }
             }
-        } else if (_stack[i]->type == FUNCJUMP) {
+            _op_stack.push_back(cur);
+        } else if (_stack[i]->type == FUNCJUMP || _stack[i]->type == METHODJUMP) {
             _res_stack.push_back(_stack[i]);
-        } else if (_stack[i]->type == METHODJUMP) {
-
         }
     }
+    while (_op_stack.size() != 0) {
+        _res_stack.push_back(_op_stack.back());
+        _op_stack.pop_back();
+    }
     SetJumps(begin, (int)_res_stack.size());
+    _stack.clear();
 }
 
 void PolizGenerator::SetJumps(int begin, int end) {
@@ -131,6 +135,9 @@ void PolizGenerator::SetJumps(int begin, int end) {
             for (int j = 0; j < dynamic_cast<PolizMethodJump*>(_res_stack[i])->count; ++j) {
                 cur.pop_back();
             }
+            auto method = dynamic_cast<PolizMethodJump*>(_res_stack[i]);
+            method->pos = _list->GetMethod(dynamic_cast<PolizGet*>(cur.back())->type, method->name);
+            cur.pop_back();
             cur.push_back(new PolizGet("RETURN FROM METHOD", dynamic_cast<PolizMethodJump*>(_res_stack[i])->type));
         }
     }
@@ -217,12 +224,14 @@ std::pair<std::string, int> PolizGenerator::GetResType(PolizCell *first, PolizCe
     return {_tid->GetTypeOverload(type2, type1, op), _list->GetOverload(type2, type1, op)}; // maybe here is a mistake
 }
 
-void PolizGenerator::print(std::ofstream &out) {
+void PolizGenerator::print() {
+    std::ofstream out("poliz.txt");
     for (auto cell : _res_stack) {
         if (cell->type == OPERATOR) {
-            out << "operator " << dynamic_cast<PolizOperator*>(cell)->oper;
+            out << "operator " << dynamic_cast<PolizOperator*>(cell)->oper << ' ';
             int ref = dynamic_cast<PolizOperator*>(cell)->pos;
-            if (ref != -1) out << " defined in " << ref << '\n';
+            if (ref != -1) out << " defined in " << ref;
+            out << '\n';
         } else if (cell->type == GET) {
             out << "get " << dynamic_cast<PolizGet*>(cell)->name << '\n';
         } else if (cell->type == JUMP) {
@@ -241,6 +250,10 @@ void PolizGenerator::print(std::ofstream &out) {
             out << "print variable\n";
         }
     }
+}
+
+void PolizGenerator::AddToRes(PolizCell* cell) {
+    _res_stack.push_back(cell);
 }
 
 void CycleSetter::OpenScope(int startPos) {

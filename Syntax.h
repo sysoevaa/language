@@ -79,6 +79,7 @@ class SyntaxAnalyser {
       if (_ind == 0) return _lex[_ind];
       return _lex[_ind - 1];
   }
+  PolizGenerator* GetGen() {return _gen;}
   TID* _tid;
  private:
   std::vector<Lexeme> _lex;

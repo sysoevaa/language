@@ -92,6 +92,7 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
             }
             if (_lex[_ind].string == ";") gc();
             _tid->AddVariable(var_type, var_name);
+            _gen->MakeExpression();
             globalNamespaceNoExec();
             return;
         }
@@ -151,6 +152,7 @@ void SyntaxAnalyser::globalNamespace() {
             }
             if (_lex[_ind].string == ";") gc();
             _tid->AddVariable(var_type, var_name);
+            _gen->MakeExpression();
             globalNamespace();
             return;
         }
@@ -227,6 +229,7 @@ void SyntaxAnalyser::member() {
             expCheck.Clear();
             if (lex.string != member_type) throw std::logic_error("unexpected type");
             _tid->AddVariable(member_type, member_name);
+            _gen->MakeExpression();
             member();
             return;
         }
@@ -385,8 +388,10 @@ void SyntaxAnalyser::expression() {
                 _parameter_arr = _tid->GetMethodParameters(type1, _lex[_ind - 1].string);
                 std::string method_name_ = _lex[_ind - 1].string;
                 parameters();
+                int count = _parameter_arr.size();
                 _parameter_arr.clear();
                 type1 = _tid->GetMethodType(type1, method_name_);
+                _gen->AddMethod(count, method_name_, type1);
                 expCheck.ChangeLast(type1);
                 if (_lex[_ind].string != ")") {
                     throw std::logic_error("expected \")\"");
@@ -395,7 +400,7 @@ void SyntaxAnalyser::expression() {
                 // break;
                 continue;
             }
-            _gen->Push(new PolizOperator((std::string& ) ".", -1));
+            _gen->Push(new PolizOperator((std::string& ) ".", 0));
             type1 = _tid->GetMember(type1, _lex[_ind - 1].string);
             _gen->Push(new PolizGet(_lex[_ind - 1].string, type1));
             expCheck.ChangeLast(type1);
@@ -442,14 +447,14 @@ void SyntaxAnalyser::expression() {
     }
 
     if (_lex[_ind].type == "bracket" && _lex[_ind].string == "(") {
-        _gen->Push(new PolizCell(BRACKET));
+        _gen->Push(new PolizBracket('('));
         expCheck.Process(_lex[_ind]);
         gc();
         expression();
         if (_lex[_ind].string != ")") {
             throw std::logic_error("\")\" expected");
         }
-        _gen->Push(new PolizCell(BRACKET));
+        _gen->Push(new PolizBracket(')'));
         expCheck.Process(_lex[_ind]);
         gc();
         if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
@@ -540,6 +545,7 @@ void SyntaxAnalyser::parameters() {
         expCheck.SetStack(stack);
         if (_parameter_arr.size() <= i) throw std::logic_error("too much parameters in function call");
         if (IsEqualTypes(lex.string, _parameter_arr[i]) == "error") throw std::logic_error("parameter types do not match");
+        _gen->MakeExpression();
         ++i;
     } while (_lex[_ind].string == ",");
     if (i < _parameter_arr.size()) throw std::logic_error("not enough parameters");
@@ -608,6 +614,7 @@ void SyntaxAnalyser::determinantes() {
             auto return_type = _tid->GetCurrentReturnType();
             if (IsEqualTypes(return_type, lex.string) == "error") throw std::logic_error("trying to return " + lex.string +
            " in " + return_type + " function");
+            _gen->MakeExpression();
         }
         else {
             if (_tid->GetCurrentReturnType() != "void") {
@@ -703,6 +710,7 @@ void SyntaxAnalyser::lexpression() {
         if (_lex[_ind].string != "]") throw std::logic_error("\"]\" expected");
         type1 = GetArrayType(type1);
         gc();
+        //_gen->MakeExpression();
     }
     while (_lex[_ind].string == ".") {
         if (def) throw std::logic_error("\"=\" expected");
@@ -955,6 +963,8 @@ void SyntaxAnalyser::If() {
     }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
+    _gen->MakeExpression();
+    // False jump to the end
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
     _tid->OpenScope();
@@ -977,6 +987,8 @@ void SyntaxAnalyser::If() {
             }
             if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
             gc();
+            _gen->MakeExpression();
+            // false jump
         }
         if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
         gc();
@@ -1000,6 +1012,7 @@ void SyntaxAnalyser::While() {
     }
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
+    _gen->MakeExpression();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
     _tid->OpenScope();
@@ -1011,6 +1024,7 @@ void SyntaxAnalyser::dowhile() {
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     expression();
+    _gen->MakeExpression();
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
     std::string b_string = "bool";
@@ -1070,6 +1084,7 @@ void SyntaxAnalyser::For() {
         if (_lex[_ind].string == "=") {
             gc();
             expression();
+            _gen->MakeExpression();
             Lexeme lex1 = expCheck.GetType();
             expCheck.Clear();
             if (IsEqualTypes(lex1.string, defined_variable) == "error") {
@@ -1079,6 +1094,7 @@ void SyntaxAnalyser::For() {
         if (_lex[_ind].string != ";") throw std::logic_error("; expected");
         gc();
         expression();
+        _gen->MakeExpression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         std::string b_string = "bool";
@@ -1122,6 +1138,8 @@ void SyntaxAnalyser::variable_def() {
     Lexeme lex = expCheck.GetType();
     expCheck.Clear();
     if (lex.string != var_type) throw std::logic_error("trying to put " + lex.string + " into " + var_type);
+    _gen->MakeExpression();
+    _gen->AddToRes(new PolizAdd); // add current variable
 }
 
 void SyntaxAnalyser::string() {
@@ -1162,6 +1180,7 @@ void SyntaxAnalyser::array_def() {
         }
         if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
         gc();
+        _gen->MakeExpression();
     }
     if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
     gc();
