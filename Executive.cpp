@@ -13,6 +13,10 @@ void Executive::Jump() {
     _pos = dynamic_cast<PolizJump*>(_cells[_pos])->pos;
 }
 
+void Executive::AddVariable() {
+
+}
+
 void Executive::OpenDerivativeScope() {
     _variables.push(_variables.top());
 }

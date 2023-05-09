@@ -68,6 +68,16 @@ public:
     void ReadPoliz(std::string& s);
 
     void ExecuteProgram();
+
+    bool IsBasic(std::string type_name) {
+        if (type_name == "int32") return true;
+        if (type_name == "int64") return true;
+        if (type_name == "float32") return true;
+        if (type_name == "float64") return true;
+        if (type_name == "bool") return true;
+        if (type_name == "char") return true;
+        if (type_name == "string") return true;
+    }
 private:
     std::vector<PolizCell*> _cells;
     std::stack<int> _callStack;
@@ -90,6 +100,7 @@ private:
     void OpenCleanScope(std::vector<UserType*> parameters);
     void CloseScope();
     void ClearElement(UserType* member);
+
 };
 
 
