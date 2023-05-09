@@ -116,10 +116,10 @@ struct PolizFuncJump : public PolizCell {
 };
 
 struct PolizMethodJump : public PolizCell {
-    PolizMethodJump(int _pos, int _count, std::string& _type, std::string& _name) :
-    PolizCell(METHODJUMP), pos(_pos), count(_count), type(_type), name(_name) { }
+    PolizMethodJump(int _pos, int _count, std::string& _type) :
+    PolizCell(METHODJUMP), pos(_pos), count(_count), type(_type) { }
     int pos, count;
-    std::string type, name;
+    std::string type;
 };
 
 struct PolizOutput : public PolizCell {
@@ -176,12 +176,11 @@ public:
     void Push(PolizCell* cell);
     void AddFunction(std::string& func_name);
     void AddCast(std::string& type1, std::string& type2);
-    void AddMethod(int cnt, std::string& name, std::string& type);
+    void AddMethod(std::string& strct, std::string& method);
     void MakeExpression();
     void Erase();
     void SetJumps(int begin, int end);
-    void print();
-    void AddToRes(PolizCell* cell);
+    void print(std::ofstream& out);
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;

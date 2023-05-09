@@ -70,6 +70,8 @@ class SyntaxAnalyser {
 
   void cycle_namespace();
 
+  void unaryProcess(std::string type);
+
   std::string GetArrayType(std::string& s);
 
   std::string IsEqualTypes(std::string& type1, std::string& type2);
