@@ -46,8 +46,11 @@ struct UserType {
         _is_basic = false;
     }
 
-    std::string _type_name;
+    UserType operator+(UserType other);
+    UserType operator-();
+    UserType operator-(UserType other);
 
+    std::string _type_name;
     std::string _var_name;
 
     bool _bool;
@@ -69,14 +72,15 @@ public:
 
     void ExecuteProgram();
 
-    bool IsBasic(std::string type_name) {
-        if (type_name == "int32") return true;
-        if (type_name == "int64") return true;
-        if (type_name == "float32") return true;
-        if (type_name == "float64") return true;
-        if (type_name == "bool") return true;
-        if (type_name == "char") return true;
-        if (type_name == "string") return true;
+    int IsBasic(std::string type_name) {
+        if (type_name == "int32") return 1;
+        if (type_name == "int64") return 1;
+        if (type_name == "float32") return 2;
+        if (type_name == "float64") return 2;
+        if (type_name == "bool") return 1;
+        if (type_name == "char") return 1;
+        if (type_name == "string") return 3;
+        return 4;
     }
 private:
     std::vector<PolizCell*> _cells;

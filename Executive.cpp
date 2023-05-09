@@ -4,6 +4,35 @@
 
 #include "Executive.h"
 
+UserType UserType::operator+(UserType other) {
+    other._bool += this->_bool;
+    other._int32 += this->_int32;
+    other._int64 += this->_int64;
+    other._float32 += this->_float32;
+    other._float64 += this->_float64;
+    other._char += this->_char;
+    other._string += this->_string;
+    return other;
+}
+
+UserType UserType::operator-() {
+    UserType other = *this;
+    other._bool = -this->_bool;
+    other._int32 = -this->_int32;
+    other._int64 = -this->_int64;
+    other._float32 = -this->_float32;
+    other._float64 = -this->_float64;
+    other._char = -this->_char;
+    return other;
+}
+
+UserType UserType::operator-(UserType other) {
+    other = -other;
+    return *this + other;
+}
+
+
+
 void Executive::ExecuteProgram() {
 
 }
@@ -14,7 +43,31 @@ void Executive::Jump() {
 }
 
 void Executive::AddVariable() {
+    std::string name = dynamic_cast<PolizAdd*>(_cells[_pos])->name;
+    std::string type = dynamic_cast<PolizAdd*>(_cells[_pos])->type;
 
+    UserType* variable;
+
+    if (IsBasic(type) == 1) {
+        long long val = 0;
+        variable = new UserType(type, name, val);
+    }
+    if (IsBasic(type) == 2) {
+        long double val = 0;
+        variable = new UserType(type, name, val);
+    }
+    if (IsBasic(type) == 3) {
+        std::string val;
+        variable = new UserType(type, name, val);
+    }
+    if (IsBasic(type) == 4) {
+        std::vector<UserType*> members;
+        variable = new UserType(type, name, members);
+    }
+
+    _results.push(variable);
+
+    _variables.top()[name] = variable;
 }
 
 void Executive::OpenDerivativeScope() {
