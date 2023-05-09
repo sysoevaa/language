@@ -7,6 +7,8 @@
 
 #include "PolizGenerator.h"
 
+int IsBasic(std::string type_name);
+
 struct UserType {
     UserType() {
         _type_name = "&null";
@@ -49,6 +51,23 @@ struct UserType {
     UserType operator+(UserType other);
     UserType operator-();
     UserType operator-(UserType other);
+    UserType operator*(UserType other);
+    UserType operator/(UserType other);
+    UserType operator!();
+    UserType operator==(UserType other);
+    UserType operator!=(UserType other);
+    UserType operator<(UserType other);
+    UserType operator&&(UserType other);
+    UserType operator||(UserType other);
+    UserType operator>(UserType other);
+    UserType operator<=(UserType other);
+    UserType operator>=(UserType other);
+    UserType operator++();
+    UserType operator--();
+    UserType operator>>(UserType other); //замена степени
+
+    void SetEverythingToType();
+
 
     std::string _type_name;
     std::string _var_name;
@@ -71,32 +90,24 @@ public:
     void ReadPoliz(std::string& s);
 
     void ExecuteProgram();
-
-    int IsBasic(std::string type_name) {
-        if (type_name == "int32") return 1;
-        if (type_name == "int64") return 1;
-        if (type_name == "float32") return 2;
-        if (type_name == "float64") return 2;
-        if (type_name == "bool") return 1;
-        if (type_name == "char") return 1;
-        if (type_name == "string") return 3;
-        return 4;
-    }
 private:
     std::vector<PolizCell*> _cells;
     std::stack<int> _callStack;
     int _pos;
 
     std::stack<std::map<std::string, UserType*>> _variables;
+    std::map<std::string, UserType*> _globals;
     std::stack<UserType*> _results;
+
+    void ClearResults();
 
     void FindExec();
     void Expression();
 
-    void AddVariable(UserType variable);
-
     void Jump();
+    void FalseJump();
     void OperatorJump();
+    void Symbol();
 
     void AddVariable();
 
