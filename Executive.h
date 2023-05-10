@@ -7,6 +7,7 @@
 
 #include "PolizGenerator.h"
 #include <iostream>
+#include <string>
 
 int IsBasic(std::string type_name);
 
@@ -58,6 +59,30 @@ struct UserType {
         }
     }
 
+    UserType(bool literal, int val) {
+        _bool = val;
+        _int32 = val;
+        _int64 = val;
+        _float64 = val;
+        _float32 = val;
+        _char = val;
+        _type_name = "int64";
+        _is_basic = true;
+        _is_var = false;
+    }
+
+    UserType(bool literal, float val) {
+        _bool = val;
+        _int32 = val;
+        _int64 = val;
+        _float64 = val;
+        _float32 = val;
+        _char = val;
+        _type_name = "float64";
+        _is_basic = true;
+        _is_var = false;
+    }
+
     UserType operator+(UserType other);
     UserType operator-();
     UserType operator-(UserType other);
@@ -97,6 +122,7 @@ struct UserType {
 
     bool _is_basic;
     bool _is_array = false;
+    bool _is_var = true;
 };
 
 class Executive {
@@ -116,7 +142,7 @@ private:
 
     std::stack<std::map<std::string, UserType*>> _variables;
     std::map<std::string, UserType*> _globals;
-    std::stack<std::stack<UserType>> _results;
+    std::stack<std::stack<UserType*>> _results;
 
     void ClearResults();
     void GetMembers(std::string type, std::map<std::string, UserType*>& members);
