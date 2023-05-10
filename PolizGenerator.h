@@ -207,6 +207,7 @@ public:
     int GetCurSize() {
         return _res_stack.size();
     }
+    PolizCell* GetLast() {}
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;

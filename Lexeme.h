@@ -123,7 +123,7 @@ class Analyser {
               int priority = isOperator(string[i]);
               lexeme_string += string[i];
               if (string[i] == '=') {
-                  divided.emplace_back("equals", lexeme_string, num);
+                  divided.emplace_back("equals", lexeme_string, num, 8);
               }
               else if (string[i] == '!' || string[i] == '-' && i != 0 && (divided.back().type != "variable" ||
               divided.back().type != "string" && divided.back().type != "number")) {
