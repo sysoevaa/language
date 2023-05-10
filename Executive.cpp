@@ -204,7 +204,113 @@ void UserType::SetEverythingToType() {
 }
 
 void Executive::ReadPoliz(std::ifstream f) {
-
+    //считать все структуры и т/п/
+    std::string s;
+    while (f >> s) {
+        if (s == "ADD") {
+            std::string name;
+            f >> name;
+            std::string type;
+            f >> type;
+            _cells.push_back(new PolizAdd(name, type));
+            continue;
+        }
+        if (s == "GET") {
+            std::string name;
+            f >> name;
+            std::string type;
+            f >> type;
+            _cells.push_back(new PolizGet(name, type));
+            continue;
+        }
+        if (s == "WRITE") {
+            std::string name;
+            f >> name;
+            std::string type;
+            f >> type;
+            _cells.push_back(new PolizAdd(name, type));
+            continue;
+        }
+        if (s == "JUMP") {
+            int pos;
+            f >> pos;
+            _cells.push_back(new PolizJump(pos));
+            continue;
+        }
+        if (s == "FALSEJUMP") {
+            int pos;
+            f >> pos;
+            _cells.push_back(new PolizFalseJump(pos));
+            continue;
+        }
+        if (s == "RETURN") {
+            int pos;
+            f >> pos;
+            _cells.push_back(new PolizReturn);
+            continue;
+        }
+        if (s == "SYMBOL") {
+            std::string val;
+            f >> val;
+            _cells.push_back(new PolizSymbol(val));
+            continue;
+        }
+        if (s == "FUNCJUMP") {
+            int pos;
+            f >> pos;
+            std::string type;
+            f >> type;
+            int count;
+            f >> count;
+            std::string name;
+            f >> name;
+            _cells.push_back(new PolizFuncJump(pos, count, type, name));
+            continue;
+        }
+        if (s == "METHODJUMP") {
+            std::string type;
+            f >> type;
+            std::string name;
+            f >> name;
+            int pos;
+            f >> pos;
+            int count;
+            f >> count;
+            _cells.push_back(new PolizMethodJump(pos, count, type, name));
+            continue;
+        }
+        if (s == "OUTPUT") {
+            int count;
+            f >> count;
+            _cells.push_back(new PolizOutput);
+            continue;
+        }
+        if (s == "INPUT") {
+            int count;
+            f >> count;
+            _cells.push_back(new PolizInput);
+            continue;
+        }
+        if (s == "OPERATOR") {
+            std::string oper;
+            f >> oper;
+            int prior;
+            f >> prior;
+            int pos;
+            f >> pos;
+            bool overload;
+            f >> overload;
+            bool unary;
+            f >> unary;
+            if (oper == "-" && unary) {
+                oper = "*-";
+            }
+            _cells.push_back(new PolizOperator(oper, prior));
+        }
+        if (s == "BRACKET") {
+            _cells.push_back(new PolizBracket(0));
+        }
+    }
 }
 
 void Executive::ClearResults() {
@@ -282,6 +388,8 @@ void Executive::ExecuteProgram() {
                     ++_pos;
                     continue;
                 }
+                default:
+                    break;
 
             }
         }
@@ -432,6 +540,13 @@ void Executive::Operator() {
             delete p2;
         }
 
+        if (!p1->_is_var) {
+            delete p1;
+        }
+        return;
+    }
+    if (symbol == "=") {
+        *p2 = *p1;
         if (!p1->_is_var) {
             delete p1;
         }
