@@ -6,6 +6,7 @@
 #define LANGUAGE_EXECUTIVE_H
 
 #include "PolizGenerator.h"
+#include <iostream>
 
 int IsBasic(std::string type_name);
 
@@ -75,6 +76,7 @@ struct UserType {
     UserType operator--();
     UserType operator>>(UserType other); //замена степени
     UserType* operator[](UserType ind);
+    UserType operator[](int ind);
 
     void SetEverythingToType();
 
@@ -110,7 +112,6 @@ private:
 
     std::map<std::string, std::vector<std::string>> _member_list;
     std::map<std::string, std::vector<std::string>> _method_list;
-    std::map<std::string, std::vector<std::string>> _parameter_list;
 
     std::stack<std::map<std::string, UserType*>> _variables;
     std::map<std::string, UserType*> _globals;
@@ -125,15 +126,23 @@ private:
     void Jump();
     void FalseJump();
     void FuncJump();
+    void MethodJump();
     void OperatorJump();
+    void Operator();
     void Symbol();
 
     void AddVariable();
 
+    void Return();
+
     void OpenDerivativeScope();
+    void OpenCleanScope(std::vector<UserType> parameters);
     void OpenCleanScope(std::vector<UserType> parameters, std::map<std::string, UserType*> members);
     void CloseScope();
     void ClearElement(UserType* member);
+
+    void Input(UserType *member, std::string s);
+    void Output(UserType *member, std::string s);
 
 };
 
