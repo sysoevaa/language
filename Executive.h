@@ -43,9 +43,18 @@ struct UserType {
         _is_basic = true;
     }
 
-    UserType(std::string type, std::string name, std::vector<UserType*> members) : _type_name(type), _var_name(name) {
+    UserType(std::string type, std::string name, std::map<std::string, UserType*> members) : _type_name(type),
+                                                                                             _var_name(name) {
         _members = members;
         _is_basic = false;
+    }
+
+    UserType(std::string type, std::string name, bool is_array, int num_of_elems) : _type_name(type), _var_name(name) {
+        _is_array = true;
+        _elements.resize(num_of_elems);
+        for (int i = 0; i < num_of_elems; ++i) {
+            _elements[i] = new UserType;
+        }
     }
 
     UserType operator+(UserType other);
@@ -65,9 +74,9 @@ struct UserType {
     UserType operator++();
     UserType operator--();
     UserType operator>>(UserType other); //замена степени
+    UserType* operator[](UserType ind);
 
     void SetEverythingToType();
-
 
     std::string _type_name;
     std::string _var_name;
@@ -80,9 +89,12 @@ struct UserType {
     char _char;
 
     std::string _string;
-    std::vector<UserType*> _members;
+    std::map<std::string, UserType*> _members;
+
+    std::vector<UserType*> _elements;
 
     bool _is_basic;
+    bool _is_array = false;
 };
 
 class Executive {
@@ -94,25 +106,32 @@ private:
     std::vector<PolizCell*> _cells;
     std::stack<int> _callStack;
     int _pos;
+    UserType* _write_memory;
+
+    std::map<std::string, std::vector<std::string>> _member_list;
+    std::map<std::string, std::vector<std::string>> _method_list;
+    std::map<std::string, std::vector<std::string>> _parameter_list;
 
     std::stack<std::map<std::string, UserType*>> _variables;
     std::map<std::string, UserType*> _globals;
-    std::stack<UserType*> _results;
+    std::stack<std::stack<UserType>> _results;
 
     void ClearResults();
+    void GetMembers(std::string type, std::map<std::string, UserType*>& members);
 
     void FindExec();
     void Expression();
 
     void Jump();
     void FalseJump();
+    void FuncJump();
     void OperatorJump();
     void Symbol();
 
     void AddVariable();
 
     void OpenDerivativeScope();
-    void OpenCleanScope(std::vector<UserType*> parameters);
+    void OpenCleanScope(std::vector<UserType> parameters, std::map<std::string, UserType*> members);
     void CloseScope();
     void ClearElement(UserType* member);
 
