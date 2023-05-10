@@ -290,6 +290,6 @@ const int CycleSetter::GetContinue() {
     return _scopeStack.top().first;
 }
 
-void CycleSetter::PushBreak(PolizJump *breakToPush) {
+void CycleSetter::PushBreak(111              {
     _scopeStack.top().second.push_back(breakToPush);
 }
