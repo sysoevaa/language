@@ -63,7 +63,8 @@ enum Command {
     INPUT = 10,
     OUTPUT = 11,
     OPERATOR = 12,
-    BRACKET = 13
+    BRACKET = 13,
+    UNARY = 14
 };
 
 struct PolizCell {
@@ -132,10 +133,16 @@ struct PolizInput : public PolizCell {
 };
 
 struct PolizOperator : public PolizCell {
-    PolizOperator(std::string& op, int priority) : PolizCell(OPERATOR), oper(op), prior(priority) {};
+    PolizOperator(std::string& op, int priority) : PolizCell(OPERATOR), oper(op), prior(priority) {
+        if (op == "++" || op == "--" || op == "~") {
+            unary = true;
+            pos = -1;
+        }
+    };
     int pos; // -1 if it has already defined
     std::string oper;
     int prior;
+    bool unary;
 };
 
 struct PolizBracket : public PolizCell {
@@ -183,6 +190,7 @@ public:
     void SetJumps(int begin, int end);
     void print();
     void AddToRes(PolizCell* cell);
+    void AddConstructor(std::string& type);
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;

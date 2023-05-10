@@ -84,7 +84,8 @@ void PolizGenerator::MakeExpression() {
             _res_stack.push_back(_stack[i]);
         } else if (_stack[i]->type == OPERATOR) {
             auto cur = dynamic_cast<PolizOperator*> (_stack[i]);
-            while (_op_stack.size() > 0 && _op_stack.back()->type == OPERATOR && dynamic_cast<PolizOperator*>(_op_stack.back())->prior <= cur->prior) {
+            while (_op_stack.size() > 0 && _op_stack.back()->type == OPERATOR &&
+            dynamic_cast<PolizOperator*>(_op_stack.back())->prior <= cur->prior && !cur->unary) {
                 if (dynamic_cast<PolizOperator*>(_op_stack.back())->oper != "**") {
                     _res_stack.push_back(_op_stack.back());
                     _op_stack.pop_back();
@@ -121,15 +122,25 @@ void PolizGenerator::SetJumps(int begin, int end) {
             }
             cur.push_back(new PolizGet("RETURN FROM FUNCTION", dynamic_cast<PolizFuncJump*>(_res_stack[i])->type));
         } else if (_res_stack[i]->type == OPERATOR) {
-            auto first = cur.back(); cur.pop_back();
-            auto second = cur.back(); cur.pop_back();
-            if (dynamic_cast<PolizOperator*>(_res_stack[i])->oper == ".") {
-                _tid->GetMember(dynamic_cast<PolizGet *>(second)->type, dynamic_cast<PolizGet *>(first)->name);
-                break;
+            auto cell = dynamic_cast<PolizOperator*>(_res_stack[i]);
+            if (cell->unary) {
+                auto first = cur.back(); cur.pop_back();
+                _res_stack.push_back(first);
+                _res_stack.push_back(cell);
+                cur.push_back(first);
+            } else {
+                auto first = cur.back();
+                cur.pop_back();
+                auto second = cur.back();
+                cur.pop_back();
+                if (dynamic_cast<PolizOperator *>(_res_stack[i])->oper == ".") {
+                    _tid->GetMember(dynamic_cast<PolizGet *>(second)->type, dynamic_cast<PolizGet *>(first)->name);
+                    break;
+                }
+                auto [res, jmp] = GetResType(second, first, dynamic_cast<PolizOperator *>(_res_stack[i])->oper);
+                cur.push_back(new PolizGet("VALUE FROM EXPR)", res));
+                dynamic_cast<PolizOperator *>(_res_stack[i])->pos = jmp;
             }
-            auto [res, jmp] = GetResType(second, first, dynamic_cast<PolizOperator*>(_res_stack[i])->oper);
-            cur.push_back(new PolizGet("VALUE FROM EXPR)",res));
-            dynamic_cast<PolizOperator*>(_res_stack[i])->pos = jmp;
 
         } else if (_res_stack[i]->type == METHODJUMP) {
             for (int j = 0; j < dynamic_cast<PolizMethodJump*>(_res_stack[i])->count; ++j) {
@@ -248,12 +259,20 @@ void PolizGenerator::print() {
             out << "get from user variable\n";
         } else if (cell->type == OUTPUT) {
             out << "print variable\n";
+        } else if (cell->type == ADD) {
+            out << "add variable " << dynamic_cast<PolizAdd*>(cell)->name << '\n';
         }
     }
 }
 
 void PolizGenerator::AddToRes(PolizCell* cell) {
     _res_stack.push_back(cell);
+}
+
+void PolizGenerator::AddConstructor(std::string &type) {
+    _stack.push_back(new PolizMethodJump(_list->GetMethod(type, (std::string&) "CONSTRUCTOR"),
+                                         _tid->GetConstructorParameters(type).size(),
+                                         (std::string&)"void", (std::string&) "CONSTRUCTOR"));
 }
 
 void CycleSetter::OpenScope(int startPos) {
