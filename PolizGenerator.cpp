@@ -21,8 +21,6 @@ void DefinitionList::AddOverload(std::string type1, std::string type2, std::stri
 void DefinitionList::AddCast(std::string type1, std::string type2, int pos) {
     _castList[{type1, type2}] = pos;
     _castList[{type2, type1}] = pos;
-    //gg
-    //gggg
 }
 
 const int DefinitionList::GetFunc(std::string name) {
@@ -100,7 +98,8 @@ void PolizGenerator::MakeExpression() {
                     _res_stack.push_back(new PolizOperator((std::string&) "[]", -1));
                 }
             }
-        } else if (_stack[i]->type == SYMBOL || _stack[i]->type == GET || _stack[i]->type == ADD) {
+        } else if (_stack[i]->type == SYMBOL || _stack[i]->type == GET ||
+        _stack[i]->type == ADD || _stack[i]->type == WRITE) {
             _res_stack.push_back(_stack[i]);
         } else if (_stack[i]->type == OPERATOR) {
             auto cur = dynamic_cast<PolizOperator*> (_stack[i]);
@@ -134,7 +133,8 @@ void PolizGenerator::MakeExpression() {
 void PolizGenerator::SetJumps(int begin, int end) {
     std::vector<PolizCell*> cur;
     for (int i = begin; i < end; ++i) {
-        if (_res_stack[i]->type == GET || _res_stack[i]->type == SYMBOL) {
+        if (_res_stack[i]->type == GET || _res_stack[i]->type == SYMBOL ||
+        _res_stack[i]->type == ADD || _res_stack[i]->type == WRITE) {
             cur.push_back(_res_stack[i]);
         } else if (_res_stack[i]->type == FUNCJUMP) {
             for (int j = 0; j < dynamic_cast<PolizFuncJump*>(_res_stack[i])->count; ++j) {
@@ -151,21 +151,23 @@ void PolizGenerator::SetJumps(int begin, int end) {
                 cur.pop_back();
                 auto second = cur.back();
                 cur.pop_back();
-                if (dynamic_cast<PolizOperator *>(_res_stack[i])->oper == ".") {
-                    _tid->GetMember(dynamic_cast<PolizGet *>(second)->type, dynamic_cast<PolizGet *>(first)->name);
-                    break;
+                if (cell->oper == ".") {
+                    auto type = _tid->GetMember(dynamic_cast<PolizGet *>(second)->type, dynamic_cast<PolizGet *>(first)->name);
+                    cur.push_back(new PolizGet("MEMBER", type));
+                    continue;
                 }
                 auto [res, jmp] = GetResType(second, first, dynamic_cast<PolizOperator *>(_res_stack[i])->oper);
                 cur.push_back(new PolizGet("VALUE FROM EXPR)", res));
                 dynamic_cast<PolizOperator *>(_res_stack[i])->pos = jmp;
-            } else if (cell->oper == "=") {
-                int aboba;
             }
         } else if (_res_stack[i]->type == METHODJUMP) {
             for (int j = 0; j < dynamic_cast<PolizMethodJump*>(_res_stack[i])->count; ++j) {
                 cur.pop_back();
             }
             auto method = dynamic_cast<PolizMethodJump*>(_res_stack[i]);
+            if (method->name == "CONSTRUCTOR") {
+                int aboba;
+            }
             method->pos = _list->GetMethod(dynamic_cast<PolizGet*>(cur.back())->type, method->name);
             cur.pop_back();
             cur.push_back(new PolizGet("RETURN FROM METHOD", dynamic_cast<PolizMethodJump*>(_res_stack[i])->type));
@@ -275,11 +277,13 @@ void PolizGenerator::print() {
         } else if (cell->type == SYMBOL) {
             out << "symbol " << dynamic_cast<PolizSymbol*>(cell)->string << '\n';
         } else if (cell->type == INPUT) {
-            out << "get from user variable\n";
+            out << "get " << dynamic_cast<PolizInput*>(cell)->count << " values from user\n";
         } else if (cell->type == OUTPUT) {
-            out << "print variable\n";
+            out << "print " << dynamic_cast<PolizOutput*>(cell)->count << " variable\n";
         } else if (cell->type == ADD) {
             out << "add variable " << dynamic_cast<PolizAdd*>(cell)->name << '\n';
+        } else if (cell->type == WRITE) {
+            out << "rewrite wariable " << dynamic_cast<PolizWrite*>(cell)->name << '\n';
         }
     }
 }

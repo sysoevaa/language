@@ -125,7 +125,7 @@ class Analyser {
               if (string[i] == '=') {
                   divided.emplace_back("equals", lexeme_string, num, 8);
               }
-              else if (string[i] == '!' || string[i] == '-' && i != 0 && (divided.back().type != "variable" ||
+              else if (string[i] == '!' || string[i] == '-' && i != 0 && (divided.back().type != "variable" &&
               divided.back().type != "string" && divided.back().type != "number")) {
                   divided.emplace_back("unary", lexeme_string, num, 1);
               }
