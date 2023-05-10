@@ -83,6 +83,24 @@ struct UserType {
         _is_var = false;
     }
 
+    UserType(bool literal, std::string val) {
+        _is_var = false;
+        if (val.size() == 1) {
+            _bool = val[0];
+            _int32 = val[0];
+            _int64 = val[0];
+            _float64 = val[0];
+            _float32 = val[0];
+            _char = val[0];
+            _type_name = "char";
+        }
+        else {
+            _type_name = "string";
+        }
+        _string = val;
+        _is_basic = true;
+    }
+
     UserType operator+(UserType other);
     UserType operator-();
     UserType operator-(UserType other);

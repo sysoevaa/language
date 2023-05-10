@@ -504,6 +504,7 @@ void Executive::Symbol() {
         }
         return;
     }
+    _results.top().push(new UserType(false, symbol));
 
 }
 
