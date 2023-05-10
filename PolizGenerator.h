@@ -64,7 +64,7 @@ enum Command {
     OUTPUT = 11,
     OPERATOR = 12,
     BRACKET = 13,
-    UNARY = 14
+    SCOPE = 14
 };
 
 struct PolizCell {
@@ -191,6 +191,9 @@ public:
     void print();
     void AddToRes(PolizCell* cell);
     void AddConstructor(std::string& type);
+    int GetCurSize() {
+        return _res_stack.size();
+    }
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;
