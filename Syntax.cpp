@@ -285,6 +285,7 @@ void SyntaxAnalyser::overload() {
 
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     _tid->AddOverload(_parameter_def_arr[0].second, type2, operator_, ret_type);
+    _list->AddOverload(object_name, type2, operator_, _gen->GetCurSize());
     gc();
 
     if (_lex[_ind].string != "{") throw std::logic_error("\"{ \" expected");
@@ -604,12 +605,15 @@ void SyntaxAnalyser::determinantes() {
         gc();
         If();
     } else if (_lex[_ind].string == "while") {
+        _cycle_setter->OpenScope(_gen->GetCurSize());
         gc();
         While();
     } else if (_lex[_ind].string == "for") {
+        _cycle_setter->OpenScope(_gen->GetCurSize());
         gc();
         For();
     } else if (_lex[_ind].string == "do") {
+        _cycle_setter->OpenScope(_gen->GetCurSize());
         gc();
         if (_lex[_ind].string == "while") {
             gc();
@@ -618,6 +622,7 @@ void SyntaxAnalyser::determinantes() {
         else {
             throw std::logic_error("\"while \" expected");
         }
+        _cycle_setter->CloseScope(_gen->GetCurSize());
     } else if (_lex[_ind].string == "print") {
         gc();
         print();
@@ -861,10 +866,12 @@ void SyntaxAnalyser::functionDefinition() {
     }
     if (!is_method) {
         _tid->AddFunction(f_name, _parameter_def_arr, f_type);
+        _list->AddFunc(f_name, _gen->GetCurSize());
         _parameter_def_arr.clear();
     }
     else {
         _tid->AddMethod(_parameter_def_arr, method_name, method_return_type);
+        _list->AddMethod(object_name, method_name, _gen->GetCurSize());
         _parameter_def_arr.clear();
     }
     gc();
@@ -920,6 +927,7 @@ void SyntaxAnalyser::type_cast_def() {
     variable();
     if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     gc();
+    _list->AddCast(cast_type_to, cast_type_from, _gen->GetCurSize());
     _tid->AddCast(cast_type_to, cast_type_from, _lex[_ind - 2].string);
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
@@ -1232,6 +1240,9 @@ void SyntaxAnalyser::array_def() {
 void SyntaxAnalyser::cycle_namespace() {
     if (_lex[_ind].type == "keyword" && !type()) {
         if (_lex[_ind].string == "break" || _lex[_ind].string == "continue") {
+            if (_lex[_ind].string == "break") {
+
+            }
             if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
             cycle_namespace();
         } else {

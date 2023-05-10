@@ -191,6 +191,11 @@ void Executive::ExecuteProgram() {
         FindExec();
         while (_pos < _cells.size()) {
             switch(_cells[_pos]->type) {
+                case(SCOPE) : {
+                    OpenDerivativeScope();
+                    ++_pos;
+                    continue;
+                }
                 case(ADD) : {
                     AddVariable();
                     ++_pos;
@@ -351,8 +356,24 @@ void Executive::Operator() {
         return;
     }
 
+    if (symbol == "=") {
+        *_write_memory = p2;
+        return;
+    }
+
+
     UserType p1 = _results.top().top();
-    _results.pop();
+    _results.top().pop();
+
+    if (symbol == ".") {
+        _results.top().push(*p2._members[p1._var_name]);
+        return;
+    }
+    if (symbol == "[]") {
+        _results.top().push(*p2._elements[p1._int32]);
+        return;
+    }
+
     if (symbol == "+") {
         _results.top().push(p1 + p2);
     }

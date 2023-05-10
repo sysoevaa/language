@@ -178,9 +178,22 @@ public:
 
 };
 
+class CycleSetter {
+public:
+    CycleSetter() { }
+    void OpenScope(int startPos);
+    void CloseScope(int endPos);
+    const int GetContinue();
+    void PushBreak(PolizJump* breakToPush);
+
+private :
+    std::stack<std::pair<int, std::vector<PolizJump*>>> _scopeStack;
+};
+
 class PolizGenerator {
 public:
-    PolizGenerator(TID* tid, DefinitionList* list) : _tid(tid), _list(list) {}
+    PolizGenerator(TID* tid, DefinitionList* list, CycleSetter* cycleSetter) : _tid(tid), _list(list),
+    _cycle_setter(cycleSetter) {}
     void Push(PolizCell* cell);
     void AddFunction(std::string& func_name);
     void AddCast(std::string& type1, std::string& type2);
@@ -199,20 +212,10 @@ private:
     std::vector<int> _last_jmp;
     TID* _tid;
     DefinitionList* _list;
+    CycleSetter* _cycle_setter;
     std::pair<std::string, int> GetResType(PolizCell* first, PolizCell* second, std::string& op);
 };
 
-class CycleSetter {
-public:
-    CycleSetter() { }
-    void OpenScope(int startPos);
-    void CloseScope(int endPos);
-    const int GetContinue();
-    void PushBreak(PolizJump* breakToPush);
-
-private :
-    std::stack<std::pair<int, std::vector<PolizJump*>>> _scopeStack;
-};
 
 
 #endif //LANGUAGE_POLIZGENERATOR_H
