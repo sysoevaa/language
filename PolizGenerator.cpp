@@ -70,7 +70,7 @@ void PolizGenerator::MakeExpression() {
             if (cur->sym == '[' || cur->sym == '(') {
                 _op_stack.push_back(cur);
             } else {
-                while (_op_stack.back()->type != BRACKET && dynamic_cast<PolizBracket*>(_op_stack.back())->sym !=
+                while (_op_stack.back()->type != BRACKET  || dynamic_cast<PolizBracket*>(_op_stack.back())->sym !=
                                                                      (cur->sym == ')'? '(' : '[')) {
                     _res_stack.push_back(_op_stack.back());
                     _op_stack.pop_back();
