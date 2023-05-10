@@ -112,6 +112,7 @@ private:
 
     std::map<std::string, std::vector<std::string>> _member_list;
     std::map<std::string, std::vector<std::string>> _method_list;
+    std::map<std::string, std::vector<std::string>> _parameter_list;
 
     std::stack<std::map<std::string, UserType*>> _variables;
     std::map<std::string, UserType*> _globals;

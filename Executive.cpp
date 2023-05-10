@@ -295,9 +295,10 @@ void Executive::MethodJump() {
     int count = dynamic_cast<PolizMethodJump*>(_cells[_pos])->count;
     int pos = dynamic_cast<PolizMethodJump*>(_cells[_pos])->pos;
     std::vector<UserType> parameters;
+    std::vector<std::string> parameter_names = _parameter_list[name];
     for (int i = 0; i < count; ++i) {
         parameters.push_back(_results.top().top());
-        //rename
+        parameters[i]._var_name = parameter_names[parameter_names.size() - 1 - i];
     }
     OpenCleanScope(parameters, _results.top().top()._members);
     _callStack.push(_pos);
