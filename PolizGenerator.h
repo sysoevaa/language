@@ -112,10 +112,10 @@ struct PolizSymbol : public PolizCell {
 };
 
 struct PolizFuncJump : public PolizCell {
-    PolizFuncJump(int _pos, int _count, std::string& _type) :
-    PolizCell(FUNCJUMP), pos(_pos), count(_count), type(_type) { }
+    PolizFuncJump(int _pos, int _count, std::string& _type, std::string& _name) :
+    PolizCell(FUNCJUMP), pos(_pos), count(_count), type(_type), name(_name) { }
     int pos, count; // position and amount of parameters;
-    std::string type;
+    std::string type, name;
 };
 
 struct PolizMethodJump : public PolizCell {

@@ -23,6 +23,7 @@ UserType UserType::operator+(UserType other) {
     other._float64 += this->_float64;
     other._char += this->_char;
     other._string += this->_string;
+    other._is_var = false;
     return other;
 }
 
@@ -34,11 +35,13 @@ UserType UserType::operator-() {
     other._float32 = -this->_float32;
     other._float64 = -this->_float64;
     other._char = -this->_char;
+    other._is_var = false;
     return other;
 }
 
 UserType UserType::operator-(UserType other) {
     other = -other;
+    other._is_var = false;
     return *this + other;
 }
 
@@ -49,6 +52,7 @@ UserType UserType::operator*(UserType other) {
     other._float32 *= this->_float32;
     other._float64 *= this->_float64;
     other._char *= this->_char;
+    other._is_var = false;
     return other;
 }
 
@@ -64,6 +68,7 @@ UserType UserType::operator/(UserType other) {
     catch(...) {
         throw std::logic_error("division by 0");
     }
+    other._is_var = false;
     return other;
 }
 
@@ -75,6 +80,7 @@ UserType UserType::operator!() {
     other._float32 = this->_float32 == 0 ? 1 : 0;
     other._float64 = this->_float64 == 0 ? 1 : 0;
     other._char = this->_char == 0 ? 1 : 0;
+    other._is_var = false;
     return other;
 }
 
@@ -85,10 +91,12 @@ UserType UserType::operator==(UserType other) {
     other._float32 = this->_float32 == other._float32;
     other._float64 = this->_float64 == other._float64;
     other._char = this->_char == other._char;
+    other._is_var = false;
     return other;
 }
 
 UserType UserType::operator!=(UserType other) {
+    other._is_var = false;
     return *this == !other;
 }
 
@@ -99,6 +107,7 @@ UserType UserType::operator<(UserType other) {
     other._float32 = this->_float32 < other._float32;
     other._float64 = this->_float64 < other._float64;
     other._char = this->_char < other._char;
+    other._is_var = false;
     return other;
 }
 
@@ -109,23 +118,32 @@ UserType UserType::operator||(UserType other) {
     other._float32 = this->_float32 || other._float32;
     other._float64 = this->_float64 || other._float64;
     other._char = this->_char || other._char;
+    other._is_var = false;
     return other;
 }
 
 UserType UserType::operator&&(UserType other) {
-    return !(!*this || !other);
+    other = !(!*this || !other);
+    other._is_var = false;
+    return other;
 }
 
 UserType UserType::operator<=(UserType other) {
-    return *this < other || *this == other;
+    other = *this < other || *this == other;
+    other._is_var = false;
+    return other;
 }
 
 UserType UserType::operator>(UserType other) {
-    return !(*this <= other);
+    other = !(*this <= other);
+    other._is_var = false;
+    return other;
 }
 
 UserType UserType::operator>=(UserType other) {
-    return *this > other || *this == other;
+    other = *this > other || *this == other;
+    other._is_var = false;
+    return other;
 }
 
 UserType UserType::operator++() {
@@ -135,7 +153,9 @@ UserType UserType::operator++() {
     this->_float32 += 1;
     this->_float64 += 1;
     this->_char += 1;
-    return *this;
+    UserType other = *this;
+    other._is_var = false;
+    return other;
 }
 
 UserType UserType::operator--() {
@@ -145,7 +165,9 @@ UserType UserType::operator--() {
     this->_float32 -= 1;
     this->_float64 -= 1;
     this->_char -= 1;
-    return *this;
+    UserType other = *this;
+    other._is_var = false;
+    return other;
 }
 
 UserType UserType::operator>>(UserType other) {
@@ -154,6 +176,7 @@ UserType UserType::operator>>(UserType other) {
     for (long long i = 0; i < n; ++i) {
         other = *this * other;
     }
+    other._is_var = false;
     return other;
 }
 
@@ -180,6 +203,116 @@ void UserType::SetEverythingToType() {
     }
 }
 
+void Executive::ReadPoliz(std::ifstream f) {
+    //считать все структуры и т/п/
+    std::string s;
+    while (f >> s) {
+        if (s == "ADD") {
+            std::string name;
+            f >> name;
+            std::string type;
+            f >> type;
+            _cells.push_back(new PolizAdd(name, type));
+            continue;
+        }
+        if (s == "GET") {
+            std::string name;
+            f >> name;
+            std::string type;
+            f >> type;
+            _cells.push_back(new PolizGet(name, type));
+            continue;
+        }
+        if (s == "WRITE") {
+            std::string name;
+            f >> name;
+            std::string type;
+            f >> type;
+            _cells.push_back(new PolizAdd(name, type));
+            continue;
+        }
+        if (s == "JUMP") {
+            int pos;
+            f >> pos;
+            _cells.push_back(new PolizJump(pos));
+            continue;
+        }
+        if (s == "FALSEJUMP") {
+            int pos;
+            f >> pos;
+            _cells.push_back(new PolizFalseJump(pos));
+            continue;
+        }
+        if (s == "RETURN") {
+            int pos;
+            f >> pos;
+            _cells.push_back(new PolizReturn);
+            continue;
+        }
+        if (s == "SYMBOL") {
+            std::string val;
+            f >> val;
+            _cells.push_back(new PolizSymbol(val));
+            continue;
+        }
+        if (s == "FUNCJUMP") {
+            int pos;
+            f >> pos;
+            std::string type;
+            f >> type;
+            int count;
+            f >> count;
+            std::string name;
+            f >> name;
+            _cells.push_back(new PolizFuncJump(pos, count, type, name));
+            continue;
+        }
+        if (s == "METHODJUMP") {
+            std::string type;
+            f >> type;
+            std::string name;
+            f >> name;
+            int pos;
+            f >> pos;
+            int count;
+            f >> count;
+            _cells.push_back(new PolizMethodJump(pos, count, type, name));
+            continue;
+        }
+        if (s == "OUTPUT") {
+            int count;
+            f >> count;
+            _cells.push_back(new PolizOutput);
+            continue;
+        }
+        if (s == "INPUT") {
+            int count;
+            f >> count;
+            _cells.push_back(new PolizInput);
+            continue;
+        }
+        if (s == "OPERATOR") {
+            std::string oper;
+            f >> oper;
+            int prior;
+            f >> prior;
+            int pos;
+            f >> pos;
+            bool overload;
+            f >> overload;
+            bool unary;
+            f >> unary;
+            if (oper == "-" && unary) {
+                oper = "*-";
+            }
+            _cells.push_back(new PolizOperator(oper, prior));
+        }
+        if (s == "BRACKET") {
+            _cells.push_back(new PolizBracket(0));
+        }
+    }
+}
+
 void Executive::ClearResults() {
     while (_results.top().size() > 0) {
         _results.top().pop();
@@ -202,7 +335,7 @@ void Executive::ExecuteProgram() {
                     continue;
                 }
                 case(GET) : {
-                    _results.top().push(*_variables.top()[dynamic_cast<PolizGet*>(_cells[_pos])->name]);
+                    _results.top().push(_variables.top()[dynamic_cast<PolizGet*>(_cells[_pos])->name]);
                     ++_pos;
                     continue;
                 }
@@ -242,7 +375,7 @@ void Executive::ExecuteProgram() {
                 }
                 case(OUTPUT) : {
                     while (!_results.top().empty()) {
-                        Output(&_results.top().top(), "");
+                        Output(_results.top().top(), "");
                     }
                     continue;
                 }
@@ -252,8 +385,11 @@ void Executive::ExecuteProgram() {
                     continue;
                 }
                 case(BRACKET) : {
+                    ++_pos;
                     continue;
                 }
+                default:
+                    break;
 
             }
         }
@@ -267,22 +403,29 @@ void Executive::Jump() {
 }
 
 void Executive::FalseJump() {
-    UserType result = _results.top().top();
+    UserType* result = _results.top().top();
     _results.top().pop();
-    result.SetEverythingToType();
-    if (!result._bool) {
+    result->SetEverythingToType();
+    if (!result->_bool) {
         _pos = dynamic_cast<PolizFalseJump*>(_cells[_pos])->pos;
     }
+    delete result;
 }
 
 void Executive::FuncJump() {
     std::string type = dynamic_cast<PolizFuncJump*>(_cells[_pos])->type;
+    std::string name = dynamic_cast<PolizFuncJump*>(_cells[_pos])->name;
     int count = dynamic_cast<PolizFuncJump*>(_cells[_pos])->count;
-    int pos = dynamic_cast<PolizJump*>(_cells[_pos])->pos;
+    int pos = dynamic_cast<PolizFuncJump*>(_cells[_pos])->pos;
     std::vector<UserType> parameters;
+    std::vector<std::string> parameter_names = _parameter_list[name];
     for (int i = 0; i < count; ++i) {
-        parameters.push_back(_results.top().top());
-        //rename
+        parameters.push_back(*_results.top().top());
+        if (!_results.top().top()->_is_var) {
+            delete _results.top().top();
+        }
+        _results.top().pop();
+        parameters[i]._var_name = parameter_names[parameter_names.size() - 1 - i];
     }
     OpenCleanScope(parameters);
     _callStack.push(_pos);
@@ -297,10 +440,14 @@ void Executive::MethodJump() {
     std::vector<UserType> parameters;
     std::vector<std::string> parameter_names = _parameter_list[name];
     for (int i = 0; i < count; ++i) {
-        parameters.push_back(_results.top().top());
+        parameters.push_back(*_results.top().top());
+        if (!_results.top().top()->_is_var) {
+            delete _results.top().top();
+        }
+        _results.top().pop();
         parameters[i]._var_name = parameter_names[parameter_names.size() - 1 - i];
     }
-    OpenCleanScope(parameters, _results.top().top()._members);
+    OpenCleanScope(parameters, _results.top().top()->_members);
     _callStack.push(_pos);
     _pos = pos;
 }
@@ -336,93 +483,147 @@ void Executive::AddVariable() {
 
 void Executive::Operator() {
     std::string symbol = dynamic_cast<PolizSymbol*>(_cells[_pos])->string;
-    UserType p2 = _results.top().top();
+
+    UserType* p2 = _results.top().top();
     _results.top().pop();
+
+    UserType* result = new UserType;
+
+    bool happened = false;
+
     if (symbol == "*-") {
-        _results.top().push(-p2);
-        return;
+        *result = -(*p2);
+        _results.top().push(result);
+        happened = true;
     }
     if (symbol == "--") {
-        //криво криво кривокосоосо очень криво и косо
-        _results.top().push(--p2);
-        return;
+        *result = --(*p2);
+        _results.top().push(result);
+        happened = true;
     }
     if (symbol == "++") {
-        //криво криво кривокосоосо очень криво и косо
-        _results.top().push(++p2);
-        return;
+        *result = ++(*p2);
+        _results.top().push(result);
+        happened = true;
     }
     if (symbol == "!") {
-        _results.top().push(!p2);
+        *result = !(*p2);
+        _results.top().push(result);
+        happened = true;
+    }
+
+    if (happened) {
+        if (!p2->_is_var) {
+            delete p2;
+        }
+        _results.top().pop();
         return;
     }
 
-    if (symbol == "=") {
-        *_write_memory = p2;
-        return;
-    }
-
-
-    UserType p1 = _results.top().top();
+    UserType* p1 = _results.top().top();
     _results.top().pop();
 
     if (symbol == ".") {
-        _results.top().push(*p2._members[p1._var_name]);
+        _results.top().push(p2->_members[p1->_var_name]);
+        if (!p2->_is_var) {
+            delete p2;
+        }
+
+        if (!p1->_is_var) {
+            delete p1;
+        }
         return;
     }
     if (symbol == "[]") {
-        _results.top().push(*p2._elements[p1._int32]);
+        _results.top().push(p2->_elements[p1->_int32]);
+        if (!p2->_is_var) {
+            delete p2;
+        }
+
+        if (!p1->_is_var) {
+            delete p1;
+        }
+        return;
+    }
+    if (symbol == "=") {
+        *p2 = *p1;
+        if (!p1->_is_var) {
+            delete p1;
+        }
         return;
     }
 
     if (symbol == "+") {
-        _results.top().push(p1 + p2);
+        *result = *p1 + *p2;
     }
     if (symbol == "-") {
-        _results.top().push(p1 - p2);
+        *result = *p1 - *p2;
     }
     if (symbol == "*") {
-        _results.top().push(p1 * p2);
+        *result = *p1 - *p2;
     }
     if (symbol == "**") {
-        _results.top().push(p1 >> p2);
+        *result = *p1 >> *p2;
     }
     if (symbol == "/") {
-        _results.top().push(p1 / p2);
+        *result = *p1 / *p2;
     }
     if (symbol == "==") {
-        _results.top().push(p1 == p2);
+        *result = *p1 == *p2;
     }
     if (symbol == "!=") {
-        _results.top().push(p1 != p2);
+        *result = *p1 != *p2;
     }
     if (symbol == "<") {
-        _results.top().push(p1 < p2);
+        *result = *p1 < *p2;
     }
     if (symbol == ">") {
-        _results.top().push(p1 > p2);
+        *result = *p1 > *p2;
     }
     if (symbol == "||") {
-        _results.top().push(p1 || p2);
+        *result = *p1 || *p2;
     }
     if (symbol == "&&") {
-        _results.top().push(p1 && p2);
+        *result = *p1 && *p2;
     }
     if (symbol == ">=") {
-        _results.top().push(p1 >= p2);
+        *result = *p1 >= *p2;
     }
     if (symbol == "<=") {
-        _results.top().push(p1 <= p2);
+        *result = *p1 <= *p2;
     }
+    _results.top().push(result);
+
+    if (!p2->_is_var) {
+        delete p2;
+    }
+
+    if (!p1->_is_var) {
+        delete p1;
+    }
+
 }
 
 void Executive::Symbol() {
     std::string symbol = dynamic_cast<PolizSymbol*>(_cells[_pos])->string;
-    if (symbol == ";") {
-        ClearResults();
+    if (symbol[0] <= '9' && symbol[0] >= '0') {
+        bool floating = false;
+        for (auto k : symbol) {
+            if (k == '.') {
+                floating = true;
+            }
+        }
+        if (floating) {
+            float val = std::stof(symbol);
+            _results.top().push(new UserType(false, val));
+        }
+        else {
+            int val = std::stoi(symbol);
+            _results.top().push(new UserType(false, val));
+        }
         return;
     }
-
+    _results.top().push(new UserType(false, symbol));
 
 }
 
@@ -437,7 +638,7 @@ void Executive::OpenCleanScope(std::vector<UserType> parameters) {
         *new_scope[parameter._var_name] = parameter;
     }
     _variables.push(new_scope);
-    _results.push(std::stack<UserType>());
+    _results.push(std::stack<UserType*>());
 }
 
 void Executive::OpenCleanScope(std::vector<UserType> parameters, std::map<std::string, UserType*> members) {
@@ -448,7 +649,7 @@ void Executive::OpenCleanScope(std::vector<UserType> parameters, std::map<std::s
     }
     new_scope.insert(members.begin(), members.end());
     _variables.push(new_scope);
-    _results.push(std::stack<UserType>());
+    _results.push(std::stack<UserType*>());
 }
 
 void Executive::CloseScope() {
@@ -461,7 +662,7 @@ void Executive::CloseScope() {
 }
 
 void Executive::Return() {
-    UserType result = _results.top().top();
+    UserType* result = _results.top().top();
     CloseScope();
     _results.top().push(result);
     _pos = _callStack.top() + 1;
