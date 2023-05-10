@@ -161,6 +161,10 @@ UserType* UserType::operator[](UserType ind) {
     return _elements[ind._int32];
 }
 
+UserType UserType::operator[](int ind) {
+    return *_elements[ind];
+}
+
 void UserType::SetEverythingToType() {
     if (IsBasic(this->_type_name) == 1) {
         this->_float32 = this->_int64;
@@ -211,6 +215,7 @@ void Executive::ExecuteProgram() {
                     continue;
                 }
                 case(RETURN) : {
+                    Return();
                     continue;
                 }
                 case(SYMBOL) : {
@@ -219,18 +224,26 @@ void Executive::ExecuteProgram() {
                     continue;
                 }
                 case(FUNCJUMP) : {
+                    FuncJump();
                     continue;
                 }
                 case(METHODJUMP) : {
+                    MethodJump();
                     continue;
                 }
                 case(INPUT) : {
+                    Input(_write_memory, "");
                     continue;
                 }
                 case(OUTPUT) : {
+                    while (!_results.top().empty()) {
+                        Output(&_results.top().top(), "");
+                    }
                     continue;
                 }
                 case(OPERATOR) : {
+                    Operator();
+                    ++_pos;
                     continue;
                 }
                 case(BRACKET) : {
@@ -258,7 +271,32 @@ void Executive::FalseJump() {
 }
 
 void Executive::FuncJump() {
+    std::string type = dynamic_cast<PolizFuncJump*>(_cells[_pos])->type;
+    int count = dynamic_cast<PolizFuncJump*>(_cells[_pos])->count;
+    int pos = dynamic_cast<PolizJump*>(_cells[_pos])->pos;
+    std::vector<UserType> parameters;
+    for (int i = 0; i < count; ++i) {
+        parameters.push_back(_results.top().top());
+        //rename
+    }
+    OpenCleanScope(parameters);
+    _callStack.push(_pos);
+    _pos = pos;
+}
 
+void Executive::MethodJump() {
+    std::string type = dynamic_cast<PolizMethodJump*>(_cells[_pos])->type;
+    std::string name = dynamic_cast<PolizMethodJump*>(_cells[_pos])->name;
+    int count = dynamic_cast<PolizMethodJump*>(_cells[_pos])->count;
+    int pos = dynamic_cast<PolizMethodJump*>(_cells[_pos])->pos;
+    std::vector<UserType> parameters;
+    for (int i = 0; i < count; ++i) {
+        parameters.push_back(_results.top().top());
+        //rename
+    }
+    OpenCleanScope(parameters, _results.top().top()._members);
+    _callStack.push(_pos);
+    _pos = pos;
 }
 
 void Executive::AddVariable() {
@@ -290,13 +328,8 @@ void Executive::AddVariable() {
     _variables.top()[name] = variable;
 }
 
-void Executive::Symbol() {
+void Executive::Operator() {
     std::string symbol = dynamic_cast<PolizSymbol*>(_cells[_pos])->string;
-    if (symbol == ";") {
-        ClearResults();
-        return;
-    }
-
     UserType p2 = _results.top().top();
     _results.top().pop();
     if (symbol == "*-") {
@@ -361,8 +394,28 @@ void Executive::Symbol() {
     }
 }
 
+void Executive::Symbol() {
+    std::string symbol = dynamic_cast<PolizSymbol*>(_cells[_pos])->string;
+    if (symbol == ";") {
+        ClearResults();
+        return;
+    }
+
+
+}
+
 void Executive::OpenDerivativeScope() {
     _variables.push(_variables.top());
+}
+
+void Executive::OpenCleanScope(std::vector<UserType> parameters) {
+    std::map<std::string, UserType*> new_scope = _globals;
+    for (auto parameter : parameters) {
+        new_scope[parameter._var_name] = new UserType();
+        *new_scope[parameter._var_name] = parameter;
+    }
+    _variables.push(new_scope);
+    _results.push(std::stack<UserType>());
 }
 
 void Executive::OpenCleanScope(std::vector<UserType> parameters, std::map<std::string, UserType*> members) {
@@ -371,6 +424,9 @@ void Executive::OpenCleanScope(std::vector<UserType> parameters, std::map<std::s
         new_scope[parameter._var_name] = new UserType();
         *new_scope[parameter._var_name] = parameter;
     }
+    new_scope.insert(members.begin(), members.end());
+    _variables.push(new_scope);
+    _results.push(std::stack<UserType>());
 }
 
 void Executive::CloseScope() {
@@ -379,6 +435,15 @@ void Executive::CloseScope() {
         ClearElement(it->second);
     }
     _variables.pop();
+    _results.pop();
+}
+
+void Executive::Return() {
+    UserType result = _results.top().top();
+    CloseScope();
+    _results.top().push(result);
+    _pos = _callStack.top() + 1;
+    _callStack.pop();
 }
 
 void Executive::ClearElement(UserType *member) {
@@ -387,6 +452,108 @@ void Executive::ClearElement(UserType *member) {
         return;
     }
     for (auto it : member->_members) {
-        ClearElement(it);
+        ClearElement(it.second);
     }
 }
+
+void Executive::Input(UserType *member, std::string s = "") {
+    if (member->_is_array) {
+        for (int i = 0; i < member->_elements.size(); ++i) {
+            std::cout << s << "type in element no. " << i << " : ";
+            if (IsBasic(member[i]._type_name) == 1) {
+                long long input;
+                std::cin >> input;
+                member[i] = UserType(member->_type_name, member->_var_name, input);
+                continue;
+            }
+            if (IsBasic(member[i]._type_name) == 2) {
+                long double input;
+                std::cin >> input;
+                member[i] = UserType(member->_type_name, member->_var_name, input);
+                continue;
+            }
+            if (IsBasic(member[i]._type_name) == 3) {
+                std::string input;
+                std::cin >> input;
+                member[i] = UserType(member->_type_name, member->_var_name, input);
+                continue;
+            }
+            for (auto it : member->_members) {
+                std::cout << "type in " << it.first << " : ";
+                Input(it.second, s + " ");
+            }
+        }
+        return;
+    }
+    if (IsBasic(member->_type_name) == 1) {
+        long long input;
+        std::cin >> input;
+        *member = UserType(member->_type_name, member->_var_name, input);
+        return;
+    }
+    if (IsBasic(member->_type_name) == 2) {
+        long double input;
+        std::cin >> input;
+        *member = UserType(member->_type_name, member->_var_name, input);
+        return;
+    }
+    if (IsBasic(member->_type_name) == 3) {
+        std::string input;
+        std::cin >> input;
+        *member = UserType(member->_type_name, member->_var_name, input);
+        return;
+    }
+    for (auto it : member->_members) {
+        std::cout << s << "type in " << it.first << " : ";
+        Input(it.second, s + " ");
+    }
+}
+
+void Executive::Output(UserType* member, std::string s = "") {
+    if (member->_is_array) {
+        for (int i = 0; i < member->_elements.size(); ++i) {
+            std::cout << s << "element no. " << i << " : ";
+            if (IsBasic(member[i]._type_name) == 1) {
+                long long output = member[i]._int64;
+                std::cout << output;
+                continue;
+            }
+            if (IsBasic(member[i]._type_name) == 2) {
+                long double output = member[i]._float64;
+                std::cout << output;
+                continue;
+            }
+            if (IsBasic(member[i]._type_name) == 3) {
+                std::string output = member[i]._string;
+                std::cout << output;
+                continue;
+            }
+            for (auto it : member->_members) {
+                std::cout << s << it.first << " : ";
+                Output(it.second, s + " ");
+            }
+        }
+        return;
+    }
+    if (IsBasic(member->_type_name) == 1) {
+        long long output = member->_int64;
+        std::cout << output;
+        return;
+    }
+    if (IsBasic(member->_type_name) == 2) {
+        long double output = member->_float64;
+        std::cout << output;
+        return;
+    }
+    if (IsBasic(member->_type_name) == 3) {
+        std::string output = member->_string;
+        std::cout << output;
+        return;
+    }
+    for (auto it : member->_members) {
+        std::cout << s << "type in " << it.first << " : ";
+        Output(it.second, s + " ");
+    }
+}
+
+
