@@ -45,11 +45,11 @@ void PolizGenerator::Push(PolizCell *cell) {
 
 void PolizGenerator::AddFunction(std::string &func_name) {
     auto type = _tid->GetTypeFunction(func_name);
-    Push(new PolizFuncJump(_list->GetFunc(func_name), _tid->GetParameters(func_name).size(), type));
+    Push(new PolizFuncJump(_list->GetFunc(func_name), _tid->GetParameters(func_name).size(), type, func_name));
 }
 
-void PolizGenerator::AddCast( std::string &type1,  std::string& type2) {
-    Push(new PolizFuncJump(_list->GetCast(type1, type2), 1, type2));
+void PolizGenerator::AddCast( std::string &type1, std::string& type2) {
+    Push(new PolizFuncJump(_list->GetCast(type1, type2), 1, type2, type1)); // may be should be another name
 }
 
 void PolizGenerator::AddMethod(int cnt, std::string& name, std::string& type) {
