@@ -391,7 +391,6 @@ void SyntaxAnalyser::expression() {
             gc();
             variable();
             if (_lex[_ind].string == "(") {
-                //_gen->AddMethod(_tid->GetType(_lex[_ind - 2].string), _lex[_ind - 1].string);
                 _parameter_arr = _tid->GetMethodParameters(type1, _lex[_ind - 1].string);
                 std::string method_name_ = _lex[_ind - 1].string;
                 parameters();
@@ -655,6 +654,7 @@ void SyntaxAnalyser::lexpression() {
     std::string name;
     std::string type1;
     if (type()) {
+        std::string func_name = _lex[_ind].string;
         if (_tid->IsFunctionExist(_lex[_ind].string)) {
             _parameter_arr = _tid->GetParameters(_lex[_ind].string);
             gc();
@@ -662,12 +662,14 @@ void SyntaxAnalyser::lexpression() {
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("\")\" expected");
             }
+            _gen->AddFunction(func_name);
             gc();
         } else {
             gc();
             if (_lex[_ind].type == "variable") {
                 if (!_tid->IsTypeExist(_lex[_ind - 1].string)) throw std::logic_error("non existing type");
                 _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
+                _gen->Push(new PolizAdd(_lex[_ind].string, _lex[_ind - 1].string));
                 name = _lex[_ind].string;
                 type1 = _lex[_ind - 1].string;
                 def = true;
@@ -708,6 +710,7 @@ void SyntaxAnalyser::lexpression() {
     if (_lex[_ind].string == "[") {
         gc();
         expCheck.Clear();
+        _gen->Push(new PolizBracket('['));
         expression();
         Lexeme lex = expCheck.GetType();
         std::string int_type1 = "int32", int_type2 = "int64";
@@ -716,12 +719,13 @@ void SyntaxAnalyser::lexpression() {
         }
         expCheck.Clear();
         if (_lex[_ind].string != "]") throw std::logic_error("\"]\" expected");
+        _gen->Push(new PolizBracket(']'));
         type1 = GetArrayType(type1);
         gc();
-        //_gen->MakeExpression();
     }
     while (_lex[_ind].string == ".") {
         if (def) throw std::logic_error("\"=\" expected");
+
         gc();
         if (_lex[_ind].type != "variable") {
             throw std::logic_error("method expected");
@@ -732,6 +736,7 @@ void SyntaxAnalyser::lexpression() {
         if (_lex[_ind].string == "(") {
             _parameter_arr = _tid->GetMethodParameters(type1, _lex[_ind - 1].string);
             parameters();
+            _gen->AddMethod(_parameter_arr.size(), method, (std::string&) "undefined");
             _parameter_arr.clear();
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("\")\" expected");
@@ -1147,7 +1152,7 @@ void SyntaxAnalyser::variable_def() {
     expCheck.Clear();
     if (lex.string != var_type) throw std::logic_error("trying to put " + lex.string + " into " + var_type);
     _gen->MakeExpression();
-    _gen->AddToRes(new PolizAdd); // add current variable
+    //_gen->AddToRes(new PolizAdd); // add current variable
 }
 
 void SyntaxAnalyser::string() {

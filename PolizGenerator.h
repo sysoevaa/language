@@ -74,7 +74,8 @@ public:
 };
 
 struct PolizAdd : public PolizCell {
-    PolizAdd() : PolizCell(ADD) { }
+    PolizAdd(std::string _name, std::string _type) : PolizCell(ADD), name(_name), type(_type) { }
+    std::string name, type;
 };
 
 struct PolizGet : public PolizCell {
