@@ -608,10 +608,12 @@ void SyntaxAnalyser::determinantes() {
         _cycle_setter->OpenScope(_gen->GetCurSize());
         gc();
         While();
+        _cycle_setter->CloseScope(_gen->GetCurSize());
     } else if (_lex[_ind].string == "for") {
         _cycle_setter->OpenScope(_gen->GetCurSize());
         gc();
         For();
+        _cycle_setter->CloseScope(_gen->GetCurSize());
     } else if (_lex[_ind].string == "do") {
         _cycle_setter->OpenScope(_gen->GetCurSize());
         gc();
@@ -1241,7 +1243,10 @@ void SyntaxAnalyser::cycle_namespace() {
     if (_lex[_ind].type == "keyword" && !type()) {
         if (_lex[_ind].string == "break" || _lex[_ind].string == "continue") {
             if (_lex[_ind].string == "break") {
-
+                _gen->AddBreak();
+            }
+            if (_lex[_ind].string == "continue") {
+                _gen->AddContinue();
             }
             if (_lex[_ind].string != ";") throw std::logic_error("\";\" expected");
             cycle_namespace();

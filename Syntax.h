@@ -9,7 +9,7 @@ class SyntaxAnalyser {
  public:
   SyntaxAnalyser (const std::vector<Lexeme>& lex) : _lex(lex), _tid(new TID), expCheck(_tid), _list(new DefinitionList),
   _cycle_setter(new CycleSetter) {
-      _gen = new PolizGenerator(_tid, _list);
+      _gen = new PolizGenerator(_tid, _list, _cycle_setter);
   }
   void gc();
 

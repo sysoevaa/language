@@ -58,6 +58,16 @@ void PolizGenerator::AddMethod(int cnt, std::string& name, std::string& type) {
     _stack.push_back(new PolizMethodJump(-1, cnt, type, name));
 }
 
+void PolizGenerator::AddBreak() {
+    PolizJump* breaky = new PolizJump(0);
+    _res_stack.push_back(breaky);
+    _cycle_setter->PushBreak(breaky);
+}
+
+void PolizGenerator::AddContinue() {
+    _res_stack.push_back(new PolizJump(_cycle_setter->GetContinue()));
+}
+
 void PolizGenerator::Erase() {
     _stack.pop_back();
 }

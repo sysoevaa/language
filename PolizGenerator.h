@@ -198,6 +198,8 @@ public:
     void AddFunction(std::string& func_name);
     void AddCast(std::string& type1, std::string& type2);
     void AddMethod(int cnt, std::string& name, std::string& type);
+    void AddBreak();
+    void AddContinue();
     void MakeExpression();
     void Erase();
     void SetJumps(int begin, int end);
