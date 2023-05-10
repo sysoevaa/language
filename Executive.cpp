@@ -157,6 +157,10 @@ UserType UserType::operator>>(UserType other) {
     return other;
 }
 
+UserType* UserType::operator[](UserType ind) {
+    return _elements[ind._int32];
+}
+
 void UserType::SetEverythingToType() {
     if (IsBasic(this->_type_name) == 1) {
         this->_float32 = this->_int64;
@@ -173,8 +177,8 @@ void UserType::SetEverythingToType() {
 }
 
 void Executive::ClearResults() {
-    while (_results.size() > 0) {
-        _results.pop();
+    while (_results.top().size() > 0) {
+        _results.top().pop();
     }
 }
 
@@ -189,12 +193,12 @@ void Executive::ExecuteProgram() {
                     continue;
                 }
                 case(GET) : {
-                    _results.push(_variables.top()[dynamic_cast<PolizGet*>(_cells[_pos])->name]);
+                    _results.top().push(*_variables.top()[dynamic_cast<PolizGet*>(_cells[_pos])->name]);
                     ++_pos;
                     continue;
                 }
                 case(WRITE) : {
-                    _results.push(_variables.top()[dynamic_cast<PolizGet*>(_cells[_pos])->name]);
+                    _write_memory = _variables.top()[dynamic_cast<PolizGet*>(_cells[_pos])->name];
                     ++_pos;
                     continue;
                 }
@@ -211,6 +215,7 @@ void Executive::ExecuteProgram() {
                 }
                 case(SYMBOL) : {
                     Symbol();
+                    ++_pos;
                     continue;
                 }
                 case(FUNCJUMP) : {
@@ -244,12 +249,16 @@ void Executive::Jump() {
 }
 
 void Executive::FalseJump() {
-    UserType* result = _results.top();
-    _results.pop();
-    result->SetEverythingToType();
-    if (!result->_bool) {
+    UserType result = _results.top().top();
+    _results.top().pop();
+    result.SetEverythingToType();
+    if (!result._bool) {
         _pos = dynamic_cast<PolizFalseJump*>(_cells[_pos])->pos;
     }
+}
+
+void Executive::FuncJump() {
+
 }
 
 void Executive::AddVariable() {
@@ -271,11 +280,12 @@ void Executive::AddVariable() {
         variable = new UserType(type, name, val);
     }
     if (IsBasic(type) == 4) {
-        std::vector<UserType*> members;
+        std::map<std::string, UserType*> members;
+        GetMembers(type, members);
         variable = new UserType(type, name, members);
     }
 
-    _results.push(variable);
+    _write_memory = variable;
 
     _variables.top()[name] = variable;
 }
@@ -284,7 +294,70 @@ void Executive::Symbol() {
     std::string symbol = dynamic_cast<PolizSymbol*>(_cells[_pos])->string;
     if (symbol == ";") {
         ClearResults();
-        ++_pos;
+        return;
+    }
+
+    UserType p2 = _results.top().top();
+    _results.top().pop();
+    if (symbol == "*-") {
+        _results.top().push(-p2);
+        return;
+    }
+    if (symbol == "--") {
+        //криво криво кривокосоосо очень криво и косо
+        _results.top().push(--p2);
+        return;
+    }
+    if (symbol == "++") {
+        //криво криво кривокосоосо очень криво и косо
+        _results.top().push(++p2);
+        return;
+    }
+    if (symbol == "!") {
+        _results.top().push(!p2);
+        return;
+    }
+
+    UserType p1 = _results.top().top();
+    _results.pop();
+    if (symbol == "+") {
+        _results.top().push(p1 + p2);
+    }
+    if (symbol == "-") {
+        _results.top().push(p1 - p2);
+    }
+    if (symbol == "*") {
+        _results.top().push(p1 * p2);
+    }
+    if (symbol == "**") {
+        _results.top().push(p1 >> p2);
+    }
+    if (symbol == "/") {
+        _results.top().push(p1 / p2);
+    }
+    if (symbol == "==") {
+        _results.top().push(p1 == p2);
+    }
+    if (symbol == "!=") {
+        _results.top().push(p1 != p2);
+    }
+    if (symbol == "<") {
+        _results.top().push(p1 < p2);
+    }
+    if (symbol == ">") {
+        _results.top().push(p1 > p2);
+    }
+    if (symbol == "||") {
+        _results.top().push(p1 || p2);
+    }
+    if (symbol == "&&") {
+        _results.top().push(p1 && p2);
+    }
+    if (symbol == ">=") {
+        _results.top().push(p1 >= p2);
+    }
+    if (symbol == "<=") {
+        _results.top().push(p1 <= p2);
     }
 }
 
@@ -292,10 +365,11 @@ void Executive::OpenDerivativeScope() {
     _variables.push(_variables.top());
 }
 
-void Executive::OpenCleanScope(std::vector<UserType*> parameters) {
+void Executive::OpenCleanScope(std::vector<UserType> parameters, std::map<std::string, UserType*> members) {
     std::map<std::string, UserType*> new_scope = _globals;
     for (auto parameter : parameters) {
-        new_scope[parameter->_var_name] = parameter;
+        new_scope[parameter._var_name] = new UserType();
+        *new_scope[parameter._var_name] = parameter;
     }
 }
 
