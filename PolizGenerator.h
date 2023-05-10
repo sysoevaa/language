@@ -64,7 +64,8 @@ enum Command {
     OUTPUT = 11,
     OPERATOR = 12,
     BRACKET = 13,
-    SCOPE = 14
+    SCOPE = 14,
+    SCOPECLOSE = 15
 };
 
 struct PolizCell {
@@ -150,6 +151,14 @@ struct PolizBracket : public PolizCell {
     char sym;
 };
 
+struct PolizClose : public PolizCell {
+    PolizClose() : PolizCell(SCOPECLOSE);
+};
+
+struct PolizScope : public PolizCell {
+    PolizScope() : PolizCell(SCOPE);
+};
+
 struct OverloadParameters {
     OverloadParameters(std::string _type1, std::string _type2, std::string _op) :
             type1(_type1), type2(_type2), op(_op) { }
@@ -200,6 +209,8 @@ public:
     void AddMethod(int cnt, std::string& name, std::string& type);
     void AddBreak();
     void AddContinue();
+    void OpenCycleScope();
+    void CloseCycleScope();
     void MakeExpression();
     void Erase();
     void SetJumps(int begin, int end);

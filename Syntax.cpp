@@ -605,17 +605,17 @@ void SyntaxAnalyser::determinantes() {
         gc();
         If();
     } else if (_lex[_ind].string == "while") {
-        _cycle_setter->OpenScope(_gen->GetCurSize());
+        _gen->OpenCycleScope();
         gc();
         While();
-        _cycle_setter->CloseScope(_gen->GetCurSize());
+        _gen->CloseCycleScope();
     } else if (_lex[_ind].string == "for") {
-        _cycle_setter->OpenScope(_gen->GetCurSize());
+        _gen->OpenCycleScope();
         gc();
         For();
-        _cycle_setter->CloseScope(_gen->GetCurSize());
+        _gen->CloseCycleScope();
     } else if (_lex[_ind].string == "do") {
-        _cycle_setter->OpenScope(_gen->GetCurSize());
+        _gen->OpenCycleScope();
         gc();
         if (_lex[_ind].string == "while") {
             gc();
@@ -624,7 +624,7 @@ void SyntaxAnalyser::determinantes() {
         else {
             throw std::logic_error("\"while \" expected");
         }
-        _cycle_setter->CloseScope(_gen->GetCurSize());
+        _gen->CloseCycleScope();
     } else if (_lex[_ind].string == "print") {
         gc();
         print();

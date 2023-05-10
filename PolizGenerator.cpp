@@ -68,6 +68,16 @@ void PolizGenerator::AddContinue() {
     _res_stack.push_back(new PolizJump(_cycle_setter->GetContinue()));
 }
 
+void PolizGenerator::OpenCycleScope() {
+    _res_stack.push_back(new PolizScope);
+    _cycle_setter->OpenScope(this->GetCurSize());
+}
+
+void PolizGenerator::CloseCycleScope() {
+    _cycle_setter->CloseScope(this->GetCurSize());
+    _res_stack.push_back(new PolizClose);
+}
+
 void PolizGenerator::Erase() {
     _stack.pop_back();
 }
