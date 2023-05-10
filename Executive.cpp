@@ -203,6 +203,10 @@ void UserType::SetEverythingToType() {
     }
 }
 
+void Executive::ReadPoliz(std::ifstream f) {
+
+}
+
 void Executive::ClearResults() {
     while (_results.top().size() > 0) {
         _results.top().pop();
@@ -335,7 +339,7 @@ void Executive::MethodJump() {
         _results.top().pop();
         parameters[i]._var_name = parameter_names[parameter_names.size() - 1 - i];
     }
-    OpenCleanScope(parameters, _results.top().top()._members);
+    OpenCleanScope(parameters, _results.top().top()->_members);
     _callStack.push(_pos);
     _pos = pos;
 }

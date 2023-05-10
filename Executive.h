@@ -8,6 +8,7 @@
 #include "PolizGenerator.h"
 #include <iostream>
 #include <string>
+#include <fstream>
 
 int IsBasic(std::string type_name);
 
@@ -145,7 +146,7 @@ struct UserType {
 
 class Executive {
 public:
-    void ReadPoliz(std::string& s);
+    void ReadPoliz(std::ifstream f);
 
     void ExecuteProgram();
 private:
