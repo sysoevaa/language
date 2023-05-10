@@ -80,7 +80,7 @@ void PolizGenerator::MakeExpression() {
                     _res_stack.push_back(new PolizOperator((std::string&) "[]", -1));
                 }
             }
-        } else if (_stack[i]->type == SYMBOL || _stack[i]->type == GET) {
+        } else if (_stack[i]->type == SYMBOL || _stack[i]->type == GET || _stack[i]->type == ADD) {
             _res_stack.push_back(_stack[i]);
         } else if (_stack[i]->type == OPERATOR) {
             auto cur = dynamic_cast<PolizOperator*> (_stack[i]);
@@ -125,10 +125,8 @@ void PolizGenerator::SetJumps(int begin, int end) {
             auto cell = dynamic_cast<PolizOperator*>(_res_stack[i]);
             if (cell->unary) {
                 auto first = cur.back(); cur.pop_back();
-                _res_stack.push_back(first);
-                _res_stack.push_back(cell);
                 cur.push_back(first);
-            } else {
+            } else if (cell->oper != "=") {
                 auto first = cur.back();
                 cur.pop_back();
                 auto second = cur.back();
@@ -140,8 +138,9 @@ void PolizGenerator::SetJumps(int begin, int end) {
                 auto [res, jmp] = GetResType(second, first, dynamic_cast<PolizOperator *>(_res_stack[i])->oper);
                 cur.push_back(new PolizGet("VALUE FROM EXPR)", res));
                 dynamic_cast<PolizOperator *>(_res_stack[i])->pos = jmp;
+            } else if (cell->oper == "=") {
+                int aboba;
             }
-
         } else if (_res_stack[i]->type == METHODJUMP) {
             for (int j = 0; j < dynamic_cast<PolizMethodJump*>(_res_stack[i])->count; ++j) {
                 cur.pop_back();

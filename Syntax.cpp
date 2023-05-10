@@ -790,17 +790,17 @@ void SyntaxAnalyser::lexpression() {
     }
 
     if (_lex[_ind].string == "=") {
+        if (!def) {
+            _gen->Push(new PolizWrite(name));
+        } else {
+        }
+        _gen->Push(new PolizOperator(_lex[_ind].string, _lex[_ind].priority));
         gc();
         expression();
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         if (IsEqualTypes(type1, lex.string) == "error") throw std::logic_error("trying to put " + lex.string + " into " +
         type1);
-        if (def) {
-            _gen->Push(new PolizAdd(name, var_type));
-        } else {
-            _gen->Push(new PolizWrite(name));
-        }
         return;
     }
     if (_lex[_ind].string == ";") {
