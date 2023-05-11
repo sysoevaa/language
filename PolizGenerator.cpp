@@ -315,9 +315,11 @@ void PolizGenerator::print() {
         } else if (cell->type == OUTPUT) {
             out << "output " << dynamic_cast<PolizOutput*>(cell)->count << "\n";
         } else if (cell->type == ADD) {
-            out << "add " << dynamic_cast<PolizAdd*>(cell)->name << '\n';
+            out << "add " << dynamic_cast<PolizAdd*>(cell)->type << ' ' << dynamic_cast<PolizAdd*>(cell)->name << '\n';
         } else if (cell->type == WRITE) {
             out << "rewrite " << dynamic_cast<PolizWrite*>(cell)->name << '\n';
+        } else if (cell->type == RETURN) {
+            out << "return" << '\n';
         }
         out.flush();
     }
