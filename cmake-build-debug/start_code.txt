@@ -1,91 +1,18 @@
-/*struct BigInt {
-    array int32 num;
-    int32 n;
-
-    BigInt overload + (BigInt b) {
-        array int32 ans;
-        int32 len = n;
-        if (b.n > n) {
-            len = b.n;
-        }
-        for (int32 i; i < n; ++i) {
-            ans[i] = num[i] + b[i];
-        }
-        BigInt ret;
-        ret.n = n;
-        ret.num = ans;
-        return ret;
-    }
+int32 sum(int32 a, int32 b) {
+    return a + b;
 }
 
-exec int32 foo() {
-    float64 n;
-    n = 1;
-    get(n);
-    BigInt b;
-    BigInt a;
-    BigInt c = a + b;
+int32 sub(int32 a, int32 b) {
+    return a - b;
 }
 
-Ap cast(int32 moo) {
-    Ap k;
-    return k;
-}
-*/
+int32 d = 2 ** 10;
 
-int32 i;
-
-struct Ap {
-    array int32 ans;
-    construct (int32 i) {
-        ans[0] = i;
-    }
-
-
-
-    int32 bubble(float64 cup) {
-        return ans[0];
-    }
-
+exec void main() {
+   int32 a;
+   int32 b;
+   int32 c = sub(a + b, b - a);
+   print(c);
 }
 
-int32 CACA(int64 p) {
-    p = 1;
-    return p;
-}
-
-
-
-
-
-struct Bp {
-    array Ap cap;
-}
-
-void Grabbles() {
-    int32 a;
-    a = a + 1;
-    return;
-}
-
-exec void af() {
-
-    int32 a = i;
-    Ap i;
-    a = i;
-    array Bp cupas;
-    string s;
-    float32 moo = 1;
-    Ap castro(1);
-    int32 gp =( CACA(2) + 1);
-    cupas[0].cap[0].ans[0] = 1;
-    array float64 a;
-    int32 i = 1;
-    Ap k;
-    Ap r;
-    r.ans[0] = 1;
-    a[0] = a[i] + a[1 + 3 + a[i]] - 3 / 2 + i;
-    for (float64 k : a) {
-
-    }
-}
+/* c a b jump = */
