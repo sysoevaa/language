@@ -279,7 +279,12 @@ std::pair<std::string, int> PolizGenerator::GetResType(PolizCell *first, PolizCe
 }
 
 void PolizGenerator::print() {
-
+    PrintExec();
+    PrintGlobal();
+    PrintFunc();
+    PrintCast();
+    PrintMembers();
+    PrintMethods();
     for (auto cell : _res_stack) {
         if (cell->type == OPERATOR) {
             out << "operator " << dynamic_cast<PolizOperator*>(cell)->oper << ' ';
@@ -371,7 +376,15 @@ void PolizGenerator::PrintMethods() {
 }
 
 void PolizGenerator::PrintMembers() {
-
+    auto st = _tid->GetStructs();
+    out << st.size() << '\n';
+    for (auto [name, ptr] : st) {
+        out << name << '\n';
+            for (auto [id, type] : ptr->GetId()) {
+                out << type << ' ' << id << '\n';
+            }
+    }
+    out.flush();
 }
 
 void PolizGenerator::PrintCast() {
