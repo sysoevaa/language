@@ -337,7 +337,20 @@ void PolizGenerator::PrintGlobal() {
     auto ptr = _tid->GetGlobal();
     out << ptr->GetId().size() << '\n';
     for (auto [id, type] : ptr->GetId()) {
-        out << id << ' ' << type << "\n";
+        out << type << ' ' << id << "\n";
+    }
+    out << std::endl;
+}
+
+void PolizGenerator::PrintFunc() {
+    auto mp = _tid->GetFunc();
+    out << mp.size() << '\n';
+    for (auto [name, ptr] : mp) {
+        out << name << ' ' << ptr->GetType("aboba", true) << '\n';
+        out << ptr->GetId().size() << '\n';
+        for (auto [id, type] : ptr->GetId()) {
+            out << type << ' ' << id << '\n';
+        }
     }
     out << std::endl;
 }
@@ -353,6 +366,7 @@ void CycleSetter::CloseScope(int endPos) {
     }
     _scopeStack.pop();
 }
+
 
 const int CycleSetter::GetContinue() {
     return _scopeStack.top().first;

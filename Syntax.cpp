@@ -87,6 +87,7 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
             return;
         }
         if (_lex[_ind].string == "=") {
+            _gen->Push(new PolizAdd(var_name, var_type));
             gc();
             expression();
             Lexeme lex = expCheck.GetType();
@@ -320,6 +321,7 @@ void SyntaxAnalyser::expression() {
         expCheck.Process(Lexeme("variable", type_n, 0));
         gc();
         if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
+            _gen->Push(new PolizOperator(_lex[_ind].string, _lex[_ind].priority));
             expCheck.Process(_lex[_ind]);
             gc();
             expression();

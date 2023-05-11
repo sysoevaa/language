@@ -316,3 +316,7 @@ std::vector<std::string> TID::GetConstructorParameters(std::string &struct_name)
 TIDElement* TID::GetGlobal() {
     return _global_tid;
 }
+
+std::map<std::string, TIDElement*> TID::GetFunc() {
+    return _functions;
+}

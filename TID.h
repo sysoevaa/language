@@ -54,6 +54,8 @@ class TID {
   std::string GetMethodType(std::string& struct_name, std::string& method_name);
   std::vector<std::string> GetConstructorParameters(std::string& struct_name);
   TIDElement* GetGlobal();
+  std::map<std::string, TIDElement*> GetFunc();
+
  private:
   std::map<std::string, TIDElement*> _functions;
   std::map<std::string, TIDElement*> _structs;
