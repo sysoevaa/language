@@ -211,6 +211,74 @@ void UserType::SetEverythingToType() {
 }
 
 void Executive::ReadPoliz(std::ifstream f) {
+    int n;
+    f >> n;
+    _execs.resize(n);
+    for (int i = 0; i < n; ++i) {
+        f >> _execs[i];
+    }
+
+    f >> n;
+    std::string name, type;
+    for (int i = 0; i < n; ++i) {
+        f >> name;
+        f >> type;
+        UserType* global;
+        if (IsBasic(type) == 1) {
+            long long val = 0;
+            global = new UserType(type, name, val);
+        }
+        if (IsBasic(type) == 2) {
+            long double val = 0;
+            global = new UserType(type, name, val);
+        }
+        if (IsBasic(type) == 3) {
+            std::string val = "";
+            global = new UserType(type, name, val);
+        }
+        if (IsBasic(type) == 4) {
+            std::map<std::string, UserType*> members;
+            global = new UserType(type, name, members);
+            _to_fill_members.push_back(global);
+        }
+        _globals[name] = global;
+    }
+    int count;
+    std::vector<std::string> parameters;
+    std::string type_name;
+
+    f >> n;
+    for (int i = 0; i < n; ++i) {
+        f >> type_name;
+        f >> type;
+        f >> name;
+        _member_list[type_name].push_back({type, name});
+    }
+
+    f >> n;
+    for (int i = 0; i < n; ++i) {
+        f >> type;
+        f >> name;
+        f >> count;
+        parameters.resize(count);
+        for (int j = 0; j < count; ++j) {
+            f >> parameters[j];
+        }
+        _parameter_list[name] = parameters;
+    }
+
+    f >> n;
+    for (int i = 0; i < n; ++i) {
+        f >> type;
+        f >> name;
+        f >> count;
+        parameters.resize(count);
+        for (int j = 0; j < count; ++j) {
+            f >> parameters[j];
+        }
+        _parameter_list[type + '&' + name] = parameters;
+    }
+
     //считать все структуры и т/п/
     std::string s;
     while (f >> s) {
@@ -289,13 +357,13 @@ void Executive::ReadPoliz(std::ifstream f) {
         if (s == "OUTPUT") {
             int count;
             f >> count;
-            _cells.push_back(new PolizOutput);
+            _cells.push_back(new PolizOutput(count));
             continue;
         }
         if (s == "INPUT") {
             int count;
             f >> count;
-            _cells.push_back(new PolizInput);
+            _cells.push_back(new PolizInput(count));
             continue;
         }
         if (s == "OPERATOR") {
@@ -317,6 +385,10 @@ void Executive::ReadPoliz(std::ifstream f) {
         if (s == "BRACKET") {
             _cells.push_back(new PolizBracket(0));
         }
+    }
+
+    for (auto a : _to_fill_members) {
+        GetMembers(a->_type_name, a->_members);
     }
 }
 
@@ -347,7 +419,7 @@ void Executive::ExecuteProgram() {
                     continue;
                 }
                 case(WRITE) : {
-                    _write_memory = _variables.top()[dynamic_cast<PolizGet*>(_cells[_pos])->name];
+                    _results.top().push(_variables.top()[dynamic_cast<PolizGet*>(_cells[_pos])->name]);
                     ++_pos;
                     continue;
                 }
@@ -453,7 +525,7 @@ void Executive::MethodJump() {
     int count = dynamic_cast<PolizMethodJump*>(_cells[_pos])->count;
     int pos = dynamic_cast<PolizMethodJump*>(_cells[_pos])->pos;
     std::vector<UserType> parameters;
-    std::vector<std::string> parameter_names = _parameter_list[name];
+    std::vector<std::string> parameter_names = _parameter_list[type + '&' + name];
     for (int i = 0; i < count; ++i) {
         parameters.push_back(*_results.top().top());
         if (!_results.top().top()->_is_var) {
@@ -795,6 +867,32 @@ void Executive::Output(UserType* member, std::string s = "") {
     for (auto it : member->_members) {
         std::cout << s << "type in " << it.first << " : ";
         Output(it.second, s + " ");
+    }
+}
+
+void Executive::GetMembers(std::string class_type, std::map<std::string, UserType *> &members) {
+    std::vector<std::pair<std::string, std::string>> member_list = _member_list[class_type];
+    for (auto elem : member_list) {
+        std::string name = elem.second, type = elem.first;
+        UserType* variable;
+        if (IsBasic(type) == 1) {
+            long long val = 0;
+            variable = new UserType(type, name, val);
+        }
+        if (IsBasic(type) == 2) {
+            long double val = 0;
+            variable = new UserType(type, name, val);
+        }
+        if (IsBasic(type) == 3) {
+            std::string val;
+            variable = new UserType(type, name, val);
+        }
+        if (IsBasic(type) == 4) {
+            std::map<std::string, UserType*> members2;
+            GetMembers(type, members);
+            variable = new UserType(type, name, members2);
+        }
+        members[name] = variable;
     }
 }
 

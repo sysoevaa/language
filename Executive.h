@@ -166,7 +166,7 @@ private:
     UserType* _write_memory;
 
 
-    std::map<std::string, std::vector<std::string>> _member_list;
+    std::map<std::string, std::vector<std::pair<std::string, std::string>>> _member_list;
     std::map<std::string, std::vector<std::string>> _method_list;
     std::map<std::string, std::vector<std::string>> _parameter_list;
 
@@ -174,8 +174,10 @@ private:
     std::map<std::string, UserType*> _globals;
     std::stack<std::stack<UserType*>> _results;
 
+    std::vector<UserType*> _to_fill_members;
+
     void ClearResults();
-    void GetMembers(std::string type, std::map<std::string, UserType*>& members);
+    void GetMembers(std::string class_type, std::map<std::string, UserType*>& members);
 
     void FindExec();
     void Expression();
