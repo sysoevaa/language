@@ -41,8 +41,10 @@ void SyntaxAnalyser::program() {
     globalNamespaceNoExec();
     if (_lex[_ind].string != "exec") throw std::logic_error("\"exec\" expected");
     gc();
+    _gen->AddExec(_gen->GetCurSize());
     functionDefinition();
     globalNamespace();
+
 }
 
 void SyntaxAnalyser::globalNamespaceNoExec() {
@@ -115,6 +117,7 @@ void SyntaxAnalyser::globalNamespace() {
         return;
     }
     if (_lex[_ind].string == "exec") {
+        _gen->AddExec(_gen->GetCurSize());
         gc();
         functionDefinition();
         globalNamespace();

@@ -46,8 +46,8 @@
 //
 //ADD - 1
 //GET -
-// 0 - все экзеки (инты в строчку)
-// 1 - глобалки: ТИП ИМЯ
+// 0 - все экзеки (инты в строчку) - done
+// 1 - глобалки: ТИП ИМЯ - done
 // 2 - функции: ТИП ИМЯ КОЛ-ВО ПАРАМЕТРОВ ИМЕНА ПАРАМЕТРОВ
 // 3 - мемберы: ИМЯ КЛАССА ТИП МЕМБЕРА ИМЯ МЕМБЕРА
 // 4 - методы: ИМЯ КЛАССА ИМЯ МЕТОДА КОЛ-ВО ПАРАМЕТРОВ ИМЕНА ПАРАМЕТРОВ (пренебрегаем возвр типом)
@@ -228,9 +228,13 @@ public:
         return _res_stack.size();
     }
     std::string GetArrayType(std::string& s);
+    std::ofstream out;
+    void AddExec(int val);
+    void PrintExec();
+    void PrintGlobal();
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
-    std::vector<int> _last_jmp;
+    std::vector<int> _last_jmp, _exec;
     TID* _tid;
     DefinitionList* _list;
     CycleSetter* _cycle_setter;

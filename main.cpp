@@ -21,6 +21,7 @@ int main() {
     }
     divided.emplace_back("END", "END", divided.back().num + 1);
     SyntaxAnalyser syntax_analyser(divided);
+    syntax_analyser.GetGen()->out.open("poliz.txt");
     try {
         syntax_analyser.program();
     } catch (std::exception& e) {
@@ -32,6 +33,8 @@ int main() {
         std::cout << "There are extra symbols at file\n";
         return 1;
     }
+    syntax_analyser.GetGen()->PrintExec();
+    syntax_analyser.GetGen()->PrintGlobal();
     syntax_analyser.GetGen()->print();
     std::cout << "Everything is OK";
 }

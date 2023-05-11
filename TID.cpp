@@ -87,6 +87,7 @@ std::string TIDElement::GetMethodType(std::string &method_name) {
 
 TID::TID() {
     _current_tid = new TIDElement;
+    _global_tid = _current_tid;
 }
 
 void TID::OpenScope() {
@@ -310,4 +311,8 @@ std::string TID::GetMethodType(std::string &struct_name, std::string &method_nam
 
 std::vector<std::string> TID::GetConstructorParameters(std::string &struct_name) {
     return _structs[struct_name]->GetConstructorParam();
+}
+
+TIDElement* TID::GetGlobal() {
+    return _global_tid;
 }

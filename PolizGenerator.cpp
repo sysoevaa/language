@@ -279,7 +279,7 @@ std::pair<std::string, int> PolizGenerator::GetResType(PolizCell *first, PolizCe
 }
 
 void PolizGenerator::print() {
-    std::ofstream out("poliz.txt");
+
     for (auto cell : _res_stack) {
         if (cell->type == OPERATOR) {
             out << "operator " << dynamic_cast<PolizOperator*>(cell)->oper << ' ';
@@ -307,6 +307,7 @@ void PolizGenerator::print() {
         } else if (cell->type == WRITE) {
             out << "rewrite wariable " << dynamic_cast<PolizWrite*>(cell)->name << '\n';
         }
+        out.flush();
     }
 }
 
@@ -318,6 +319,27 @@ void PolizGenerator::AddConstructor(std::string &type) {
     _stack.push_back(new PolizMethodJump(_list->GetMethod(type, (std::string&) "CONSTRUCTOR"),
                                          _tid->GetConstructorParameters(type).size(),
                                          (std::string&)"void", (std::string&) "CONSTRUCTOR"));
+}
+
+void PolizGenerator::AddExec(int val) {
+    _exec.push_back(val);
+}
+
+void PolizGenerator::PrintExec() {
+    out << _exec.size() << '\n';
+    for (auto el : _exec) {
+        out << el << ' ';
+    }
+    out << "\n" << std::endl;
+}
+
+void PolizGenerator::PrintGlobal() {
+    auto ptr = _tid->GetGlobal();
+    out << ptr->GetId().size() << '\n';
+    for (auto [id, type] : ptr->GetId()) {
+        out << id << ' ' << type << "\n";
+    }
+    out << std::endl;
 }
 
 void CycleSetter::OpenScope(int startPos) {

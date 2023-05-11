@@ -53,9 +53,10 @@ class TID {
   std::vector<std::string> GetMethodParameters(std::string& struct_name, std::string& method_name);
   std::string GetMethodType(std::string& struct_name, std::string& method_name);
   std::vector<std::string> GetConstructorParameters(std::string& struct_name);
+  TIDElement* GetGlobal();
  private:
   std::map<std::string, TIDElement*> _functions;
   std::map<std::string, TIDElement*> _structs;
   std::vector<std::pair<std::pair<std::string, std::string>, TIDElement*>> _cast;
-  TIDElement *_current_tid;
+  TIDElement *_current_tid, *_global_tid;
 };
