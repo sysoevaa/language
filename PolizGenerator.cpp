@@ -2,6 +2,8 @@
 // Created by А ну да on 14.04.2023.
 //
 
+// вместо operator ref != -1 methodjump как обычно
+
 #include "PolizGenerator.h"
 
 void DefinitionList::AddFunc(std::string name, int pos) {
@@ -95,7 +97,8 @@ void PolizGenerator::MakeExpression() {
                 }
                 _op_stack.pop_back();
                 if (cur->sym == ']') {
-                    _res_stack.push_back(new PolizOperator((std::string&) "[]", -1));
+                    std::string br = "[]";
+                    _res_stack.push_back(new PolizOperator(br, -1));
                 }
             }
         } else if (_stack[i]->type == SYMBOL || _stack[i]->type == GET ||
@@ -165,7 +168,11 @@ void PolizGenerator::SetJumps(int begin, int end) {
                 }
                 auto [res, jmp] = GetResType(second, first, dynamic_cast<PolizOperator *>(_res_stack[i])->oper);
                 cur.push_back(new PolizGet("VALUE FROM EXPR)", res));
-                dynamic_cast<PolizOperator *>(_res_stack[i])->pos = jmp;
+                if (jmp != -1) {
+                    delete _res_stack[i];
+                    _res_stack[i] = new PolizMethodJump(jmp, 1, dynamic_cast<PolizGet*>(second)->type, cell->oper);
+                }
+                //dynamic_cast<PolizOperator *>(_res_stack[i])->pos = jmp;
             }
         } else if (_res_stack[i]->type == METHODJUMP) {
             for (int j = 0; j < dynamic_cast<PolizMethodJump*>(_res_stack[i])->count; ++j) {
@@ -289,28 +296,28 @@ void PolizGenerator::print() {
         if (cell->type == OPERATOR) {
             out << "operator " << dynamic_cast<PolizOperator*>(cell)->oper << ' ';
             int ref = dynamic_cast<PolizOperator*>(cell)->pos;
-            if (ref != -1) out << " defined in " << ref;
+            if (ref != -1) out << "methodjump" << ref;
             out << '\n';
         } else if (cell->type == GET) {
             out << "get " << dynamic_cast<PolizGet*>(cell)->name << '\n';
         } else if (cell->type == JUMP) {
-            out << "jump to " << dynamic_cast<PolizJump*>(cell)->pos << '\n';
+            out << "jump " << dynamic_cast<PolizJump*>(cell)->pos << '\n';
         } else if (cell->type == FALSEJUMP) {
-            out << "false jump to " << dynamic_cast<PolizFalseJump*>(cell)->pos << '\n';
+            out << "falsejump " << dynamic_cast<PolizFalseJump*>(cell)->pos << '\n';
         } else if (cell->type == FUNCJUMP) {
-            out << "function call to " << dynamic_cast<PolizFuncJump*>(cell)->pos << '\n';
+            out << "funcjump " << dynamic_cast<PolizFuncJump*>(cell)->pos << '\n';
         } else if (cell->type == METHODJUMP) {
-            out << "method call to " << dynamic_cast<PolizMethodJump*>(cell)->pos << '\n';
+            out << "methodjump " << dynamic_cast<PolizMethodJump*>(cell)->pos << '\n';
         } else if (cell->type == SYMBOL) {
             out << "symbol " << dynamic_cast<PolizSymbol*>(cell)->string << '\n';
         } else if (cell->type == INPUT) {
-            out << "get " << dynamic_cast<PolizInput*>(cell)->count << " values from user\n";
+            out << "get " << dynamic_cast<PolizInput*>(cell)->count << "\n";
         } else if (cell->type == OUTPUT) {
-            out << "print " << dynamic_cast<PolizOutput*>(cell)->count << " variable\n";
+            out << "output " << dynamic_cast<PolizOutput*>(cell)->count << "\n";
         } else if (cell->type == ADD) {
-            out << "add variable " << dynamic_cast<PolizAdd*>(cell)->name << '\n';
+            out << "add " << dynamic_cast<PolizAdd*>(cell)->name << '\n';
         } else if (cell->type == WRITE) {
-            out << "rewrite wariable " << dynamic_cast<PolizWrite*>(cell)->name << '\n';
+            out << "rewrite " << dynamic_cast<PolizWrite*>(cell)->name << '\n';
         }
         out.flush();
     }

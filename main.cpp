@@ -34,7 +34,6 @@ int main() {
         std::cout << "There are extra symbols at file\n";
         return 1;
     }
-
     syntax_analyser.GetGen()->print();
     syntax_analyser.GetGen()->out.close();
 
