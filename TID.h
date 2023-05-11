@@ -19,6 +19,7 @@ class TIDElement {
   std::vector<std::string> GetMethodParam(std::string& method_name);
   std::vector<std::string> GetConstructorParam();
   std::string GetMethodType(std::string& method_name);
+  std::map<std::string, TIDElement*> GetMethods();
  protected:
   std::map<std::string, std::string> _id; // variable name, type
   std::map<std::pair<std::string, std::string>, TIDElement*> _overload;
@@ -55,8 +56,10 @@ class TID {
   std::vector<std::string> GetConstructorParameters(std::string& struct_name);
   TIDElement* GetGlobal();
   std::map<std::string, TIDElement*> GetFunc();
+  std::vector<std::pair<std::pair<std::string, std::string>, TIDElement*>> GetCast();
+  std::map<std::string, TIDElement*> GetStructs();
 
- private:
+private:
   std::map<std::string, TIDElement*> _functions;
   std::map<std::string, TIDElement*> _structs;
   std::vector<std::pair<std::pair<std::string, std::string>, TIDElement*>> _cast;

@@ -50,8 +50,8 @@
 // 1 - глобалки: ТИП ИМЯ - done
 // 2 - функции: ТИП ИМЯ КОЛ-ВО ПАРАМЕТРОВ ИМЕНА ПАРАМЕТРОВ - done
 // 3 - мемберы: ИМЯ КЛАССА ТИП МЕМБЕРА ИМЯ МЕМБЕРА
-// 4 - методы: ИМЯ КЛАССА ИМЯ МЕТОДА КОЛ-ВО ПАРАМЕТРОВ ИМЕНА ПАРАМЕТРОВ (пренебрегаем возвр типом)
-//
+// 4 - методы: ИМЯ КЛАССА ИМЯ МЕТОДА КОЛ-ВО ПАРАМЕТРОВ ИМЕНА ПАРАМЕТРОВ (пренебрегаем возвр типом) - done
+// 5 - cast - done
 //
 //
 
@@ -233,6 +233,9 @@ public:
     void PrintExec();
     void PrintGlobal();
     void PrintFunc();
+    void PrintMethods();
+    void PrintMembers();
+    void PrintCast();
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp, _exec;

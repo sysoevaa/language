@@ -80,9 +80,14 @@ std::vector<std::string> TIDElement::GetConstructorParam() {
     }
     return id;
 }
+
 std::string TIDElement::GetMethodType(std::string &method_name) {
     if (_methods.count(method_name) == 0) throw std::logic_error("There is no method with this name");
     return _methods[method_name]->GetType("smth", true);
+}
+
+std::map<std::string, TIDElement*> TIDElement::GetMethods() {
+    return _methods;
 }
 
 TID::TID() {
@@ -319,4 +324,12 @@ TIDElement* TID::GetGlobal() {
 
 std::map<std::string, TIDElement*> TID::GetFunc() {
     return _functions;
+}
+
+std::vector<std::pair<std::pair<std::string, std::string>, TIDElement*>> TID::GetCast(){
+    return _cast;
+}
+
+std::map<std::string, TIDElement*> TID::GetStructs() {
+    return _structs;
 }

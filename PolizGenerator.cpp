@@ -344,10 +344,40 @@ void PolizGenerator::PrintGlobal() {
 
 void PolizGenerator::PrintFunc() {
     auto mp = _tid->GetFunc();
-    out << mp.size() << '\n';
+    out << mp.size() + _tid->GetCast().size() << '\n';
     for (auto [name, ptr] : mp) {
         out << name << ' ' << ptr->GetType("aboba", true) << '\n';
         out << ptr->GetId().size() << '\n';
+        for (auto [id, type] : ptr->GetId()) {
+            out << type << ' ' << id << '\n';
+        }
+    }
+    out << std::endl;
+}
+
+void PolizGenerator::PrintMethods() {
+    auto st = _tid->GetStructs();
+    out << st.size() << '\n';
+    for (auto [name, ptr] : st) {
+        out << name << '\n';
+        for (auto [m_name, m_ptr] : ptr->GetMethods()) {
+            out << m_name << "\n " << m_ptr->GetId().size();
+            for (auto [id, type] : m_ptr->GetId()) {
+                out << id << '\n';
+            }
+        }
+    }
+    out.flush();
+}
+
+void PolizGenerator::PrintMembers() {
+
+}
+
+void PolizGenerator::PrintCast() {
+    auto vct = _tid->GetCast();
+    for (auto [v, ptr] : vct) {
+        out << ' ' << v.second << " " <<   v.first + v.second << "\n1\n";
         for (auto [id, type] : ptr->GetId()) {
             out << type << ' ' << id << '\n';
         }

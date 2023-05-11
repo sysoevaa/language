@@ -36,6 +36,7 @@ int main() {
     syntax_analyser.GetGen()->PrintExec();
     syntax_analyser.GetGen()->PrintGlobal();
     syntax_analyser.GetGen()->PrintFunc();
+    syntax_analyser.GetGen()->PrintCast();
     syntax_analyser.GetGen()->print();
     std::cout << "Everything is OK";
 }
