@@ -126,11 +126,13 @@ struct PolizMethodJump : public PolizCell {
 };
 
 struct PolizOutput : public PolizCell {
-    PolizOutput() : PolizCell(OUTPUT) { }
+    PolizOutput(int _count) : PolizCell(OUTPUT), count(_count) { }
+    int count;
 };
 
 struct PolizInput : public PolizCell {
-    PolizInput() : PolizCell(INPUT) { }
+    PolizInput(int _count) : PolizCell(INPUT), count(_count){ }
+    int count;
 };
 
 struct PolizOperator : public PolizCell {
@@ -140,7 +142,7 @@ struct PolizOperator : public PolizCell {
             pos = -1;
         }
     };
-    int pos; // -1 if it has already defined
+    int pos = -1; // -1 if it has already defined
     std::string oper;
     int prior;
     bool unary;
@@ -152,11 +154,11 @@ struct PolizBracket : public PolizCell {
 };
 
 struct PolizClose : public PolizCell {
-    PolizClose() : PolizCell(SCOPECLOSE);
+    PolizClose() : PolizCell(SCOPECLOSE){};
 };
 
 struct PolizScope : public PolizCell {
-    PolizScope() : PolizCell(SCOPE);
+    PolizScope() : PolizCell(SCOPE){};
 };
 
 struct OverloadParameters {
@@ -220,7 +222,7 @@ public:
     int GetCurSize() {
         return _res_stack.size();
     }
-    PolizCell* GetLast() {}
+    std::string GetArrayType(std::string& s);
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;

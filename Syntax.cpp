@@ -70,6 +70,8 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
         }
         if (_lex[_ind + 2].string == "(") {
             functionDefinition();
+            std::string f_name = _lex[_ind + 1].string;
+            _list->AddFunc(f_name, _gen->GetCurSize());
             globalNamespaceNoExec();
             return;
         }
@@ -250,7 +252,7 @@ void SyntaxAnalyser::construct() {
     gc();
     if (_lex[_ind].string != "{") throw std::logic_error("\"{\" expected");
     gc();
-
+    _list->AddMethod(object_name,"CONSTRUCTOR", _gen->GetCurSize());
     //_tid->OpenScope();
     namepace();
     _tid->CloseScope();
@@ -328,13 +330,13 @@ void SyntaxAnalyser::expression() {
         return;
     }
     if (_lex[_ind].type == "variable" || _lex[_ind].type == "number" || _lex[_ind].type == "char") {
-        _gen->Push(new PolizGet(_lex[_ind].string, _tid->GetType(_lex[_ind].string)));
+        //_gen->Push(new PolizGet(_lex[_ind].string, _tid->GetType(_lex[_ind].string)));
         gc();
         if (_lex[_ind].string == "cast") {
             expCheck.Process(_lex[_ind - 1]);
             expCheck.Process(_lex[_ind]);
             --_ind;
-            _gen->Erase();
+            //_gen->Erase();
             type_cast();
             expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
             if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
@@ -346,6 +348,7 @@ void SyntaxAnalyser::expression() {
             return;
         }
         if (_lex[_ind].string == "(") {
+            //_gen->Erase();
             std::string func_name = _lex[_ind - 1].string;
             std::string type_f = _tid->GetTypeFunction(_lex[_ind - 1].string);
             _parameter_arr = _tid->GetParameters(_lex[_ind - 1].string);
@@ -354,7 +357,6 @@ void SyntaxAnalyser::expression() {
             if (_lex[_ind].string != ")") {
                 throw std::logic_error("expected \")\"");
             }
-            _gen->Erase();
             _gen->AddFunction(func_name);
             gc();
             if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
@@ -368,10 +370,10 @@ void SyntaxAnalyser::expression() {
 
         auto type1 = _tid->GetType(_lex[_ind - 1].string);
         expCheck.Process(Lexeme("variable", type1, 0));
-
         Lexeme exp_last = expCheck.GetLast();
         //std::cout << "exp_last = " << exp_last.string << "\n";
         //array check
+        _gen->Push(new PolizGet(_lex[_ind - 1].string, type1));
         if (_lex[_ind].string == "[") {
             _gen->Push(new PolizBracket('['));
             expCheck.Process(_lex[_ind]);
@@ -407,7 +409,7 @@ void SyntaxAnalyser::expression() {
                 // break;
                 continue;
             }
-            _gen->Push(new PolizOperator((std::string& ) ".", -1));
+            _gen->Push(new PolizOperator(_point, -1));
             type1 = _tid->GetMember(type1, _lex[_ind - 1].string);
             _gen->Push(new PolizGet(_lex[_ind - 1].string, type1));
             expCheck.ChangeLast(type1);
@@ -446,6 +448,7 @@ void SyntaxAnalyser::expression() {
         expCheck.Process(Lexeme("variable", _tid->GetType(_lex[_ind - 1].string), 0));
         if (_lex[_ind].type == "binary" || _lex[_ind].type == "power" || _lex[_ind].type == "bool") {
             expCheck.Process(_lex[_ind]);
+            _gen->Push(new PolizOperator(_lex[_ind].string, _lex[_ind].priority));
             gc();
             expression();
         }
@@ -522,7 +525,7 @@ void SyntaxAnalyser::expression() {
                 // break;
                 continue;
             }
-            _gen->Push(new PolizOperator((std::string& ) ".", -1));
+            _gen->Push(new PolizOperator(_point, -1));
             type1 = _tid->GetMember(type1, _lex[_ind - 1].string);
             _gen->Push(new PolizGet(_lex[_ind - 1].string, type1));
             expCheck.ChangeLast(type1);
@@ -560,21 +563,24 @@ void SyntaxAnalyser::expression() {
 
 void SyntaxAnalyser::parameters() {
     int i = 0;
+    _gen->Push(new PolizBracket('('));
     do {
         gc();
         if (_lex[_ind].string == ")") {
             if (i < _parameter_arr.size()) throw std::logic_error("not enough parameters");
+            _gen->Push(new PolizBracket(')'));
             return;
         }
         std::vector<Lexeme> stack = expCheck.GetStack();
         expCheck.Clear();
+        _gen->Push(new PolizBracket('('));
         expression();
+        _gen->Push(new PolizBracket(')'));
         Lexeme lex = expCheck.GetType();
         expCheck.Clear();
         expCheck.SetStack(stack);
         if (_parameter_arr.size() <= i) throw std::logic_error("too much parameters in function call");
         if (IsEqualTypes(lex.string, _parameter_arr[i]) == "error") throw std::logic_error("parameter types do not match");
-        _gen->MakeExpression();
         ++i;
     } while (_lex[_ind].string == ",");
     if (i < _parameter_arr.size()) throw std::logic_error("not enough parameters");
@@ -659,7 +665,7 @@ void SyntaxAnalyser::determinantes() {
         if (_lex[_ind].string != ";") {
             throw std::logic_error("\";\" expected");
         }
-
+        _gen->AddToRes(new PolizReturn());
         gc();
         IAMRETURNINGSOMETHING = true;
     } else {
@@ -707,6 +713,7 @@ void SyntaxAnalyser::lexpression() {
             } else {
                 name = _lex[_ind - 1].string;
                 type1 = _tid->GetType(name);
+                _gen->Push(new PolizGet(name, type1));
             }
         }
         //} else if (_lex[_ind - 1].type == "keyword") {
@@ -774,6 +781,8 @@ void SyntaxAnalyser::lexpression() {
             gc();
 
         } else {
+            _gen->Push(new PolizOperator(_point, -1));
+            _gen->Push(new PolizGet(method, _tid->GetMember(type1, method)));
             type1 = _tid->GetMember(type1, method);
         }
 
@@ -797,10 +806,6 @@ void SyntaxAnalyser::lexpression() {
     }
 
     if (_lex[_ind].string == "=") {
-        if (!def) {
-            _gen->Push(new PolizWrite(name));
-        } else {
-        }
         _gen->Push(new PolizOperator(_lex[_ind].string, _lex[_ind].priority));
         gc();
         expression();
@@ -894,6 +899,9 @@ void SyntaxAnalyser::functionDefinition() {
     if (!IAMRETURNINGSOMETHING && f_type != "void") {
         throw std::logic_error("function with non-void type must return something");
     }
+    if (!IAMRETURNINGSOMETHING && f_type == "void") {
+        _gen->AddToRes(new PolizReturn());
+    }
     IAMRETURNINGSOMETHING = false;
     is_in_function = false;
 }
@@ -947,6 +955,7 @@ void SyntaxAnalyser::type_cast_def() {
 }
 
 void SyntaxAnalyser::print() {
+    int count = 0;
     if (_lex[_ind].string != "(") throw std::logic_error("\"(\" expected");
     gc();
     if (_lex[_ind].type != "variable" && _lex[_ind].type != "string" &&
@@ -957,10 +966,12 @@ void SyntaxAnalyser::print() {
     if (_lex[_ind].type == "variable") {
         type1 = _tid->GetType(_lex[_ind].string);
         if (_tid->IsTypeExist(type1) != 2) throw std::logic_error("bad type");
+        ++count;
     }
     gc();
     if (_lex[_ind].string == ")") {
         gc();
+        _gen->AddToRes(new PolizOutput(count));
         return;
     } else if (_lex[_ind].string != ",") {
         throw std::logic_error("\",\" expected");
@@ -975,10 +986,12 @@ void SyntaxAnalyser::print() {
                 type1 = _tid->GetType(_lex[_ind].string);
                 if (_tid->IsTypeExist(type1) != 2) throw std::logic_error("bad type");
             }
+            ++count;
             gc();
         } while (_lex[_ind].string == ",");
         if (_lex[_ind].string != ")") throw std::logic_error("\")\" expected");
     }
+    _gen->AddToRes(new PolizOutput(count));
     gc();
 }
 
@@ -996,11 +1009,14 @@ void SyntaxAnalyser::input() {
     auto type1 = _tid->GetType(_lex[_ind].string);
     if (_tid->IsTypeExist(type1) != 2) throw std::logic_error("bad type");
     variable();
+    int count = 1;
     while (_lex[_ind].string == ",") {
         gc();
         _tid->GetType(_lex[_ind].string);
         variable();
+        count++;
     }
+    _gen->AddToRes(new PolizInput(count));
 }
 
 void SyntaxAnalyser::If() {
@@ -1106,6 +1122,7 @@ void SyntaxAnalyser::For() {
         if (type()) {
             _tid->IsTypeExist(_lex[_ind - 1].string);
             _tid->AddVariable(_lex[_ind - 1].string, _lex[_ind].string);
+            _gen->Push(new PolizAdd(_lex[_ind].string, _lex[_ind - 1].string));
             defined_variable = _lex[_ind - 1].string;
             gc();
         } else {
@@ -1134,6 +1151,7 @@ void SyntaxAnalyser::For() {
 
     } else if (diff == 2) {
         if (_lex[_ind].string == "=") {
+            _gen->Push(new PolizOperator(_lex[_ind].string, _lex[_ind].priority));
             gc();
             expression();
             _gen->MakeExpression();
@@ -1219,8 +1237,8 @@ void SyntaxAnalyser::array_def() {
     gc();
     std::string arr_name = _lex[_ind].string;
     auto add_name = "array " + arr_type;
-
     _tid->AddVariable(add_name, arr_name);
+    _gen->AddToRes(new PolizAdd(arr_name, add_name));
     variable();
     if (_lex[_ind].string == "(") {
         gc();
