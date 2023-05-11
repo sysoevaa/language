@@ -188,6 +188,13 @@ UserType UserType::operator[](int ind) {
     return *_elements[ind];
 }
 
+UserType UserType::operator=(UserType other) {
+    std::string type = this->_type_name;
+    *this = other;
+    this->_type_name = type;
+    return *this;
+}
+
 void UserType::SetEverythingToType() {
     if (IsBasic(this->_type_name) == 1) {
         this->_float32 = this->_int64;
@@ -320,9 +327,9 @@ void Executive::ClearResults() {
 }
 
 void Executive::ExecuteProgram() {
-    while (_pos < _cells.size()) {
+    while (_pos < _cells.size() && !_time_to_end) {
         FindExec();
-        while (_pos < _cells.size()) {
+        while (_pos < _cells.size() && !_time_to_end) {
             switch(_cells[_pos]->type) {
                 case(SCOPE) : {
                     OpenDerivativeScope();
@@ -395,6 +402,14 @@ void Executive::ExecuteProgram() {
         }
     }
 
+}
+
+void Executive::FindExec() {
+    _pos = _execs[_exec_ind];
+    ++_exec_ind;
+    if (_exec_ind >= _execs.size()) {
+        _time_to_end = true;
+    }
 }
 
 void Executive::Jump() {
@@ -662,6 +677,10 @@ void Executive::CloseScope() {
 }
 
 void Executive::Return() {
+    if (_callStack.empty()) {
+        FindExec();
+        return;
+    }
     UserType* result = _results.top().top();
     CloseScope();
     _results.top().push(result);

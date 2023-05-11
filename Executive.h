@@ -1,6 +1,12 @@
 //
 // Created by А ну да on 07.05.2023.
-//
+// 0 список екзеков
+// 1 глобалкии
+// 2 функции
+// 3 мемберы
+// 4 методы
+
+
 
 #ifndef LANGUAGE_EXECUTIVE_H
 #define LANGUAGE_EXECUTIVE_H
@@ -121,6 +127,7 @@ struct UserType {
     UserType operator>>(UserType other); //замена степени
     UserType* operator[](UserType ind);
     UserType operator[](int ind);
+    UserType operator=(UserType other);
 
     void SetEverythingToType();
 
@@ -152,8 +159,12 @@ public:
 private:
     std::vector<PolizCell*> _cells;
     std::stack<int> _callStack;
+    std::vector<int> _execs;
     int _pos;
+    int _exec_ind = 0;
+    bool _time_to_end = false;
     UserType* _write_memory;
+
 
     std::map<std::string, std::vector<std::string>> _member_list;
     std::map<std::string, std::vector<std::string>> _method_list;
