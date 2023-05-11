@@ -153,7 +153,7 @@ struct UserType {
 
 class Executive {
 public:
-    void ReadPoliz(std::ifstream f);
+    void ReadPoliz(std::ifstream& f);
 
     void ExecuteProgram();
 private:

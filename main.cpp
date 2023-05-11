@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Syntax.h"
 #include <cassert>
+#include "Executive.h"
 
 int main() {
     std::ofstream out_stream("divided.txt");
@@ -35,5 +36,13 @@ int main() {
     }
 
     syntax_analyser.GetGen()->print();
+    syntax_analyser.GetGen()->out.close();
+
+    Executive FINALLY;
+    std::ifstream f;
+    f.open("poliz.txt");
+    FINALLY.ReadPoliz(f);
+    f.close();
+    FINALLY.ExecuteProgram();
     std::cout << "Everything is OK";
 }
