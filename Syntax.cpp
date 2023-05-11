@@ -70,6 +70,8 @@ void SyntaxAnalyser::globalNamespaceNoExec() {
         }
         if (_lex[_ind + 2].string == "(") {
             functionDefinition();
+            std::string f_name = _lex[_ind + 1].string;
+            _list->AddFunc(f_name, _gen->GetCurSize());
             globalNamespaceNoExec();
             return;
         }
@@ -858,7 +860,6 @@ void SyntaxAnalyser::functionDefinition() {
         throw std::logic_error("variable expected");
     }
     std::string f_name = _lex[_ind].string;
-    _list->AddFunc(f_name, _gen->GetCurSize());
     gc();
     if (_lex[_ind].string != "(") {
         throw std::logic_error("\"(\" expected");
@@ -897,6 +898,9 @@ void SyntaxAnalyser::functionDefinition() {
     gc();
     if (!IAMRETURNINGSOMETHING && f_type != "void") {
         throw std::logic_error("function with non-void type must return something");
+    }
+    if (!IAMRETURNINGSOMETHING && f_type == "void") {
+        _gen->AddToRes(new PolizReturn());
     }
     IAMRETURNINGSOMETHING = false;
     is_in_function = false;

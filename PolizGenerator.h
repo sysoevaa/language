@@ -222,6 +222,7 @@ public:
     int GetCurSize() {
         return _res_stack.size();
     }
+    std::string GetArrayType(std::string& s);
 private:
     std::vector<PolizCell*> _stack, _res_stack, _op_stack;
     std::vector<int> _last_jmp;

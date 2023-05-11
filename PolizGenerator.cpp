@@ -146,6 +146,13 @@ void PolizGenerator::SetJumps(int begin, int end) {
             if (cell->unary) {
                 auto first = cur.back(); cur.pop_back();
                 cur.push_back(first);
+            } else if (cell->oper == "[]") {
+                auto first = cur.back();
+                cur.pop_back();
+                auto second = cur.back();
+                cur.pop_back();
+                auto type = GetArrayType(dynamic_cast<PolizGet*>(second)->type);
+                cur.push_back(new PolizGet("ELEMENT OF ARRAY", type));
             } else if (cell->oper != "=") {
                 auto first = cur.back();
                 cur.pop_back();
@@ -173,6 +180,21 @@ void PolizGenerator::SetJumps(int begin, int end) {
             cur.push_back(new PolizGet("RETURN FROM METHOD", dynamic_cast<PolizMethodJump*>(_res_stack[i])->type));
         }
     }
+}
+
+std::string PolizGenerator::GetArrayType(std::string &s) {
+    int i = 0;
+    std::string tmp = "array";
+    for (i = 0; i < 5; ++i) {
+        if (tmp[i] != s[i]) throw std::logic_error("array expected");
+    }
+    while (i < s.size() && s[i] == ' ') ++i;
+    std::string type;
+    while (i < s.size()) {
+        type += s[i];
+        ++i;
+    }
+    return type;
 }
 
 std::pair<std::string, int> PolizGenerator::GetResType(PolizCell *first, PolizCell *second, std::string &op) {
