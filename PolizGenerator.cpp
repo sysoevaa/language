@@ -305,9 +305,11 @@ void PolizGenerator::print() {
         } else if (cell->type == FALSEJUMP) {
             out << "falsejump " << dynamic_cast<PolizFalseJump*>(cell)->pos << '\n';
         } else if (cell->type == FUNCJUMP) {
-            out << "funcjump " << dynamic_cast<PolizFuncJump*>(cell)->pos << '\n';
+            out << "funcjump " << dynamic_cast<PolizFuncJump*>(cell)->pos << " " <<
+            dynamic_cast<PolizFuncJump*>(cell)->name << '\n';
         } else if (cell->type == METHODJUMP) {
-            out << "methodjump " << dynamic_cast<PolizMethodJump*>(cell)->pos << '\n';
+            out << "methodjump " << dynamic_cast<PolizMethodJump*>(cell)->pos << ' ' <<
+            dynamic_cast<PolizMethodJump*>(cell)->name << '\n';
         } else if (cell->type == SYMBOL) {
             out << "symbol " << dynamic_cast<PolizSymbol*>(cell)->string << '\n';
         } else if (cell->type == INPUT) {
