@@ -5,6 +5,9 @@
 // 2 функции
 // 3 мемберы
 // 4 методы
+// при пррыжке в функцию нет имени или кол-ва параметров (проще наверн тупо имя функции)
+// то же самое с методами мб фигануть
+
 
 
 
@@ -127,12 +130,12 @@ struct UserType {
     UserType operator>>(UserType other); //замена степени
     UserType* operator[](UserType ind);
     UserType operator[](int ind);
-    UserType operator=(UserType other);
+    UserType operator<<(UserType other);
 
     void SetEverythingToType();
 
     std::string _type_name;
-    std::string _var_name;
+    std::string _var_name = "&null";
 
     bool _bool;
     int _int32;
@@ -160,7 +163,7 @@ private:
     std::vector<PolizCell*> _cells;
     std::stack<int> _callStack;
     std::vector<int> _execs;
-    int _pos;
+    int _pos = 0;
     int _exec_ind = 0;
     bool _time_to_end = false;
     UserType* _write_memory;
@@ -173,6 +176,8 @@ private:
     std::stack<std::map<std::string, UserType*>> _variables;
     std::map<std::string, UserType*> _globals;
     std::stack<std::stack<UserType*>> _results;
+
+    std::vector<UserType*> _locals;
 
     std::vector<UserType*> _to_fill_members;
 
@@ -202,6 +207,8 @@ private:
 
     void Input(UserType *member, std::string s);
     void Output(UserType *member, std::string s);
+
+    void ResultOut();
 
 };
 

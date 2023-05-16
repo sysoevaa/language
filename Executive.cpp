@@ -188,10 +188,21 @@ UserType UserType::operator[](int ind) {
     return *_elements[ind];
 }
 
-UserType UserType::operator=(UserType other) {
+UserType UserType::operator<<(UserType other) {
+    std::cout << "\n\ncompleting = \n";
     std::string type = this->_type_name;
+    std::string name = this->_var_name;
+    std::cout << this->_var_name << " " << this->_int64 << " = " << other._var_name << " " << other._int64 << "\n";
+
     *this = other;
-    this->_type_name = type;
+
+    std::cout << this->_var_name << " " << this->_int64 << " = " << other._var_name << " " << other._int64 << "\n";
+
+    this->_is_var = true;
+    this->_var_name = name;
+
+    std::cout << this->_var_name << " " << this->_int64 << " = " << other._var_name << " " << other._int64 << "\n";
+    std::cout << '\n';
     return *this;
 }
 
@@ -210,7 +221,7 @@ void UserType::SetEverythingToType() {
     }
 }
 
-void Executive::ReadPoliz(std::ifstream f) {
+void Executive::ReadPoliz(std::ifstream& f) {
     int n;
     f >> n;
     _execs.resize(n);
@@ -221,8 +232,8 @@ void Executive::ReadPoliz(std::ifstream f) {
     f >> n;
     std::string name, type;
     for (int i = 0; i < n; ++i) {
-        f >> name;
         f >> type;
+        f >> name;
         UserType* global;
         if (IsBasic(type) == 1) {
             long long val = 0;
@@ -249,22 +260,23 @@ void Executive::ReadPoliz(std::ifstream f) {
 
     f >> n;
     for (int i = 0; i < n; ++i) {
-        f >> type_name;
-        f >> type;
         f >> name;
-        _member_list[type_name].push_back({type, name});
+        f >> type;
+        f >> count;
+        parameters.resize(count);
+        for (int j = 0; j < count; ++j) {
+            f >> type;
+            f >> parameters[j];
+        }
+        _parameter_list[name] = parameters;
     }
 
     f >> n;
     for (int i = 0; i < n; ++i) {
+        f >> type_name;
         f >> type;
         f >> name;
-        f >> count;
-        parameters.resize(count);
-        for (int j = 0; j < count; ++j) {
-            f >> parameters[j];
-        }
-        _parameter_list[name] = parameters;
+        _member_list[type_name].push_back({type, name});
     }
 
     f >> n;
@@ -282,23 +294,22 @@ void Executive::ReadPoliz(std::ifstream f) {
     //считать все структуры и т/п/
     std::string s;
     while (f >> s) {
-        if (s == "ADD") {
+        if (s == "add") {
             std::string name;
             f >> name;
-            std::string type;
+            std::string type = " ";
             f >> type;
-            _cells.push_back(new PolizAdd(name, type));
+            _cells.push_back(new PolizAdd(type, name));
             continue;
         }
-        if (s == "GET") {
+        if (s == "get") {
             std::string name;
             f >> name;
-            std::string type;
-            f >> type;
+            type = "";
             _cells.push_back(new PolizGet(name, type));
             continue;
         }
-        if (s == "WRITE") {
+        if (s == "write") {
             std::string name;
             f >> name;
             std::string type;
@@ -306,83 +317,76 @@ void Executive::ReadPoliz(std::ifstream f) {
             _cells.push_back(new PolizAdd(name, type));
             continue;
         }
-        if (s == "JUMP") {
+        if (s == "jump") {
             int pos;
             f >> pos;
             _cells.push_back(new PolizJump(pos));
             continue;
         }
-        if (s == "FALSEJUMP") {
+        if (s == "falsejump") {
             int pos;
             f >> pos;
             _cells.push_back(new PolizFalseJump(pos));
             continue;
         }
-        if (s == "RETURN") {
+        if (s == "return") {
             int pos;
-            f >> pos;
+            //f >> pos;
             _cells.push_back(new PolizReturn);
             continue;
         }
-        if (s == "SYMBOL") {
+        if (s == "symbol") {
             std::string val;
             f >> val;
             _cells.push_back(new PolizSymbol(val));
             continue;
         }
-        if (s == "FUNCJUMP") {
+        if (s == "funcjump") {
             int pos;
             f >> pos;
-            std::string type;
-            f >> type;
-            int count;
-            f >> count;
-            std::string name;
+            std::string type = "";
+            int count = 0;
+            std::string name = "";
             f >> name;
             _cells.push_back(new PolizFuncJump(pos, count, type, name));
             continue;
         }
-        if (s == "METHODJUMP") {
-            std::string type;
-            f >> type;
-            std::string name;
-            f >> name;
+        if (s == "methodjump") {
             int pos;
             f >> pos;
+            std::string type;
+            //f >> type;
+            std::string name;
+            f >> name;
+
+
             int count;
-            f >> count;
+            //f >> count;
             _cells.push_back(new PolizMethodJump(pos, count, type, name));
             continue;
         }
-        if (s == "OUTPUT") {
+        if (s == "output") {
             int count;
             f >> count;
             _cells.push_back(new PolizOutput(count));
             continue;
         }
-        if (s == "INPUT") {
+        if (s == "input") {
             int count;
             f >> count;
             _cells.push_back(new PolizInput(count));
             continue;
         }
-        if (s == "OPERATOR") {
+        if (s == "operator") {
             std::string oper;
             f >> oper;
-            int prior;
-            f >> prior;
-            int pos;
-            f >> pos;
-            bool overload;
-            f >> overload;
-            bool unary;
-            f >> unary;
-            if (oper == "-" && unary) {
+            if (oper == "~") {
                 oper = "*-";
             }
+            int prior = 0;
             _cells.push_back(new PolizOperator(oper, prior));
         }
-        if (s == "BRACKET") {
+        if (s == "bracket") {
             _cells.push_back(new PolizBracket(0));
         }
     }
@@ -398,10 +402,30 @@ void Executive::ClearResults() {
     }
 }
 
+void Executive::ResultOut() {
+    std::stack<UserType*> result = _results.top();
+    std::cout << "pos : " << _pos << "\n";
+    std::cout << "results : ";
+    while (!result.empty()) {
+        std::cout << result.top()->_var_name << " " << result.top()->_int64 << " , ";
+        result.pop();
+    }
+    std::cout << "\n";
+    std::cout << "variables: ";
+    for (auto a : _variables.top()) {
+        std::cout << a.first << " " << a.second->_var_name << " " << a.second->_int64 << " , ";
+    }
+    std::cout << "\n";
+}
+
 void Executive::ExecuteProgram() {
     while (_pos < _cells.size() && !_time_to_end) {
         FindExec();
-        while (_pos < _cells.size() && !_time_to_end) {
+        while (_pos < _cells.size() && !_time_to_end && _variables.size() > 0) {
+            std::cout << "\n";
+            std::stack<UserType*> p = _results.top();
+            int pos = _pos;
+            ResultOut();
             switch(_cells[_pos]->type) {
                 case(SCOPE) : {
                     OpenDerivativeScope();
@@ -455,11 +479,13 @@ void Executive::ExecuteProgram() {
                 case(OUTPUT) : {
                     while (!_results.top().empty()) {
                         Output(_results.top().top(), "");
+                        _results.top().pop();
                     }
                     continue;
                 }
                 case(OPERATOR) : {
                     Operator();
+                    std::cout << "\n";
                     ++_pos;
                     continue;
                 }
@@ -477,11 +503,14 @@ void Executive::ExecuteProgram() {
 }
 
 void Executive::FindExec() {
-    _pos = _execs[_exec_ind];
-    ++_exec_ind;
     if (_exec_ind >= _execs.size()) {
         _time_to_end = true;
+        return;
     }
+    _pos = _execs[_exec_ind];
+    ++_exec_ind;
+    _variables.push(_globals);
+    _results.push(std::stack<UserType*>());
 }
 
 void Executive::Jump() {
@@ -502,39 +531,51 @@ void Executive::FalseJump() {
 void Executive::FuncJump() {
     std::string type = dynamic_cast<PolizFuncJump*>(_cells[_pos])->type;
     std::string name = dynamic_cast<PolizFuncJump*>(_cells[_pos])->name;
-    int count = dynamic_cast<PolizFuncJump*>(_cells[_pos])->count;
+    //int count = dynamic_cast<PolizFuncJump*>(_cells[_pos])->count;
+    int count = _parameter_list[name].size();
     int pos = dynamic_cast<PolizFuncJump*>(_cells[_pos])->pos;
     std::vector<UserType> parameters;
     std::vector<std::string> parameter_names = _parameter_list[name];
+    std::vector<UserType*> to_delete;
+    std::stack<UserType*> k = _results.top();
     for (int i = 0; i < count; ++i) {
         parameters.push_back(*_results.top().top());
         if (!_results.top().top()->_is_var) {
-            delete _results.top().top();
+            to_delete.push_back(_results.top().top());
         }
         _results.top().pop();
         parameters[i]._var_name = parameter_names[parameter_names.size() - 1 - i];
     }
     OpenCleanScope(parameters);
+    for (auto a : to_delete) {
+        delete a;
+    }
     _callStack.push(_pos);
     _pos = pos;
 }
 
 void Executive::MethodJump() {
-    std::string type = dynamic_cast<PolizMethodJump*>(_cells[_pos])->type;
+    //std::string type = dynamic_cast<PolizMethodJump*>(_cells[_pos])->type;
+    std::string type = _results.top().top()->_type_name;
+    _results.pop();
     std::string name = dynamic_cast<PolizMethodJump*>(_cells[_pos])->name;
     int count = dynamic_cast<PolizMethodJump*>(_cells[_pos])->count;
     int pos = dynamic_cast<PolizMethodJump*>(_cells[_pos])->pos;
     std::vector<UserType> parameters;
     std::vector<std::string> parameter_names = _parameter_list[type + '&' + name];
+    std::vector<UserType*> to_delete;
     for (int i = 0; i < count; ++i) {
         parameters.push_back(*_results.top().top());
         if (!_results.top().top()->_is_var) {
-            delete _results.top().top();
+            to_delete.push_back(_results.top().top());
         }
         _results.top().pop();
         parameters[i]._var_name = parameter_names[parameter_names.size() - 1 - i];
     }
     OpenCleanScope(parameters, _results.top().top()->_members);
+    for (auto a : to_delete) {
+        delete a;
+    }
     _callStack.push(_pos);
     _pos = pos;
 }
@@ -543,7 +584,8 @@ void Executive::AddVariable() {
     std::string name = dynamic_cast<PolizAdd*>(_cells[_pos])->name;
     std::string type = dynamic_cast<PolizAdd*>(_cells[_pos])->type;
 
-    UserType* variable;
+    UserType* variable = nullptr;
+    std::cout << "\n ADDING NEW VARIABLE: ";
 
     if (IsBasic(type) == 1) {
         long long val = 0;
@@ -563,16 +605,22 @@ void Executive::AddVariable() {
         variable = new UserType(type, name, members);
     }
 
-    _write_memory = variable;
+    std::cout << variable->_var_name << " " << variable->_int64 << "\n";
+    //_write_memory = variable;
+    _locals.push_back(variable);
+    _results.top().push(variable);
 
     _variables.top()[name] = variable;
 }
 
 void Executive::Operator() {
-    std::string symbol = dynamic_cast<PolizSymbol*>(_cells[_pos])->string;
+    std::string symbol = dynamic_cast<PolizOperator*>(_cells[_pos])->oper;
+    std::cout << symbol << ": ";
+    std::stack<UserType*> p = _results.top();
 
     UserType* p2 = _results.top().top();
     _results.top().pop();
+    std::cout << p2->_var_name << " " << p2->_int64 << " ";
 
     UserType* result = new UserType;
 
@@ -609,6 +657,7 @@ void Executive::Operator() {
 
     UserType* p1 = _results.top().top();
     _results.top().pop();
+    std::cout << p1->_var_name << " " << p1->_int64 << " ";
 
     if (symbol == ".") {
         _results.top().push(p2->_members[p1->_var_name]);
@@ -633,8 +682,8 @@ void Executive::Operator() {
         return;
     }
     if (symbol == "=") {
-        *p2 = *p1;
-        if (!p1->_is_var) {
+        *p1 << *p2;
+        if (!p2->_is_var) {
             delete p1;
         }
         return;
@@ -679,6 +728,7 @@ void Executive::Operator() {
     if (symbol == "<=") {
         *result = *p1 <= *p2;
     }
+    std::cout << "result: " << result->_var_name << " " << result->_int64;
     _results.top().push(result);
 
     if (!p2->_is_var) {
@@ -693,6 +743,7 @@ void Executive::Operator() {
 
 void Executive::Symbol() {
     std::string symbol = dynamic_cast<PolizSymbol*>(_cells[_pos])->string;
+    UserType* result = nullptr;
     if (symbol[0] <= '9' && symbol[0] >= '0') {
         bool floating = false;
         for (auto k : symbol) {
@@ -702,15 +753,18 @@ void Executive::Symbol() {
         }
         if (floating) {
             float val = std::stof(symbol);
-            _results.top().push(new UserType(false, val));
+            result = new UserType(false, val);
         }
         else {
             int val = std::stoi(symbol);
-            _results.top().push(new UserType(false, val));
+            result = new UserType(false, val);
+
         }
+        _results.top().push(result);
         return;
     }
-    _results.top().push(new UserType(false, symbol));
+    result = new UserType(false, symbol);
+    _results.top().push(result);
 
 }
 
@@ -723,6 +777,7 @@ void Executive::OpenCleanScope(std::vector<UserType> parameters) {
     for (auto parameter : parameters) {
         new_scope[parameter._var_name] = new UserType();
         *new_scope[parameter._var_name] = parameter;
+        new_scope[parameter._var_name]->_is_var = true;
     }
     _variables.push(new_scope);
     _results.push(std::stack<UserType*>());
@@ -733,6 +788,7 @@ void Executive::OpenCleanScope(std::vector<UserType> parameters, std::map<std::s
     for (auto parameter : parameters) {
         new_scope[parameter._var_name] = new UserType();
         *new_scope[parameter._var_name] = parameter;
+        new_scope[parameter._var_name]->_is_var = true;
     }
     new_scope.insert(members.begin(), members.end());
     _variables.push(new_scope);
@@ -744,6 +800,9 @@ void Executive::CloseScope() {
     for (it = _variables.top().begin(); it != _variables.top().end(); ++it) {
         ClearElement(it->second);
     }
+   /* for (auto a : _locals) {
+        delete a;
+    }*/
     _variables.pop();
     _results.pop();
 }
@@ -756,7 +815,7 @@ void Executive::Return() {
     UserType* result = _results.top().top();
     CloseScope();
     _results.top().push(result);
-    _pos = _callStack.top() + 1;
+    _pos = _callStack.top() + 2;
     _callStack.pop();
 }
 
